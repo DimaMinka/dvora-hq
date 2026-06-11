@@ -58,19 +58,45 @@ export default function FighterDashboard({
       <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
 
       {/* Operator Info */}
-      <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex items-center gap-3">
-        <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
-          <div className="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
-          <span className="text-bf-cyan text-base font-black">⚡</span>
-        </div>
-        <div className="min-w-0">
-          <div className="text-white font-black text-xs uppercase tracking-wider truncate">
-            {user ? `OPERATOR: ${user.callsign || user.phone_number}` : d.opName}
+      <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="Tactical Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <>
+                <div className="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
+                <span className="text-bf-cyan text-base font-black">⚡</span>
+              </>
+            )}
           </div>
-          <div className="text-[10px] text-slate-400 truncate">
-            {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
+          <div className="min-w-0 flex-1">
+            <div className="text-white font-black text-xs uppercase tracking-wider truncate">
+              {user ? `OPERATOR: ${user.callsign || user.phone_number}` : d.opName}
+            </div>
+            <div className="text-[10px] text-slate-400 truncate">
+              {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
+            </div>
           </div>
         </div>
+
+        {/* Loadout Biometrics Details */}
+        {user?.specialization && (
+          <div className="grid grid-cols-3 gap-1.5 pt-1.5 border-t border-bf-border/40 text-[8px] font-mono uppercase text-slate-400">
+            <div>
+              <span className="text-slate-600 block">// ROLE</span>
+              <span className="text-bf-cyan font-bold truncate block">{user.specialization}</span>
+            </div>
+            <div>
+              <span className="text-slate-600 block">// WEAPON</span>
+              <span className="text-bf-cyan font-bold truncate block">{user.weaponry}</span>
+            </div>
+            <div className="min-w-0">
+              <span className="text-slate-600 block">// GEAR</span>
+              <span className="text-bf-cyan font-bold truncate block" title={user.gear}>{user.gear}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Alarm Alert Box */}
