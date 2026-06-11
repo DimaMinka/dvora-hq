@@ -11,7 +11,7 @@ export const config = {
   gcpRegion: process.env.GCP_REGION || 'europe-west1',
   gcsAvatarBucket: process.env.GCS_AVATAR_BUCKET,
   cloudTasksQueueName: process.env.CLOUDTASKS_QUEUE_NAME || 'avatar-generation',
-  cloudSqlInstanceName: process.env.CLOUDSQL_INSTANCE_NAME || 'dvora-db'
+  cloudSqlInstanceName: process.env.CLOUDSQL_INSTANCE_NAME || 'dvora-db',
 };
 
 console.log(`[System] Booting ${config.appName} in ${config.env} mode...`);

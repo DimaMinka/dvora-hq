@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-bf-dark: #050b0e;
@@ -13,7 +13,14 @@
 
 /* Custom styles from mockup */
 .dvora-bg {
-  background-image: linear-gradient(to bottom, rgba(5, 11, 14, 0.85), rgba(5, 11, 14, 0.5) 30%, rgba(5, 11, 14, 0.95)), url('https://i.ibb.co/6R496p0c/IMG-8704.png');
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(5, 11, 14, 0.85),
+      rgba(5, 11, 14, 0.5) 30%,
+      rgba(5, 11, 14, 0.95)
+    ),
+    url('https://i.ibb.co/6R496p0c/IMG-8704.png');
   background-size: contain;
   background-position: center top;
   background-repeat: no-repeat;
@@ -28,12 +35,25 @@
 }
 
 .hud-grid {
-  background: linear-gradient(rgba(13, 24, 30, 0.2) 50%, rgba(5, 11, 14, 0.4) 50%), linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px), linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 4px, 20px 20px, 20px 20px;
+  background:
+    linear-gradient(rgba(13, 24, 30, 0.2) 50%, rgba(5, 11, 14, 0.4) 50%),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+  background-size:
+    100% 4px,
+    20px 20px,
+    20px 20px;
 }
 
 .clip-hud {
-  clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+  clip-path: polygon(
+    0 0,
+    calc(100% - 15px) 0,
+    100% 15px,
+    100% 100%,
+    15px 100%,
+    0 calc(100% - 15px)
+  );
 }
 
 .clip-btn {
