@@ -228,12 +228,14 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
 
   try {
     const pool = await getDbPool();
-    
+
     // Save selections
-    await pool.query(
-      'UPDATE users SET specialization = ?, weaponry = ?, gear = ? WHERE id = ?',
-      [specialization, weaponry, gear, req.user.userId]
-    );
+    await pool.query('UPDATE users SET specialization = ?, weaponry = ?, gear = ? WHERE id = ?', [
+      specialization,
+      weaponry,
+      gear,
+      req.user.userId,
+    ]);
 
     let avatarUrl = null;
     if (ai) {
@@ -253,8 +255,13 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
         if (aiResponse?.generatedImages?.[0]?.image?.imageBytes) {
           const base64Bytes = aiResponse.generatedImages[0].image.imageBytes;
           avatarUrl = `data:image/jpeg;base64,${base64Bytes}`;
-          await pool.query('UPDATE users SET avatar_url = ? WHERE id = ?', [avatarUrl, req.user.userId]);
-          console.log(`[API] AI avatar successfully generated and saved for user ${req.user.userId}`);
+          await pool.query('UPDATE users SET avatar_url = ? WHERE id = ?', [
+            avatarUrl,
+            req.user.userId,
+          ]);
+          console.log(
+            `[API] AI avatar successfully generated and saved for user ${req.user.userId}`
+          );
         }
       } catch (aiErr) {
         console.error('[API] AI Avatar generation failed:', aiErr.message);
@@ -275,8 +282,8 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
         gear,
         avatar_url: avatarUrl,
         alarm_active: false,
-        readiness: null
-      }
+        readiness: null,
+      },
     });
   } catch (err) {
     console.error('[API] Onboarding error:', err.message);

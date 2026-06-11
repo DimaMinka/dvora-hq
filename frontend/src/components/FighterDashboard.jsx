@@ -62,7 +62,11 @@ export default function FighterDashboard({
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
             {user?.avatar_url ? (
-              <img src={user.avatar_url} alt="Tactical Avatar" className="w-full h-full object-cover" />
+              <img
+                src={user.avatar_url}
+                alt="Tactical Avatar"
+                className="w-full h-full object-cover"
+              />
             ) : (
               <>
                 <div className="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
@@ -93,7 +97,9 @@ export default function FighterDashboard({
             </div>
             <div className="min-w-0">
               <span className="text-slate-600 block">// GEAR</span>
-              <span className="text-bf-cyan font-bold truncate block" title={user.gear}>{user.gear}</span>
+              <span className="text-bf-cyan font-bold truncate block" title={user.gear}>
+                {user.gear}
+              </span>
             </div>
           </div>
         )}

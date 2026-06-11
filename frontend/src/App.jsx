@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import LockScreen from './components/LockScreen.jsx';
 import FighterDashboard from './components/FighterDashboard.jsx';
 import CommanderDashboard from './components/CommanderDashboard.jsx';
+import Onboarding from './components/Onboarding.jsx';
 
 const i18n = {
   en: {
@@ -188,6 +189,7 @@ function App() {
   const [isLocked, setIsLocked] = useState(true);
   const [role, setRole] = useState('soldier');
   const [user, setUser] = useState(null);
+  const [squadMembers, setSquadMembers] = useState([]);
   const [alarmActive, setAlarmActive] = useState(false);
   const [checklist, setChecklist] = useState({
     wpn: true,
@@ -209,6 +211,7 @@ function App() {
     }
     localStorage.removeItem('dvora_token');
     setUser(null);
+    setSquadMembers([]);
     setIsLocked(true);
   };
 
@@ -229,10 +232,43 @@ function App() {
       localStorage.setItem('dvora_token', data.token);
       setUser(data.user);
       setRole(data.user.role === 'fighter' ? 'soldier' : data.user.role);
+
+      if (data.user.readiness) {
+        setChecklist({
+          wpn: Boolean(data.user.readiness.weapons_ready),
+          trsp: Boolean(data.user.readiness.transport_ready),
+          com: Boolean(data.user.readiness.comms_ready),
+          med: Boolean(data.user.readiness.meds_ready),
+        });
+      }
+      setAlarmActive(Boolean(data.user.alarm_active));
       setIsLocked(false);
     } catch (err) {
       alert(`AUTH ERROR: ${err.message}`);
     }
+  };
+
+  const handleOnboardingComplete = async (loadout) => {
+    const token = localStorage.getItem('dvora_token');
+    if (!token) return;
+
+    const res = await fetch('/api/user/onboarding', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(loadout),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || 'Onboarding failed');
+    }
+
+    const data = await res.json();
+    setUser(data.user);
+    setAlarmActive(false);
   };
 
   const toggleChecklist = async (key) => {
@@ -316,6 +352,16 @@ function App() {
       .then((profile) => {
         setUser(profile);
         setRole(profile.role === 'fighter' ? 'soldier' : profile.role);
+
+        if (profile.readiness) {
+          setChecklist({
+            wpn: Boolean(profile.readiness.weapons_ready),
+            trsp: Boolean(profile.readiness.transport_ready),
+            com: Boolean(profile.readiness.comms_ready),
+            med: Boolean(profile.readiness.meds_ready),
+          });
+        }
+        setAlarmActive(Boolean(profile.alarm_active));
         setIsLocked(false);
       })
       .catch(() => {
@@ -324,22 +370,32 @@ function App() {
       });
   }, []);
 
-  // 2. Polling for Alarm State (Fighters) or Squad Readiness (Commanders)
+  // 2. Initial Commander Load & Polling for Alarm State (Fighters) or Squad Readiness (Commanders)
   useEffect(() => {
     if (isLocked || !user) return;
 
-    const interval = setInterval(() => {
-      const token = localStorage.getItem('dvora_token');
-      if (!token) return;
+    const token = localStorage.getItem('dvora_token');
+    if (!token) return;
 
+    // Load immediately if commander
+    if (user.role === 'commander') {
+      fetch('/api/squad/status', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setSquadMembers(data))
+        .catch(() => {});
+    }
+
+    const interval = setInterval(() => {
       if (user.role === 'fighter') {
         // Fighters query profile to check if squad alarm is activated
         fetch('/api/user/profile', {
           headers: { Authorization: `Bearer ${token}` },
         })
           .then((res) => res.json())
-          .then(() => {
-            // Can be extended to check alarm status
+          .then((profile) => {
+            setAlarmActive(profile.alarm_active);
           })
           .catch(() => {});
       } else if (user.role === 'commander') {
@@ -353,8 +409,8 @@ function App() {
             }
             return res.json();
           })
-          .then(() => {
-            // Can be extended to update list
+          .then((data) => {
+            setSquadMembers(data);
           })
           .catch(() => {});
       }
@@ -480,23 +536,26 @@ function App() {
               <LockScreen onUnlock={handleUnlock} />
             ) : (
               <>
-                {role === 'soldier' && (
-                  <FighterDashboard
-                    lang={lang}
-                    checklist={checklist}
-                    onToggleChecklist={toggleChecklist}
-                    alarmActive={alarmActive}
-                    onSendReport={handleSendReport}
-                    user={user}
-                  />
-                )}
+                {role === 'soldier' &&
+                  (user && !user.specialization ? (
+                    <Onboarding lang={lang} onComplete={handleOnboardingComplete} />
+                  ) : (
+                    <FighterDashboard
+                      lang={lang}
+                      checklist={checklist}
+                      onToggleChecklist={toggleChecklist}
+                      alarmActive={alarmActive}
+                      onSendReport={handleSendReport}
+                      user={user}
+                    />
+                  ))}
 
                 {role === 'commander' && (
                   <CommanderDashboard
                     lang={lang}
                     alarmActive={alarmActive}
                     onToggleAlarm={handleToggleAlarm}
-                    checklist={checklist}
+                    squadMembers={squadMembers}
                   />
                 )}
 
