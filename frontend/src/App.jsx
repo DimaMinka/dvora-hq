@@ -487,6 +487,7 @@ function App() {
                     onToggleChecklist={toggleChecklist}
                     alarmActive={alarmActive}
                     onSendReport={handleSendReport}
+                    user={user}
                   />
                 )}
 

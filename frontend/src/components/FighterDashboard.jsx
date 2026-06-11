@@ -6,6 +6,7 @@ export default function FighterDashboard({
   onToggleChecklist,
   alarmActive = false,
   onSendReport,
+  user,
 }) {
   const [reportText, setReportText] = React.useState('');
 
@@ -64,9 +65,11 @@ export default function FighterDashboard({
         </div>
         <div className="min-w-0">
           <div className="text-white font-black text-xs uppercase tracking-wider truncate">
-            {d.opName}
+            {user ? `OPERATOR: ${user.phone_number}` : d.opName}
           </div>
-          <div className="text-[10px] text-slate-400 truncate">{d.opSquad}</div>
+          <div className="text-[10px] text-slate-400 truncate">
+            {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
+          </div>
         </div>
       </div>
 
