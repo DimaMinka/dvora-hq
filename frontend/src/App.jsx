@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LockScreen from './components/LockScreen.jsx';
 import FighterDashboard from './components/FighterDashboard.jsx';
 import CommanderDashboard from './components/CommanderDashboard.jsx';
@@ -187,6 +187,7 @@ function App() {
   const [lang, setLang] = useState('en');
   const [isLocked, setIsLocked] = useState(true);
   const [role, setRole] = useState('soldier');
+  const [user, setUser] = useState(null);
   const [alarmActive, setAlarmActive] = useState(false);
   const [checklist, setChecklist] = useState({
     wpn: true,
@@ -198,12 +199,169 @@ function App() {
   const dict = i18n[lang];
   const isRtl = lang === 'he';
 
-  const toggleChecklist = (key) => {
-    setChecklist((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+  const handleLogout = async () => {
+    const token = localStorage.getItem('dvora_token');
+    if (token) {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
+    }
+    localStorage.removeItem('dvora_token');
+    setUser(null);
+    setIsLocked(true);
   };
+
+  const handleUnlock = async (phone, pin) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phone, pin }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Login failed');
+      }
+
+      const data = await res.json();
+      localStorage.setItem('dvora_token', data.token);
+      setUser(data.user);
+      setRole(data.user.role === 'fighter' ? 'soldier' : data.user.role);
+      setIsLocked(false);
+    } catch (err) {
+      alert(`AUTH ERROR: ${err.message}`);
+    }
+  };
+
+  const toggleChecklist = async (key) => {
+    const newChecklist = {
+      ...checklist,
+      [key]: !checklist[key],
+    };
+    setChecklist(newChecklist);
+
+    const token = localStorage.getItem('dvora_token');
+    if (!token) return;
+
+    await fetch('/api/user/readiness', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        weapons_ready: newChecklist.wpn,
+        transport_ready: newChecklist.trsp,
+        comms_ready: newChecklist.com,
+        meds_ready: newChecklist.med,
+      }),
+    }).catch((err) => console.error('[API] Failed to update readiness:', err.message));
+  };
+
+  const handleSendReport = async (text) => {
+    const token = localStorage.getItem('dvora_token');
+    if (!token) return;
+
+    await fetch('/api/user/readiness', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        weapons_ready: checklist.wpn,
+        transport_ready: checklist.trsp,
+        comms_ready: checklist.com,
+        meds_ready: checklist.med,
+        note: text,
+      }),
+    })
+      .then(() => alert(lang === 'en' ? 'REPORT TRANSMITTED' : 'הדיווח נשלח בהצלחה'))
+      .catch((err) => console.error('[API] Failed to send report:', err.message));
+  };
+
+  const handleToggleAlarm = async () => {
+    const nextAlarmState = !alarmActive;
+    setAlarmActive(nextAlarmState);
+
+    const token = localStorage.getItem('dvora_token');
+    if (!token) return;
+
+    await fetch('/api/squad/alarm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ alarm_active: nextAlarmState }),
+    }).catch((err) => console.error('[API] Failed to toggle alarm:', err.message));
+  };
+
+  // 1. Initial Load: Check token
+  useEffect(() => {
+    const token = localStorage.getItem('dvora_token');
+    if (!token) {
+      return;
+    }
+
+    fetch('/api/user/profile', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Session invalid');
+        return res.json();
+      })
+      .then((profile) => {
+        setUser(profile);
+        setRole(profile.role === 'fighter' ? 'soldier' : profile.role);
+        setIsLocked(false);
+      })
+      .catch(() => {
+        localStorage.removeItem('dvora_token');
+        setIsLocked(true);
+      });
+  }, []);
+
+  // 2. Polling for Alarm State (Fighters) or Squad Readiness (Commanders)
+  useEffect(() => {
+    if (isLocked || !user) return;
+
+    const interval = setInterval(() => {
+      const token = localStorage.getItem('dvora_token');
+      if (!token) return;
+
+      if (user.role === 'fighter') {
+        // Fighters query profile to check if squad alarm is activated
+        fetch('/api/user/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => res.json())
+          .then(() => {
+            // Can be extended to check alarm status
+          })
+          .catch(() => {});
+      } else if (user.role === 'commander') {
+        // Commanders fetch squad status
+        fetch('/api/squad/status', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => {
+            if (res.status === 401 || res.status === 403) {
+              handleLogout();
+            }
+            return res.json();
+          })
+          .then(() => {
+            // Can be extended to update list
+          })
+          .catch(() => {});
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isLocked, user]);
 
   return (
     <div
@@ -319,7 +477,7 @@ function App() {
 
           <div className="p-4 glass-panel border-2 border-bf-cyan/30 clip-hud relative flex flex-col justify-between min-h-[440px]">
             {isLocked ? (
-              <LockScreen onUnlock={() => setIsLocked(false)} />
+              <LockScreen onUnlock={handleUnlock} />
             ) : (
               <>
                 {role === 'soldier' && (
@@ -328,7 +486,7 @@ function App() {
                     checklist={checklist}
                     onToggleChecklist={toggleChecklist}
                     alarmActive={alarmActive}
-                    onSendReport={(text) => console.log('Report sent:', text)}
+                    onSendReport={handleSendReport}
                   />
                 )}
 
@@ -336,7 +494,7 @@ function App() {
                   <CommanderDashboard
                     lang={lang}
                     alarmActive={alarmActive}
-                    onToggleAlarm={() => setAlarmActive(!alarmActive)}
+                    onToggleAlarm={handleToggleAlarm}
                     checklist={checklist}
                   />
                 )}
@@ -390,7 +548,7 @@ function App() {
                       Alarm Off
                     </button>
                     <button
-                      onClick={() => setIsLocked(true)}
+                      onClick={handleLogout}
                       className="w-full bg-bf-orange/10 border border-bf-orange/40 text-bf-orange py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-bf-orange/20 transition-all cursor-pointer"
                     >
                       Lock
