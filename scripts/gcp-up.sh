@@ -7,11 +7,16 @@ set -e
 LOG_FILE="gcp-infra.log"
 exec > >(tee -ia "$LOG_FILE") 2>&1
 
-PROJECT_ID=$(gcloud config get-value project)
-REGION="europe-west1"
-BUCKET_NAME="${PROJECT_ID}-avatars"
-QUEUE_NAME="avatar-generation"
-DB_INSTANCE_NAME="dvora-db"
+# Load environment variables from .env if it exists
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)
+fi
+
+PROJECT_ID=${GCP_PROJECT_ID:-$(gcloud config get-value project)}
+REGION=${GCP_REGION:-"europe-west1"}
+BUCKET_NAME=${GCS_AVATAR_BUCKET:-"${PROJECT_ID}-avatars"}
+QUEUE_NAME=${CLOUDTASKS_QUEUE_NAME:-"avatar-generation"}
+DB_INSTANCE_NAME=${CLOUDSQL_INSTANCE_NAME:-"dvora-db"}
 
 echo "============================================="
 echo " Deploying Dvora HQ Infrastructure on GCP"
