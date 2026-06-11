@@ -4,19 +4,14 @@ export default function CommanderDashboard({
   lang = 'en',
   alarmActive = false,
   onToggleAlarm,
-  checklist = { wpn: true, trsp: true, com: true, med: true }, // reaper checklist
+  squadMembers = [],
 }) {
-  const [logs] = useState([
-    { id: 1, time: '20:01', user: 'REAPER', action: 'STATUS_CHECK: ALL_READY' },
-    { id: 2, time: '20:02', user: 'PHANTOM', action: 'REPORT: COMMS INTERFERENCE' },
-    { id: 3, time: '20:04', user: 'SYSTEM', action: 'SECURITY_GATEWAY: PIN_VERIFIED [REAPER]' },
-  ]);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const textDict = {
     en: {
       title: '// STRATEGIC_DASHBOARD // COMMAND_NODE',
-      squadTitle: 'SQUAD ALPHA OVERVIEW',
+      squadTitle: 'SQUAD OVERVIEW',
       alarmOn: 'FORCE ALARM STATE',
       alarmOff: 'STANDBY MODE',
       logsTitle: 'INCIDENT LOGS',
@@ -27,13 +22,10 @@ export default function CommanderDashboard({
       trsp: 'TRSP',
       com: 'COM',
       med: 'MED',
-      reaper: 'REAPER (YOU)',
-      phantom: 'PHANTOM',
-      ghost: 'GHOST',
     },
     he: {
       title: '// לוח_פיקוד_אסטרטגי // מפקד',
-      squadTitle: 'סקירת צוות אלפא',
+      squadTitle: 'סקירת צוות',
       alarmOn: 'הפעל סירנת קרב',
       alarmOff: 'חזרה לכוננות',
       logsTitle: 'יומן אירועים',
@@ -44,25 +36,27 @@ export default function CommanderDashboard({
       trsp: 'רכב',
       com: 'קשר',
       med: 'רפו',
-      reaper: 'REAPER (אתה)',
-      phantom: 'PHANTOM',
-      ghost: 'GHOST',
     },
   };
 
   const d = textDict[lang] || textDict.en;
 
-  const mockSquad = [
-    {
-      name: d.reaper,
-      wpn: checklist.wpn,
-      trsp: checklist.trsp,
-      com: checklist.com,
-      med: checklist.med,
-    },
-    { name: d.phantom, wpn: true, trsp: true, com: false, med: true },
-    { name: d.ghost, wpn: true, trsp: false, com: true, med: true },
-  ];
+  const logs = squadMembers
+    .filter((m) => m.note)
+    .map((m, idx) => {
+      const timeStr = m.updated_at
+        ? new Date(m.updated_at).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : '00:00';
+      return {
+        id: idx,
+        time: timeStr,
+        user: m.callsign || m.phone_number,
+        action: `REPORT: ${m.note}`,
+      };
+    });
 
   return (
     <div className="space-y-4 w-full animate-fade-in relative">
@@ -79,30 +73,39 @@ export default function CommanderDashboard({
           <div className="text-center">{d.med}</div>
         </div>
 
-        {mockSquad.map((m, idx) => (
+        {squadMembers.map((m) => (
           <div
-            key={idx}
+            key={m.id}
             className="grid grid-cols-5 text-[10px] items-center p-1.5 bg-bf-dark/40 border border-bf-border/40 clip-btn"
           >
-            <div className="truncate text-slate-300 font-bold">{m.name}</div>
+            <div className="truncate text-slate-300 font-bold flex items-center gap-1">
+              {m.avatar_url && (
+                <img
+                  src={m.avatar_url}
+                  alt=""
+                  className="w-4 h-4 rounded-full object-cover border border-bf-cyan/30 shrink-0"
+                />
+              )}
+              <span className="truncate">{m.callsign || m.phone_number}</span>
+            </div>
             <div className="flex justify-center">
               <span
-                className={`w-2 h-2 rounded-full ${m.wpn ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
+                className={`w-2 h-2 rounded-full ${m.weapons_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
               />
             </div>
             <div className="flex justify-center">
               <span
-                className={`w-2 h-2 rounded-full ${m.trsp ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
+                className={`w-2 h-2 rounded-full ${m.transport_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
               />
             </div>
             <div className="flex justify-center">
               <span
-                className={`w-2 h-2 rounded-full ${m.com ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
+                className={`w-2 h-2 rounded-full ${m.comms_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
               />
             </div>
             <div className="flex justify-center">
               <span
-                className={`w-2 h-2 rounded-full ${m.med ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
+                className={`w-2 h-2 rounded-full ${m.meds_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
               />
             </div>
           </div>
