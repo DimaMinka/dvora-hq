@@ -1,0 +1,20 @@
+{
+  "name": "dvora-hq-backend",
+  "version": "1.0.0",
+  "description": "Tactical Command & Readiness App for Telegram",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@google-cloud/cloud-sql-connector": "^1.2.2",
+    "argon2": "^0.40.1",
+    "express": "^4.19.2",
+    "grammy": "^1.22.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.9.7"
+  }
+}

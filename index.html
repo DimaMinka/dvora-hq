@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVORA HQ // TACTICAL BATTLE NETWORK</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rubik:wght@300;400;700;900&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bf: {
+                            dark: '#050b0e',
+                            slate: '#0d181e',
+                            cyan: '#00f0ff',
+                            orange: '#ff5400',
+                            border: '#162b35'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                        heb: ['Rubik', 'sans-serif'],
+                        heb_title: ['Rubik Mono One', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Интеграция твоего фона с адаптацией под десктоп */
+        .dvora-bg {
+            background-image: linear-gradient(to bottom, rgba(5, 11, 14, 0.85), rgba(5, 11, 14, 0.5) 30%, rgba(5, 11, 14, 0.95)), url('https://i.ibb.co/6R496p0c/IMG-8704.png');
+            background-size: contain;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        /* Для десктопов делаем cover, чтобы не было пустых полей по бокам, но центрируем по арту */
+        @media (min-width: 1024px) {
+            .dvora-bg {
+                background-size: cover;
+                background-position: center 20%;
+            }
+        }
+
+        .hud-grid {
+            background: linear-gradient(rgba(13, 24, 30, 0.2) 50%, rgba(5, 11, 14, 0.4) 50%), linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px), linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 4px, 20px 20px, 20px 20px;
+        }
+
+        .clip-hud {
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+        }
+
+        .clip-btn {
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+        }
+
+        html[dir="rtl"] body {
+            font-family: 'Rubik', sans-serif;
+        }
+
+        html[dir="rtl"] .main-title {
+            font-family: 'Rubik Mono One', sans-serif;
+        }
+
+        /* Эффект матового стекла для HUD панелей поверх крутого фона */
+        .glass-panel {
+            background: rgba(13, 24, 30, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen bg-bf-dark text-slate-300 font-mono tracking-wide p-4 sm:p-8 relative overflow-x-hidden dvora-bg hud-grid">
+
+    <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-bf-cyan to-transparent opacity-50">
+    </div>
+
+    <header
+        class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-bf-border/60 pb-6 glass-panel p-4 clip-hud">
+        <div class="w-full sm:w-auto">
+            <div id="meta-status" class="text-xs text-bf-cyan opacity-70 mb-1">// CODENAME: DVORA // NETWORK_STATUS:
+                ONLINE</div>
+            <h1 class="text-3xl font-black text-white tracking-widest sm:text-4xl main-title">
+                DVORA <span class="text-bf-orange animate-pulse">HQ v2.1</span>
+            </h1>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <div class="flex p-0.5 bg-bf-dark border border-bf-border clip-btn">
+                <button onclick="changeLanguage('en')" id="lang-en"
+                    class="px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn">ENG</button>
+                <button onclick="changeLanguage('he')" id="lang-he"
+                    class="px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn">עבר</button>
+            </div>
+
+            <div class="text-right text-xs border border-bf-border p-2 bg-bf-dark/80 clip-btn w-full sm:w-auto flex sm:flex-col justify-between"
+                id="telemetry-box">
+                <div><span class="text-slate-500">SYS_LOC:</span> <span
+                        class="text-bf-cyan font-bold">EU-WEST.GCP</span></div>
+                <div><span class="text-slate-500">SECURITY:</span> <span
+                        class="text-bf-orange font-bold">STRICT_AUTH</span></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="max-w-6xl mx-auto mb-8 p-6 glass-panel border border-bf-border/50 clip-hud">
+        <div class="flex items-center gap-2 mb-3">
+            <span class="w-2 h-10 bg-bf-orange"></span>
+            <div>
+                <div class="text-[10px] text-bf-orange font-bold font-mono tracking-widest">// MISSION_STATEMENT</div>
+                <h2 id="app-desc-title" class="text-xl font-black text-white uppercase">TACTICAL COMMAND OPERATIONS</h2>
+            </div>
+        </div>
+        <p id="app-desc-text" class="text-sm text-slate-300 max-w-3xl leading-relaxed">
+            Dvora HQ is an ultra-secure, invite-only tactical synchronization dashboard integrated natively into the
+            Telegram ecosystem. Built for modern field operations, it guarantees instant state alignment, decentralized
+            deployment management, and real-time combat status reporting under a strictly enforced perimeter.
+        </p>
+    </section>
+
+    <main class="max-w-6xl mx-auto grid gap-6 md:grid-cols-3">
+
+        <section class="md:col-span-2 space-y-6">
+            <div class="flex items-center gap-2 border-b border-bf-cyan/30 pb-2">
+                <span class="w-2 h-2 bg-bf-cyan"></span>
+                <h2 id="section-caps-title" class="text-sm font-black text-white uppercase tracking-widest">System
+                    Capabilities [Deploy_Log]</h2>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2" id="cards-container">
+            </div>
+        </section>
+
+        <section class="space-y-6">
+            <div class="flex items-center gap-2 border-b border-bf-orange/30 pb-2">
+                <span class="w-2 h-2 bg-bf-orange animate-ping"></span>
+                <h2 id="section-nodes-title" class="text-sm font-black text-white uppercase tracking-widest">Live Mini
+                    App HUD [Node_Matrix]</h2>
+            </div>
+
+            <div class="flex flex-col gap-1.5" id="node-toggles"></div>
+
+            <div
+                class="p-4 glass-panel border-2 border-bf-cyan/30 clip-hud relative flex flex-col justify-between min-h-[440px]">
+
+                <div id="mini-app-content" class="space-y-4 w-full"></div>
+
+                <div class="w-full pt-3 mt-4 border-t border-bf-border space-y-2 z-20">
+                    <div id="sim-title" class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">//
+                        LOCAL_HUD_SIMULATOR_ACTIONS</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="simulateAlarm(true)" id="sim-alarm-on"
+                            class="w-full bg-bf-orange/20 border border-bf-orange text-bf-orange py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-bf-orange/30 transition-all">
+                            Alarm On
+                        </button>
+                        <button onclick="simulateAlarm(false)" id="sim-alarm-off"
+                            class="w-full bg-slate-800 border border-slate-700 text-slate-400 py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-slate-700 transition-all">
+                            Alarm Off
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <section class="max-w-6xl mx-auto mt-12 mb-16">
+        <div class="flex items-center gap-2 border-b border-bf-border pb-2 mb-6">
+            <span class="w-2 h-2 bg-slate-500"></span>
+            <h2 id="section-tech-title" class="text-sm font-black text-white uppercase tracking-widest">Core
+                Infrastructure Blueprint [GCP_Serverless]</h2>
+        </div>
+
+        <div class="border border-bf-border bg-bf-slate/40 glass-panel clip-hud overflow-hidden"
+            id="tech-stack-container">
+        </div>
+    </section>
+
+    <footer id="footer-text"
+        class="max-w-6xl mx-auto border-t border-bf-border pt-6 text-center text-[10px] text-slate-600 tracking-widest">
+        CRITICAL DATA STREAM // SECURITY ENFORCED BY DVORA HQ PROTOCOLS // NO OUTBOUND EGRESS DETECTED
+    </footer>
+
+    <script>
+        let currentLang = 'en';
+        let globalAlarmState = false;
+        let currentRole = 'soldier';
+
+        // Временный проброс изображения для проверки, если слетит хостинг картинок
+        // Прямая ссылка на ваш загруженный файл: https://i.ibb.co/6R496p0c/IMG-8704.png
+
+        const i18n = {
+            en: {
+                metaStatus: '// CODENAME: DVORA // NETWORK_STATUS: ONLINE',
+                capsTitle: 'System Capabilities [Deploy_Log]',
+                nodesTitle: 'Live Mini App HUD [Node_Matrix]',
+                techTitle: 'Core Infrastructure Blueprint [GCP_Serverless]',
+                simTitle: '// LOCAL_HUD_SIMULATOR_ACTIONS',
+                appDescTitle: 'TACTICAL COMMAND OPERATIONS HUB',
+                appDescText: 'Dvora HQ is an ultra-secure, invite-only tactical synchronization dashboard integrated natively into the Telegram ecosystem. Built for modern rapid field operations, it guarantees instant status alignment, decentralized resource tracking, and real-time squad activation under a strictly audited perimeter.',
+                footer: 'CRITICAL DATA STREAM // SECURITY ENFORCED BY DVORA HQ PROTOCOLS // NO OUTBOUND EGRESS DETECTED',
+                sysLoc: 'SYS_LOC:',
+                security: 'SECURITY:',
+                btnSoldier: '> OPERATOR_NODE (LIVE APP)',
+                btnCommander: '> COMMAND_NODE (VIEW)',
+                btnAdmin: '> INTEL_ADMIN (BOT CLI)',
+                alarmStandby: 'STATUS // NETWORK_STANDBY',
+                alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
+                cards: [
+                    { tag: '[01_SECURE_ACCESS]', title: '2FA Tactical Lock Screen', desc: 'Strict pairing of Telegram native hardware verification with an encrypted numeric-alpha PIN. Hard token wipe executed precisely at T-120 minutes.' },
+                    { tag: '[02_AI_RENDER]', title: 'Loadout Biometrics', desc: 'Onboarding protocols evaluate operator loadout & specialization. Asynchronous GCP queues spin up neural assets to render a permanent custom profile matrix.' },
+                    { tag: '[03_STATUS_HUB]', title: 'Readiness Diagnostics', desc: 'Quad-axis checks: Weapons, Transport, Comms, Meds. Direct raw-text pipeline allows battlefield operators to feed asset bottlenecks instantly up the chain.' },
+                    { tag: '[04_COMBAT_ALARM]', title: 'Squad Overrides', desc: 'Commanders deploy precision alarms. Instantly overwrites the client state of target sub-squads with no resource overhead or background polling fatigue.' }
+                ],
+                tech: [
+                    { name: '[ENGINE] Cloud Run', desc: 'Isolated environment container. Param `min-instances: 1` targeted to completely vaporize Telegram webhook latency.' },
+                    { name: '[DATABASE] Cloud SQL', desc: 'MySQL 8 instance running restricted connection parameters (`poolSize: 2`) preventing serverless memory collapse.' },
+                    { name: '[CYPHER] Argon2id', desc: 'OWASP cryptographic mandate for offline numeric validation. Zero plaintext vectors across the persistence layer.' },
+                    { name: '[QUEUE] Cloud Tasks', desc: 'Asynchronous token ingestion. Isolates expensive generative AI endpoints from core application runtime.' }
+                ],
+                roles: {
+                    soldier: {
+                        feed: '[NODE_FEED: OPERATOR_HUD]',
+                        op: 'OPERATOR: REAPER',
+                        squad: 'SQUAD: ALPHA (01)',
+                        tasks: [
+                            'Pass 2FA validation sequence (Native Phone Identity + Hash PIN)',
+                            'Report real-time combat status toggles [Weapons, Transport, Comms, Meds]',
+                            'Inject raw unencrypted asset bottleneck text directly up the chain'
+                        ]
+                    },
+                    commander: {
+                        feed: '[NODE_FEED: STRATEGIC_DASHBOARD]',
+                        title: 'SQUAD ALPHA OVERVIEW',
+                        tasks: [
+                            'Oversee full operational green/red matrix status of assigned unit',
+                            'Query read-only append-only incident reports filed by field operators',
+                            'Execute immediate targeted Squad-Level Alarm state-overrides'
+                        ]
+                    },
+                    admin: {
+                        feed: '[NODE_FEED: TELEGRAM_BOT_CLI]',
+                        title: 'INTEL COMMAND LINE',
+                        tasks: [
+                            'Inject pre-approved network whitelist entries (Phone Identity Vectors)',
+                            'Deploy automatically generated unique PIN codes (5-digits + 1-alpha)',
+                            'Zero layout footprint within client Mini App interface'
+                        ]
+                    }
+                }
+            },
+            he: {
+                metaStatus: '// שם קוד: דבורה // סטאטוס רשת: מחובר',
+                capsTitle: 'יכולות מערכת [יומן_פריסה]',
+                nodesTitle: 'תצוגת מיני-אפליקציה [מטריצת_קשר]',
+                techTitle: 'ארכיטקטורת תשתית [ענן_גוגל_שרברלס]',
+                simTitle: '// פעולות סימולטור מקומי',
+                appDescTitle: 'חמ"ל מבצעים טקטי',
+                appDescText: 'מערכת Dvora HQ הינה פלטפורמת סנכרון טקטית מאובטחת ביותר, המיועדת למוזמנים בלבד ומיושמת באופן מובנה בתוך המערכת של טלגרם. המערכת נבנתה עבור מבצעים מהירים בשטח, ומבטיחה תיאום מצב מיידי, מעקב משאבים מבוזר והפעלה בזמן אמת של צוותים תחת מעטפת אבטחה קשיחה.',
+                footer: 'זרם נתונים קריטי // אבטחה מנוהלת על ידי פרוטוקול דבורה // לא זוהתה דליפת נתונים',
+                sysLoc: 'מיקום מערכת:',
+                security: 'רמת אבטחה:',
+                btnSoldier: '> מסוף_לוחם (אפליקציה)',
+                btnCommander: '> מסוף_מפקד (תצוגה)',
+                btnAdmin: '> ניהול_מודיעין (בוט CLI)',
+                alarmStandby: 'סטאטוס // רשת_בהמתנה',
+                alarmActive: '!! התרעת פריסה קרבית !!',
+                cards: [
+                    { tag: '[01_אבטחת_גישה]', title: 'מסך נעילה טקטי 2FA', desc: 'הצמדה קשיחה בין אימות טלפון מובנה של טלגרם לבין קוד PIN מוצפן. מחיקת טוקן מוחלטת מתבצעת בדיוק ב-T-120 דקות.' },
+                    { tag: '[02_עיבוד_AI]', title: 'ביומטריה של ציוד', desc: 'פרוטוקולי קליטה מעריכים את נשק הלוחם וההתמחות שלו. תורים אסינכרוניים בענן מייצרים אווטאר טקטי קבוע למטריצת הפרופיל.' },
+                    { tag: '[03_מרכז_סטאטוס]', title: 'אבחון מוכנות', desc: 'בדיקה ב-4 צירים: נשק, רכב, קשר, ומדיצינה. צינור דיווח ישיר מאפשר למפעילים בשטח להזין תקלות לוגיסטיות באופן מיידי ישירות לפיקוד.' },
+                    { tag: '[04_התרעת_קרב]', title: 'עקיפת פיקוד', desc: 'מפקדים מפעילים אזעקות דיוק. דוחף שינוי מצב מיידי למסכי הלוחמים ללא עומס על סוללת המכשיר או דרישת רענון רקע.' }
+                ],
+                tech: [
+                    { name: '[מנוע] Cloud Run', desc: 'סביבת קונטיינרים מבודדת. הגדרת מינימום אינסטנס 1 על מנת לנטרל לחלוטין את השהיית הוובהוקס של טלגרם.' },
+                    { name: '[בסיס נתונים] Cloud SQL', desc: 'מסד נתונים MySQL 8 המריץ הגדרות חיבור מוגבלות למניעת קריסת זיכרון שרברלס.' },
+                    { name: '[הצפנה] Argon2id', desc: 'תקן אבטחה מחמיר של OWASP לאימות קודים לא מקוון. אפס וקטורים של טקסט גלוי בשכבת הנתונים.' },
+                    { name: '[תורים] Cloud Tasks', desc: 'ניהול משימות אסינכרוני. מבודד קריאות כבדות לשרתי AI מרשת האפליקציה המרכזית.' }
+                ],
+                roles: {
+                    soldier: {
+                        feed: '[ערוץ_נתונים: מסך_לוחם]',
+                        op: 'מפעיל: REAPER',
+                        squad: 'צוות: אלפא (01)',
+                        tasks: [
+                            'מעבר רצף אימות 2FA (זיהוי טלפון מובנה + קוד PIN מוצפן)',
+                            'דיווח מוכנות קרבית בזמן אמת [נשק, רכב, קשר, רפואה]',
+                            'הזרקת דיווחי תקלות לוגיסטיות בטקסט חופשי ישירות לדרג הפיקוד'
+                        ]
+                    },
+                    commander: {
+                        feed: '[ערוץ_נתונים: לוח_פיקוד_אסטרטגי]',
+                        title: 'סקירת צוות אלפא',
+                        tasks: [
+                            'ניטור מטריצת מוכנות (ירוק/אדום) בזמן אמת של כלל היחידה',
+                            'צפייה בדוחות תקלות היסטוריים (לקריאה בלבד) שנשלחו מהשטח',
+                            'הפעלת התרעת צוות גלובלית ועקיפת מצב מסך מיידית'
+                        ]
+                    },
+                    admin: {
+                        feed: '[ערוץ_נתונים: ממשק_בוט_CLI]',
+                        title: 'שורת פקודה מודיעינית',
+                        tasks: [
+                            'הזרקת מספרי טלפון מאושרים מראש לרשימה הלבנה',
+                            'הנפקת קודי PIN ייחודיים ומאובטחים (5 ספרות + אות אחת)',
+                            'אפס טביעת רגל ויזואלית בתוך ממשק המיני-אפליקציה של הלוחמים'
+                        ]
+                    }
+                }
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+
+            document.getElementById('lang-en').className = lang === 'en' ? "px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn" : "px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn";
+            document.getElementById('lang-he').className = lang === 'he' ? "px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn" : "px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn";
+
+            const dict = i18n[lang];
+            document.getElementById('meta-status').innerText = dict.metaStatus;
+            document.getElementById('section-caps-title').innerText = dict.capsTitle;
+            document.getElementById('section-nodes-title').innerText = dict.nodesTitle;
+            document.getElementById('section-tech-title').innerText = dict.techTitle;
+            document.getElementById('sim-title').innerText = dict.simTitle;
+            document.getElementById('app-desc-title').innerText = dict.appDescTitle;
+            document.getElementById('app-desc-text').innerText = dict.appDescText;
+            document.getElementById('footer-text').innerText = dict.footer;
+
+            document.getElementById('telemetry-box').innerHTML = `
+                <div><span class="text-slate-500">${dict.sysLoc}</span> <span class="text-bf-cyan font-bold">EU-WEST.GCP</span></div>
+                <div><span class="text-slate-500">${dict.security}</span> <span class="text-bf-orange font-bold">STRICT_AUTH</span></div>
+            `;
+
+            const cardsContainer = document.getElementById('cards-container');
+            cardsContainer.innerHTML = '';
+            dict.cards.forEach(card => {
+                cardsContainer.innerHTML += `
+                    <div class="p-5 bg-bf-slate/75 border border-bf-border/80 clip-hud relative group hover:border-bf-cyan/50 transition-all backdrop-blur-sm">
+                        <div class="absolute top-0 ${lang === 'he' ? 'left-0' : 'right-0'} w-8 h-8 border-t-2 ${lang === 'he' ? 'border-l-2' : 'border-r-2'} border-bf-cyan opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="text-xs text-bf-cyan mb-2 font-bold">${card.tag}</div>
+                        <h3 class="text-base font-bold text-white mb-2 uppercase">${card.title}</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">${card.desc}</p>
+                    </div>
+                `;
+            });
+
+            const togglesContainer = document.getElementById('node-toggles');
+            togglesContainer.innerHTML = `
+                <button onclick="switchRole('soldier')" id="btn-soldier" class="w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border clip-btn">${dict.btnSoldier}</button>
+                <button onclick="switchRole('commander')" id="btn-commander" class="w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border clip-btn">${dict.btnCommander}</button>
+                <button onclick="switchRole('admin')" id="btn-admin" class="w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border clip-btn">${dict.btnAdmin}</button>
+            `;
+
+            const techContainer = document.getElementById('tech-stack-container');
+            techContainer.innerHTML = '';
+            dict.tech.forEach(t => {
+                techContainer.innerHTML += `
+                    <div class="p-4 sm:grid sm:grid-cols-3 gap-4 hover:bg-bf-slate/50 transition-all">
+                        <div class="font-bold text-bf-cyan uppercase mb-1 sm:mb-0">${t.name}</div>
+                        <div class="sm:col-span-2 text-slate-400">${t.desc}</div>
+                    </div>
+                `;
+            });
+
+            switchRole(currentRole);
+        }
+
+        function switchRole(roleKey) {
+            currentRole = roleKey;
+            const container = document.getElementById('mini-app-content');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const dict = i18n[currentLang];
+            const roleDict = dict.roles[roleKey];
+
+            ['soldier', 'commander', 'admin'].forEach(k => {
+                const btn = document.getElementById(`btn-${k}`);
+                if (btn) btn.className = "w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border text-slate-400 hover:border-bf-cyan/50 hover:text-white clip-btn";
+            });
+            const activeBtn = document.getElementById(`btn-${roleKey}`);
+            if (activeBtn) activeBtn.className = "w-full text-left p-2.5 text-[11px] font-black uppercase transition-all bg-bf-cyan text-bf-dark border border-bf-cyan clip-btn";
+
+            if (roleKey === 'soldier') {
+                container.innerHTML = `
+                    <div class="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">${roleDict.feed}</div>
+                    <div class="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex items-center gap-3">
+                        <div class="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
+                            <div class="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
+                            <span class="text-bf-cyan text-base font-black">⚡</span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-white font-black text-xs uppercase tracking-wider truncate">${roleDict.op}</div>
+                            <div class="text-[10px] text-slate-400 truncate">${roleDict.squad}</div>
+                        </div>
+                    </div>
+                    <div id="alarm-banner" class="p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300"></div>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <button onclick="toggleSystem('wpn')" id="sys-wpn" class="p-2 bg-bf-dark/90 border border-bf-cyan text-left clip-btn transition-all">
+                            <div class="text-[8px] text-slate-500">01_WEAPONS</div>
+                            <div id="status-wpn" class="text-xs font-black text-bf-cyan uppercase">READY</div>
+                        </button>
+                        <button onclick="toggleSystem('trsp')" id="sys-trsp" class="p-2 bg-bf-dark/90 border border-bf-cyan text-left clip-btn transition-all">
+                            <div class="text-[8px] text-slate-500">02_TRANSPORT</div>
+                            <div id="status-trsp" class="text-xs font-black text-bf-cyan uppercase">READY</div>
+                        </button>
+                        <button onclick="toggleSystem('com')" id="sys-com" class="p-2 bg-bf-dark/90 border border-bf-cyan text-left clip-btn transition-all">
+                            <div class="text-[8px] text-slate-500">03_COMMS</div>
+                            <div id="status-com" class="text-xs font-black text-bf-cyan uppercase">READY</div>
+                        </button>
+                        <button onclick="toggleSystem('med')" id="sys-med" class="p-2 bg-bf-dark/90 border border-bf-cyan text-left clip-btn transition-all">
+                            <div class="text-[8px] text-slate-500">04_MED_KIT</div>
+                            <div id="status-med" class="text-xs font-black text-bf-cyan uppercase">READY</div>
+                        </button>
+                    </div>
+                    <div class="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn">
+                        <textarea placeholder="${currentLang === 'en' ? 'INJECT BOTTLENECK DATA...' : 'הזרקת דיווח תקלה...'}" class="w-full h-12 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 resize-none uppercase text-[10px] font-mono outline-none"></textarea>
+                    </div>
+                `;
+                simulateAlarm(globalAlarmState);
+            } else {
+                container.innerHTML = `
+                    <div class="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">${roleDict.feed}</div>
+                    <h3 class="text-sm font-black text-white uppercase tracking-wider">${roleDict.title}</h3>
+                    <ul id="role-tasks" class="space-y-3 text-xs"></ul>
+                `;
+                const tasksContainer = document.getElementById('role-tasks');
+                roleDict.tasks.forEach(task => {
+                    tasksContainer.innerHTML += `
+                        <li class="flex items-start gap-2 text-slate-400">
+                            <span class="text-bf-cyan font-bold">&gt;&gt;</span><span>${task}</span>
+                        </li>
+                    `;
+                });
+            }
+        }
+
+        function toggleSystem(id) {
+            const btn = document.getElementById(`sys-${id}`);
+            const text = document.getElementById(`status-${id}`);
+            if (!text) return;
+
+            if (text.innerText === 'READY') {
+                text.innerText = 'ISSUE';
+                text.className = 'text-xs font-black text-bf-orange uppercase';
+                btn.className = 'p-2 bg-bf-dark border border-bf-orange text-left clip-btn transition-all';
+            } else {
+                text.innerText = 'READY';
+                text.className = 'text-xs font-black text-bf-cyan uppercase';
+                btn.className = 'p-2 bg-bf-dark border border-bf-cyan text-left clip-btn transition-all';
+            }
+        }
+
+        function simulateAlarm(status) {
+            globalAlarmState = status;
+            const banner = document.getElementById('alarm-banner');
+            if (!banner) return;
+
+            const dict = i18n[currentLang];
+            if (status) {
+                banner.innerText = dict.alarmActive;
+                banner.className = 'p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 bg-bf-orange/20 border-bf-orange text-bf-orange animate-pulse';
+            } else {
+                banner.innerText = dict.alarmStandby;
+                banner.className = 'p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 bg-bf-cyan/10 border-bf-cyan/30 text-bf-cyan';
+            }
+        }
+
+        changeLanguage('en');
+    </script>
+</body>
+
+</html>

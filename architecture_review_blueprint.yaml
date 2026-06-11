@@ -1,0 +1,132 @@
+# architecture_review_blueprint.yaml
+# Version: 2.1 (Final)
+# Project Name: Dvora HQ
+# Target stack: GCP + Node.js + Serverless
+
+project:
+  name: dvora-hq-backend
+  runtime: nodejs20
+  region: europe-west1
+
+# ─────────────────────────────────────────
+# MODULE 1 — COMPUTE & HOSTING
+# ─────────────────────────────────────────
+compute:
+  backend:
+    service: cloud_run
+    image: gcr.io/${PROJECT_ID}/api:${GIT_SHA}
+    config:
+      min_instances: 1          # REQUIRED — исключает холодный старт для вебхуков Telegram
+      max_instances: 20         # REQUIRED — ограничивает количество соединений с БД
+      concurrency: 80
+      memory: 512Mi
+      cpu: 1
+      timeout: 30s
+
+  frontend:
+    service: firebase_hosting
+    framework: react
+    build_command: npm run build
+    deploy_command: firebase deploy --only hosting
+
+# ─────────────────────────────────────────
+# MODULE 2 — DATA LAYER
+# ─────────────────────────────────────────
+data_layer:
+  primary_db:
+    service: cloud_sql
+    engine: mysql_8
+    tier: db-f1-micro
+    connection:
+      method: cloud_sql_connector
+      pool_size_per_instance: 2
+      max_total_connections: "max_instances × pool_size = 20 × 2 = 40"
+    schema_notes:
+      - "users: id, phone_number, pin_hash (argon2id), created_at"
+      - "readiness_status: separate table, FK → users.id"
+      - "commander_reports: separate table, FK → users.id"
+      - "revoked_tokens: jti VARCHAR(36), expires_at DATETIME, INDEX(expires_at)"
+
+  object_storage:
+    service: cloud_storage
+    bucket_name: ${PROJECT_ID}-avatars
+    access: private
+    iam: "cloud_run_sa has roles/storage.objectCreator + roles/storage.objectViewer"
+
+# ─────────────────────────────────────────
+# MODULE 3 — AUTH & SECURITY
+# ─────────────────────────────────────────
+auth:
+  pin_storage:
+    algorithm: argon2id          # MANDATORY
+    params: { memoryCost: 65536, timeCost: 3, parallelism: 1 }
+    library: argon2 (npm)
+
+  telegram_initdata:
+    validation: "HMAC-SHA256 against bot token"
+    max_age_seconds: 3600
+
+  jwt:
+    ttl: 7200              # 2 часа — время жизни сессии для Lock Screen
+    algorithm: HS256
+    secret_source: secret_manager
+    payload_required_fields: [sub, iat, exp, jti]
+    revocation:
+      strategy: deny_list_in_db
+      table: revoked_tokens
+      cleanup: "Cloud Scheduler hourly DELETE WHERE expires_at < NOW()"
+
+# ─────────────────────────────────────────
+# MODULE 4 — ASYNC TASKS (AI AVATARS)
+# ─────────────────────────────────────────
+async:
+  queue:
+    service: cloud_tasks
+    queue_name: avatar-generation
+    config:
+      max_attempts: 3
+      task_timeout: 600s
+    security:
+      method: oidc_token
+      audience: https://${AVATAR_WORKER_URL}
+      service_account: cloud-tasks-invoker@${PROJECT_ID}.iam.gserviceaccount.com
+
+  worker:
+    service: cloud_run
+    name: avatar-worker
+    config:
+      min_instances: 0
+      max_instances: 5
+    ingress: internal-only
+    validation: "verify OIDC token on every request"
+
+# ─────────────────────────────────────────
+# MODULE 5 — OBSERVABILITY & CONFIG
+# ─────────────────────────────────────────
+observability:
+  secrets:
+    service: secret_manager
+    secrets:
+      - TELEGRAM_BOT_TOKEN
+      - DB_PASSWORD
+      - AI_API_KEY
+      - JWT_SECRET
+    audit_logging:
+      type: DATA_READ            # REQUIRED: для отслеживания доступа к секретам
+
+  logging:
+    service: cloud_logging
+    structured: true
+
+# ─────────────────────────────────────────
+# MODULE 6 — CI/CD PIPELINE
+# ─────────────────────────────────────────
+cicd:
+  provider: github_actions
+  pipeline:
+    steps:
+      1_test: "npm ci && npm test"
+      2_build_image: "docker build and push via Workload Identity Federation"
+      3_deploy_backend: "gcloud run deploy api --min-instances=1 --max-instances=20"
+      4_deploy_frontend: "npm run build && firebase deploy --only hosting"
+      5_smoke_test: "curl -f https://${CLOUD_RUN_URL}/health"
