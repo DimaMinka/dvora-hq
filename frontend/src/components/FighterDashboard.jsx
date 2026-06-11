@@ -9,6 +9,7 @@ export default function FighterDashboard({
   user,
 }) {
   const [reportText, setReportText] = React.useState('');
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -65,7 +66,8 @@ export default function FighterDashboard({
               <img
                 src={user.avatar_url}
                 alt="Tactical Avatar"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover cursor-zoom-in"
+                onClick={() => setLightboxOpen(true)}
               />
             ) : (
               <>
@@ -162,6 +164,25 @@ export default function FighterDashboard({
           {d.btnSend}
         </button>
       </form>
+
+      {/* Lightbox Modal */}
+      {lightboxOpen && user?.avatar_url && (
+        <div
+          className="fixed inset-0 bg-bf-dark/95 z-50 flex flex-col items-center justify-center p-4 animate-fade-in"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <div className="relative max-w-full max-h-[85vh] border border-bf-cyan/30 clip-hud overflow-hidden bg-bf-slate/90 flex flex-col">
+            <img
+              src={user.avatar_url}
+              alt="Tactical Avatar Fullscreen"
+              className="max-w-[95vw] max-h-[75vh] object-contain"
+            />
+            <div className="p-3 bg-bf-dark/90 text-[9px] font-mono text-bf-cyan border-t border-bf-border uppercase text-center tracking-widest select-none">
+              // OPERATOR_BIOMETRICS // LOADOUT_PREVIEW // CLOSE_ON_CLICK
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
