@@ -39,8 +39,19 @@ echo "[3/4] Checking and creating Cloud Tasks queue..."
 if gcloud tasks queues describe "${QUEUE_NAME}" --location="${REGION}" &>/dev/null; then
   echo "Queue ${QUEUE_NAME} already exists."
 else
-  gcloud tasks queues create "${QUEUE_NAME}" --location="${REGION}"
-  echo "Queue ${QUEUE_NAME} created successfully."
+  if ! gcloud tasks queues create "${QUEUE_NAME}" --location="${REGION}" 2>queue_err.log; then
+    if grep -q "existed too recently" queue_err.log; then
+      echo "WARNING: Could not create queue '${QUEUE_NAME}' because it was deleted too recently."
+      echo "GCP enforces a cooldown period before a deleted queue name can be reused."
+      echo "Continuing setup anyway..."
+    else
+      cat queue_err.log
+      exit 1
+    fi
+  else
+    echo "Queue ${QUEUE_NAME} created successfully."
+  fi
+  rm -f queue_err.log
 fi
 
 # 4. Create Cloud SQL (MySQL 8) Database Instance
