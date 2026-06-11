@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import LockScreen from './components/LockScreen.jsx';
+import FighterDashboard from './components/FighterDashboard.jsx';
+import CommanderDashboard from './components/CommanderDashboard.jsx';
 
 const i18n = {
   en: {
@@ -320,131 +322,55 @@ function App() {
               <LockScreen onUnlock={() => setIsLocked(false)} />
             ) : (
               <>
-                <div className="space-y-4 w-full">
-                  <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
-                    {dict.roles[role].feed}
+                {role === 'soldier' && (
+                  <FighterDashboard
+                    lang={lang}
+                    checklist={checklist}
+                    onToggleChecklist={toggleChecklist}
+                    alarmActive={alarmActive}
+                    onSendReport={(text) => console.log('Report sent:', text)}
+                  />
+                )}
+
+                {role === 'commander' && (
+                  <CommanderDashboard
+                    lang={lang}
+                    alarmActive={alarmActive}
+                    onToggleAlarm={() => setAlarmActive(!alarmActive)}
+                    checklist={checklist}
+                  />
+                )}
+
+                {role === 'admin' && (
+                  <div className="space-y-4 w-full">
+                    <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
+                      {dict.roles[role].feed}
+                    </div>
+                    <h3 className="text-sm font-black text-white uppercase tracking-wider">
+                      {dict.roles[role].title}
+                    </h3>
+                    <div className="bg-bf-dark border border-bf-border p-3 rounded font-mono text-[11px] space-y-2">
+                      <div className="text-slate-500">/admin_panel initialized...</div>
+                      <div className="text-slate-300">
+                        <span className="text-bf-cyan">$</span> /add_user +79991112233 "REAPER"
+                        "ALPHA"
+                      </div>
+                      <div className="text-bf-cyan font-bold">
+                        [SUCCESS] USER INJECTED INTO WHITELIST
+                      </div>
+                      <div className="text-slate-400">
+                        GEN_PIN:{' '}
+                        <span className="text-bf-orange font-bold font-black tracking-widest">
+                          5492A
+                        </span>
+                      </div>
+                      <div className="text-slate-300 animate-pulse">
+                        <span className="text-bf-cyan">$</span>{' '}
+                        <span className="bg-bf-cyan text-bf-dark font-bold px-0.5">_</span>
+                      </div>
+                    </div>
                   </div>
-
-                  {role === 'soldier' && (
-                    <>
-                      <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex items-center gap-3">
-                        <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
-                          <div className="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
-                          <span className="text-bf-cyan text-base font-black">⚡</span>
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-white font-black text-xs uppercase tracking-wider truncate">
-                            {dict.roles.soldier.op}
-                          </div>
-                          <div className="text-[10px] text-slate-400 truncate">
-                            {dict.roles.soldier.squad}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        className={`p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 ${alarmActive ? 'bg-bf-orange/20 border-bf-orange text-bf-orange animate-pulse' : 'bg-bf-cyan/10 border-bf-cyan/30 text-bf-cyan'}`}
-                      >
-                        {alarmActive ? dict.alarmActive : dict.alarmStandby}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-1.5">
-                        <button
-                          onClick={() => toggleChecklist('wpn')}
-                          className={`p-2 bg-bf-dark/90 border text-left clip-btn transition-all ${checklist.wpn ? 'border-bf-cyan' : 'border-bf-orange'}`}
-                        >
-                          <div className="text-[8px] text-slate-500">01_WEAPONS</div>
-                          <div
-                            className={`text-xs font-black uppercase ${checklist.wpn ? 'text-bf-cyan' : 'text-bf-orange'}`}
-                          >
-                            {checklist.wpn ? 'READY' : 'ISSUE'}
-                          </div>
-                        </button>
-                        <button
-                          onClick={() => toggleChecklist('trsp')}
-                          className={`p-2 bg-bf-dark/90 border text-left clip-btn transition-all ${checklist.trsp ? 'border-bf-cyan' : 'border-bf-orange'}`}
-                        >
-                          <div className="text-[8px] text-slate-500">02_TRANSPORT</div>
-                          <div
-                            className={`text-xs font-black uppercase ${checklist.trsp ? 'text-bf-cyan' : 'text-bf-orange'}`}
-                          >
-                            {checklist.trsp ? 'READY' : 'ISSUE'}
-                          </div>
-                        </button>
-                        <button
-                          onClick={() => toggleChecklist('com')}
-                          className={`p-2 bg-bf-dark/90 border text-left clip-btn transition-all ${checklist.com ? 'border-bf-cyan' : 'border-bf-orange'}`}
-                        >
-                          <div className="text-[8px] text-slate-500">03_COMMS</div>
-                          <div
-                            className={`text-xs font-black uppercase ${checklist.com ? 'text-bf-cyan' : 'text-bf-orange'}`}
-                          >
-                            {checklist.com ? 'READY' : 'ISSUE'}
-                          </div>
-                        </button>
-                        <button
-                          onClick={() => toggleChecklist('med')}
-                          className={`p-2 bg-bf-dark/90 border text-left clip-btn transition-all ${checklist.med ? 'border-bf-cyan' : 'border-bf-orange'}`}
-                        >
-                          <div className="text-[8px] text-slate-500">04_MED_KIT</div>
-                          <div
-                            className={`text-xs font-black uppercase ${checklist.med ? 'text-bf-cyan' : 'text-bf-orange'}`}
-                          >
-                            {checklist.med ? 'READY' : 'ISSUE'}
-                          </div>
-                        </button>
-                      </div>
-
-                      <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn">
-                        <textarea
-                          placeholder={
-                            lang === 'en' ? 'INJECT BOTTLENECK DATA...' : 'הזרקת דיווח תקלה...'
-                          }
-                          className="w-full h-12 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 resize-none uppercase text-[10px] font-mono outline-none"
-                        ></textarea>
-                      </div>
-                    </>
-                  )}
-
-                  {role !== 'soldier' && (
-                    <>
-                      <h3 className="text-sm font-black text-white uppercase tracking-wider">
-                        {dict.roles[role].title}
-                      </h3>
-                      {role === 'admin' ? (
-                        <div className="bg-bf-dark border border-bf-border p-3 rounded font-mono text-[11px] space-y-2">
-                          <div className="text-slate-500">/admin_panel initialized...</div>
-                          <div className="text-slate-300">
-                            <span className="text-bf-cyan">$</span> /add_user +79991112233 "REAPER"
-                            "ALPHA"
-                          </div>
-                          <div className="text-bf-cyan font-bold">
-                            [SUCCESS] USER INJECTED INTO WHITELIST
-                          </div>
-                          <div className="text-slate-400">
-                            GEN_PIN:{' '}
-                            <span className="text-bf-orange font-bold font-black tracking-widest">
-                              5492A
-                            </span>
-                          </div>
-                          <div className="text-slate-300 animate-pulse">
-                            <span className="text-bf-cyan">$</span>{' '}
-                            <span className="bg-bf-cyan text-bf-dark font-bold px-0.5">_</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <ul className="space-y-3 text-xs">
-                          {dict.roles[role].tasks.map((task, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-slate-400">
-                              <span className="text-bf-cyan font-bold">&gt;&gt;</span>
-                              <span>{task}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </>
-                  )}
-                </div>
+                )}
 
                 <div className="w-full pt-3 mt-4 border-t border-bf-border space-y-2 z-20">
                   <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">
