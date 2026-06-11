@@ -1,11 +1,13 @@
 import express from 'express';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
+import { GoogleGenAI } from '@google/genai';
 import { config } from './config.js';
 import { setupDatabase, getDbPool } from './db.js';
 import { startBot } from './bot.js';
 
 const app = express();
+const ai = config.aiApiKey ? new GoogleGenAI({ apiKey: config.aiApiKey }) : null;
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -127,6 +129,19 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '2h' } // 2 hours expiration as per lockscreen requirement
     );
 
+    // Fetch additional fields for full user state
+    const [alarmRows] = await pool.query(
+      'SELECT alarm_active FROM commander_reports WHERE squad_id = ? ORDER BY updated_at DESC LIMIT 1',
+      [user.squad_id]
+    );
+    const alarmActive = alarmRows.length > 0 ? Boolean(alarmRows[0].alarm_active) : false;
+
+    const [readinessRows] = await pool.query(
+      'SELECT weapons_ready, transport_ready, comms_ready, meds_ready, note FROM readiness_status WHERE user_id = ?',
+      [user.id]
+    );
+    const readiness = readinessRows.length > 0 ? readinessRows[0] : null;
+
     res.json({
       token,
       user: {
@@ -135,7 +150,12 @@ app.post('/api/auth/login', async (req, res) => {
         role: user.role,
         squad_id: user.squad_id,
         callsign: user.callsign,
+        specialization: user.specialization,
+        weaponry: user.weaponry,
+        gear: user.gear,
         avatar_url: user.avatar_url,
+        alarm_active: alarmActive,
+        readiness,
       },
     });
   } catch (err) {
@@ -175,9 +195,91 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(rows[0]);
+    const user = rows[0];
+
+    // Fetch squad alarm status
+    const [alarmRows] = await pool.query(
+      'SELECT alarm_active FROM commander_reports WHERE squad_id = ? ORDER BY updated_at DESC LIMIT 1',
+      [user.squad_id]
+    );
+    user.alarm_active = alarmRows.length > 0 ? Boolean(alarmRows[0].alarm_active) : false;
+
+    // Fetch user readiness status
+    const [readinessRows] = await pool.query(
+      'SELECT weapons_ready, transport_ready, comms_ready, meds_ready, note FROM readiness_status WHERE user_id = ?',
+      [user.id]
+    );
+    user.readiness = readinessRows.length > 0 ? readinessRows[0] : null;
+
+    res.json(user);
   } catch (err) {
     console.error('[API] Profile error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 5.5 Onboarding (Fighter loadout selection & AI avatar generation)
+app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
+  const { specialization, weaponry, gear } = req.body;
+
+  if (!specialization || !weaponry || !gear) {
+    return res.status(400).json({ error: 'specialization, weaponry, and gear are required' });
+  }
+
+  try {
+    const pool = await getDbPool();
+    
+    // Save selections
+    await pool.query(
+      'UPDATE users SET specialization = ?, weaponry = ?, gear = ? WHERE id = ?',
+      [specialization, weaponry, gear, req.user.userId]
+    );
+
+    let avatarUrl = null;
+    if (ai) {
+      try {
+        console.log(`[API] Generating AI avatar for user ${req.user.userId}...`);
+        const prompt = `A futuristic cyberpunk tactical military HUD avatar for a soldier. Role/Specialization: ${specialization}. Primary weapon: ${weaponry}. Secondary/Gear: ${gear}. Minimalist digital paint, glowing cyan and neon accents, dark sleek battlefield background, tactical icon, high quality.`;
+        const aiResponse = await ai.models.generateImages({
+          model: 'imagen-4.0-generate-001',
+          prompt,
+          config: {
+            numberOfImages: 1,
+            outputMimeType: 'image/jpeg',
+            aspectRatio: '1:1',
+          },
+        });
+
+        if (aiResponse?.generatedImages?.[0]?.image?.imageBytes) {
+          const base64Bytes = aiResponse.generatedImages[0].image.imageBytes;
+          avatarUrl = `data:image/jpeg;base64,${base64Bytes}`;
+          await pool.query('UPDATE users SET avatar_url = ? WHERE id = ?', [avatarUrl, req.user.userId]);
+          console.log(`[API] AI avatar successfully generated and saved for user ${req.user.userId}`);
+        }
+      } catch (aiErr) {
+        console.error('[API] AI Avatar generation failed:', aiErr.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Onboarding completed successfully',
+      user: {
+        id: req.user.userId,
+        phone_number: req.user.phoneNumber,
+        role: req.user.role,
+        squad_id: req.user.squadId,
+        callsign: req.user.callsign,
+        specialization,
+        weaponry,
+        gear,
+        avatar_url: avatarUrl,
+        alarm_active: false,
+        readiness: null
+      }
+    });
+  } catch (err) {
+    console.error('[API] Onboarding error:', err.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
