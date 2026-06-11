@@ -3,6 +3,10 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Redirect stdout and stderr to terminal and log file
+LOG_FILE="gcp-infra.log"
+exec > >(tee -ia "$LOG_FILE") 2>&1
+
 PROJECT_ID=$(gcloud config get-value project)
 REGION="europe-west1"
 BUCKET_NAME="${PROJECT_ID}-avatars"

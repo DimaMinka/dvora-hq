@@ -15,6 +15,10 @@ echo "============================================="
 read -p "Are you sure you want to delete all resources? This is irreversible! (y/N): " -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+  # Redirect stdout and stderr to terminal and log file
+  LOG_FILE="gcp-infra.log"
+  exec > >(tee -ia "$LOG_FILE") 2>&1
+
   # 1. Delete Cloud SQL Instance
   echo "[1/3] Deleting Cloud SQL instance ${DB_INSTANCE_NAME}..."
   if gcloud sql instances describe "${DB_INSTANCE_NAME}" &>/dev/null; then
