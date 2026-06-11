@@ -34,6 +34,7 @@ export default function FighterDashboard({
       medkit: '04_MED_KIT',
       ready: 'READY',
       issue: 'ISSUE',
+      pending: 'PENDING',
     },
     he: {
       title: '// מסוף_לוחם // פעיל',
@@ -49,6 +50,7 @@ export default function FighterDashboard({
       medkit: '04_רפואה',
       ready: 'תקין',
       issue: 'תקלה',
+      pending: 'טרם נקבע',
     },
   };
 
@@ -126,22 +128,30 @@ export default function FighterDashboard({
           { key: 'com', label: d.comms },
           { key: 'med', label: d.medkit },
         ].map((item) => {
-          const isReady = checklist[item.key];
+          const status = checklist[item.key] ?? 0;
+          let btnBorderClass = 'border-slate-800';
+          let btnTextClass = 'text-slate-500';
+          let statusLabel = d.pending;
+
+          if (status === 1) {
+            btnBorderClass = 'border-bf-cyan';
+            btnTextClass = 'text-bf-cyan';
+            statusLabel = d.ready;
+          } else if (status === 2) {
+            btnBorderClass = 'border-bf-orange';
+            btnTextClass = 'text-bf-orange';
+            statusLabel = d.issue;
+          }
+
           return (
             <button
               key={item.key}
               type="button"
               onClick={() => onToggleChecklist && onToggleChecklist(item.key)}
-              className={`p-2 bg-bf-dark/90 border text-left clip-btn transition-all duration-200 cursor-pointer select-none hover:border-white/40 ${
-                isReady ? 'border-bf-cyan' : 'border-bf-orange'
-              }`}
+              className={`p-2 bg-bf-dark/90 border text-left clip-btn transition-all duration-200 cursor-pointer select-none hover:border-white/40 ${btnBorderClass}`}
             >
               <div className="text-[8px] text-slate-500">{item.label}</div>
-              <div
-                className={`text-xs font-black uppercase ${isReady ? 'text-bf-cyan' : 'text-bf-orange'}`}
-              >
-                {isReady ? d.ready : d.issue}
-              </div>
+              <div className={`text-xs font-black uppercase ${btnTextClass}`}>{statusLabel}</div>
             </button>
           );
         })}

@@ -192,10 +192,10 @@ function App() {
   const [squadMembers, setSquadMembers] = useState([]);
   const [alarmActive, setAlarmActive] = useState(false);
   const [checklist, setChecklist] = useState({
-    wpn: true,
-    trsp: true,
-    com: true,
-    med: true,
+    wpn: 0,
+    trsp: 0,
+    com: 0,
+    med: 0,
   });
 
   const dict = i18n[lang];
@@ -235,10 +235,10 @@ function App() {
 
       if (data.user.readiness) {
         setChecklist({
-          wpn: Boolean(data.user.readiness.weapons_ready),
-          trsp: Boolean(data.user.readiness.transport_ready),
-          com: Boolean(data.user.readiness.comms_ready),
-          med: Boolean(data.user.readiness.meds_ready),
+          wpn: Number(data.user.readiness.weapons_ready),
+          trsp: Number(data.user.readiness.transport_ready),
+          com: Number(data.user.readiness.comms_ready),
+          med: Number(data.user.readiness.meds_ready),
         });
       }
       setAlarmActive(Boolean(data.user.alarm_active));
@@ -272,9 +272,12 @@ function App() {
   };
 
   const toggleChecklist = async (key) => {
+    const currentVal = checklist[key] ?? 0;
+    const nextVal = (currentVal + 1) % 3;
+
     const newChecklist = {
       ...checklist,
-      [key]: !checklist[key],
+      [key]: nextVal,
     };
     setChecklist(newChecklist);
 
@@ -355,10 +358,10 @@ function App() {
 
         if (profile.readiness) {
           setChecklist({
-            wpn: Boolean(profile.readiness.weapons_ready),
-            trsp: Boolean(profile.readiness.transport_ready),
-            com: Boolean(profile.readiness.comms_ready),
-            med: Boolean(profile.readiness.meds_ready),
+            wpn: Number(profile.readiness.weapons_ready),
+            trsp: Number(profile.readiness.transport_ready),
+            com: Number(profile.readiness.comms_ready),
+            med: Number(profile.readiness.meds_ready),
           });
         }
         setAlarmActive(Boolean(profile.alarm_active));

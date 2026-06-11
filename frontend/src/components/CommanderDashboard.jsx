@@ -88,26 +88,30 @@ export default function CommanderDashboard({
               )}
               <span className="truncate">{m.callsign || m.phone_number}</span>
             </div>
-            <div className="flex justify-center">
-              <span
-                className={`w-2 h-2 rounded-full ${m.weapons_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
-              />
-            </div>
-            <div className="flex justify-center">
-              <span
-                className={`w-2 h-2 rounded-full ${m.transport_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
-              />
-            </div>
-            <div className="flex justify-center">
-              <span
-                className={`w-2 h-2 rounded-full ${m.comms_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
-              />
-            </div>
-            <div className="flex justify-center">
-              <span
-                className={`w-2 h-2 rounded-full ${m.meds_ready ? 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]' : 'bg-bf-orange animate-pulse'}`}
-              />
-            </div>
+            {(() => {
+              const getDotClass = (val) => {
+                const status = val ?? 0;
+                if (status === 1) return 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]';
+                if (status === 2) return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
+                return 'bg-slate-700';
+              };
+              return (
+                <>
+                  <div className="flex justify-center">
+                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.weapons_ready)}`} />
+                  </div>
+                  <div className="flex justify-center">
+                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.transport_ready)}`} />
+                  </div>
+                  <div className="flex justify-center">
+                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.comms_ready)}`} />
+                  </div>
+                  <div className="flex justify-center">
+                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.meds_ready)}`} />
+                  </div>
+                </>
+              );
+            })()}
           </div>
         ))}
       </div>
