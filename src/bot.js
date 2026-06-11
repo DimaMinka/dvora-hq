@@ -23,8 +23,8 @@ if (bot) {
     const helpMessage =
       `⚡ *DVORA HQ // INTEL BOT CLI* ⚡\n\n` +
       `Available command protocols:\n` +
-      `• \`/add_fighter <phone> <squad_id>\` — Generate PIN and authorize fighter.\n` +
-      `• \`/add_commander <phone> <squad_id>\` — Generate PIN and authorize commander.\n` +
+      `• \`/add_fighter <phone> <squad_id> [callsign]\` — Generate PIN and authorize fighter.\n` +
+      `• \`/add_commander <phone> <squad_id> [callsign]\` — Generate PIN and authorize commander.\n` +
       `• \`/remove_user <phone>\` — Evict phone record from tactical database.\n\n` +
       `_Secure tactical sync protocols active._`;
     return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
@@ -33,10 +33,10 @@ if (bot) {
   // Command: Add Fighter
   bot.command('add_fighter', async (ctx) => {
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
-    const [phone, squadId] = args;
+    const [phone, squadId, callsign] = args;
 
     if (!phone || !squadId) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_fighter <phone> <squad_id>`', {
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_fighter <phone> <squad_id> [callsign]`', {
         parse_mode: 'Markdown',
       });
     }
@@ -51,14 +51,15 @@ if (bot) {
 
       const pool = await getDbPool();
       await pool.query(
-        'INSERT INTO users (phone_number, pin_hash, role, squad_id) VALUES (?, ?, "fighter", ?) ON DUPLICATE KEY UPDATE pin_hash = ?, squad_id = ?',
-        [phone, pinHash, squadId, pinHash, squadId]
+        'INSERT INTO users (phone_number, pin_hash, role, squad_id, callsign) VALUES (?, ?, "fighter", ?, ?) ON DUPLICATE KEY UPDATE pin_hash = ?, squad_id = ?, callsign = ?',
+        [phone, pinHash, squadId, callsign || null, pinHash, squadId, callsign || null]
       );
 
       return ctx.reply(
         `✅ *FIGHTER AUTHORIZED SUCCESSFULLY*\n\n` +
           `• *Phone:* \`${phone}\`\n` +
           `• *Squad ID:* \`${squadId}\`\n` +
+          `• *Callsign:* \`${callsign || 'NONE'}\`\n` +
           `• *One-Time PIN:* \`${pin}\`\n\n` +
           `_Distribute PIN securely. Token will wipe in 120 min post-login._`,
         { parse_mode: 'Markdown' }
@@ -72,10 +73,10 @@ if (bot) {
   // Command: Add Commander
   bot.command('add_commander', async (ctx) => {
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
-    const [phone, squadId] = args;
+    const [phone, squadId, callsign] = args;
 
     if (!phone || !squadId) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_commander <phone> <squad_id>`', {
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_commander <phone> <squad_id> [callsign]`', {
         parse_mode: 'Markdown',
       });
     }
@@ -90,14 +91,15 @@ if (bot) {
 
       const pool = await getDbPool();
       await pool.query(
-        'INSERT INTO users (phone_number, pin_hash, role, squad_id) VALUES (?, ?, "commander", ?) ON DUPLICATE KEY UPDATE pin_hash = ?, squad_id = ?',
-        [phone, pinHash, squadId, pinHash, squadId]
+        'INSERT INTO users (phone_number, pin_hash, role, squad_id, callsign) VALUES (?, ?, "commander", ?, ?) ON DUPLICATE KEY UPDATE pin_hash = ?, squad_id = ?, callsign = ?',
+        [phone, pinHash, squadId, callsign || null, pinHash, squadId, callsign || null]
       );
 
       return ctx.reply(
         `✅ *COMMANDER AUTHORIZED SUCCESSFULLY*\n\n` +
           `• *Phone:* \`${phone}\`\n` +
           `• *Squad ID:* \`${squadId}\`\n` +
+          `• *Callsign:* \`${callsign || 'NONE'}\`\n` +
           `• *One-Time PIN:* \`${pin}\`\n\n` +
           `_Distribute PIN securely._`,
         { parse_mode: 'Markdown' }

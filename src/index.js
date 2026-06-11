@@ -134,6 +134,7 @@ app.post('/api/auth/login', async (req, res) => {
         phone_number: user.phone_number,
         role: user.role,
         squad_id: user.squad_id,
+        callsign: user.callsign,
         avatar_url: user.avatar_url,
       },
     });
@@ -166,7 +167,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
   try {
     const pool = await getDbPool();
     const [rows] = await pool.query(
-      'SELECT id, phone_number, role, squad_id, specialization, weaponry, gear, avatar_url FROM users WHERE id = ?',
+      'SELECT id, phone_number, role, squad_id, callsign, specialization, weaponry, gear, avatar_url FROM users WHERE id = ?',
       [req.user.userId]
     );
 

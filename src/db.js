@@ -41,12 +41,15 @@ export async function setupDatabase() {
       pin_hash VARCHAR(255) NOT NULL,
       role ENUM('fighter', 'commander') NOT NULL DEFAULT 'fighter',
       squad_id VARCHAR(50) NOT NULL,
+      callsign VARCHAR(100) NULL,
       specialization VARCHAR(100) NULL,
       weaponry VARCHAR(100) NULL,
       gear VARCHAR(100) NULL,
       avatar_url VARCHAR(255) NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB;`,
+
+    `ALTER TABLE users ADD COLUMN IF NOT EXISTS callsign VARCHAR(100) NULL;`,
 
     `CREATE TABLE IF NOT EXISTS readiness_status (
       id INT AUTO_INCREMENT PRIMARY KEY,
