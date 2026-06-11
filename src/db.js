@@ -45,9 +45,11 @@ export async function setupDatabase() {
       specialization VARCHAR(100) NULL,
       weaponry VARCHAR(100) NULL,
       gear VARCHAR(100) NULL,
-      avatar_url VARCHAR(255) NULL,
+      avatar_url LONGTEXT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB;`,
+
+    `ALTER TABLE users MODIFY COLUMN avatar_url LONGTEXT NULL;`,
 
     `ALTER TABLE users ADD COLUMN callsign VARCHAR(100) NULL;`,
 
