@@ -56,14 +56,19 @@ export async function setupDatabase() {
     `CREATE TABLE IF NOT EXISTS readiness_status (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
-      weapons_ready BOOLEAN NOT NULL DEFAULT FALSE,
-      transport_ready BOOLEAN NOT NULL DEFAULT FALSE,
-      comms_ready BOOLEAN NOT NULL DEFAULT FALSE,
-      meds_ready BOOLEAN NOT NULL DEFAULT FALSE,
+      weapons_ready TINYINT NOT NULL DEFAULT 0,
+      transport_ready TINYINT NOT NULL DEFAULT 0,
+      comms_ready TINYINT NOT NULL DEFAULT 0,
+      meds_ready TINYINT NOT NULL DEFAULT 0,
       note TEXT NULL,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     ) ENGINE=InnoDB;`,
+
+    `ALTER TABLE readiness_status MODIFY COLUMN weapons_ready TINYINT NOT NULL DEFAULT 0;`,
+    `ALTER TABLE readiness_status MODIFY COLUMN transport_ready TINYINT NOT NULL DEFAULT 0;`,
+    `ALTER TABLE readiness_status MODIFY COLUMN comms_ready TINYINT NOT NULL DEFAULT 0;`,
+    `ALTER TABLE readiness_status MODIFY COLUMN meds_ready TINYINT NOT NULL DEFAULT 0;`,
 
     `CREATE TABLE IF NOT EXISTS commander_reports (
       id INT AUTO_INCREMENT PRIMARY KEY,
