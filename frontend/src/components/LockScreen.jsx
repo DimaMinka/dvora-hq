@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 function LockScreen({ onUnlock }) {
+  const [phone, setPhone] = useState('');
   const [pin, setPin] = useState('');
   const [keyboardMode, setKeyboardMode] = useState('numeric'); // 'numeric' | 'alpha'
   const [error, setError] = useState(null);
@@ -59,6 +60,12 @@ function LockScreen({ onUnlock }) {
   };
 
   const handleSubmit = (finalPin) => {
+    if (!phone) {
+      setError('PHONE NUMBER REQUIRED');
+      setPin('');
+      return;
+    }
+
     // Basic structural check: 5 digits + 1 letter
     const digits = finalPin.slice(0, 5);
     const letter = finalPin.charAt(5);
@@ -67,9 +74,9 @@ function LockScreen({ onUnlock }) {
     const isLetterOk = /^[A-Z]$/i.test(letter);
 
     if (isDigitsOk && isLetterOk) {
-      onUnlock(finalPin.toUpperCase());
+      onUnlock(phone, finalPin.toUpperCase());
     } else {
-      setError('INVALID CREDENTIAL STRUCTURE (MUST BE 5 DIGITS + 1 LETTER)');
+      setError('INVALID PIN STRUCTURE (5 DIGITS + 1 LETTER)');
       // Reset pin after short delay to let user retry
       setTimeout(() => {
         setPin('');
@@ -85,8 +92,22 @@ function LockScreen({ onUnlock }) {
           // SECURITY_GATEWAY // SECURE_SHELL
         </div>
         <h2 className="text-xl font-black text-white tracking-widest uppercase">
-          ENTER ACCESS PIN
+          ENTER ACCESS CREDENTIALS
         </h2>
+
+        {/* Phone Input Field */}
+        <div className="bg-bf-dark/90 border border-bf-border p-2 clip-btn focus-within:border-bf-cyan/60 transition-colors text-left">
+          <label className="block text-[8px] text-slate-500 uppercase tracking-widest mb-1">
+            // PHONE_NUMBER
+          </label>
+          <input
+            type="text"
+            placeholder="+79991112233"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0 resize-none uppercase text-[12px] font-mono outline-none"
+          />
+        </div>
 
         {/* Display placeholders for 6 characters */}
         <div className="flex justify-center gap-2.5 py-4">
