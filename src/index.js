@@ -241,7 +241,11 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
     if (ai) {
       try {
         console.log(`[API] Generating AI avatar for user ${req.user.userId}...`);
-        const prompt = `A futuristic cyberpunk tactical military HUD avatar for a soldier. Role/Specialization: ${specialization}. Primary weapon: ${weaponry}. Secondary/Gear: ${gear}. Minimalist digital paint, glowing cyan and neon accents, dark sleek battlefield background, tactical icon, high quality.`;
+        const prompt = `Ultra-realistic 3D render, photorealistic textures, diffuse soft overcast daylight. A high-fidelity tactical modern military special operations soldier avatar.
+Role/Specialization: ${specialization}.
+Primary weapon: ${weaponry} (highly customized, tan collapsible stock, extended M-LOK handguard, ACOG magnified optic, suppressor).
+Gear & Loadout: ${gear} (Ranger Green plate carrier, Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud, balaclava face mask, blue/white Israeli flag patch on right shoulder, low-profile belt rig).
+Pose: Tactically standing on a rocky hill looking forward. Background: Distant damaged village on a hillside. Professional studio quality game asset.`;
         const aiResponse = await ai.models.generateImages({
           model: 'imagen-4.0-generate-001',
           prompt,
