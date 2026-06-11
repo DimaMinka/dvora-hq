@@ -8,6 +8,10 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:all": "npm run lint && npm run lint:frontend",
+    "build:frontend": "npm run build --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -19,6 +23,9 @@
     "mysql2": "^3.9.7"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
     "prettier": "^3.8.4"
   }
 }
