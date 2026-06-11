@@ -49,7 +49,7 @@ export async function setupDatabase() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB;`,
 
-    `ALTER TABLE users ADD COLUMN IF NOT EXISTS callsign VARCHAR(100) NULL;`,
+    `ALTER TABLE users ADD COLUMN callsign VARCHAR(100) NULL;`,
 
     `CREATE TABLE IF NOT EXISTS readiness_status (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -83,6 +83,9 @@ export async function setupDatabase() {
     try {
       await activePool.query(q);
     } catch (err) {
+      if (err.errno === 1060 || err.sqlState === '42S21') {
+        continue;
+      }
       console.error('[DB] Error executing schema query:', err.message);
       throw err;
     }
