@@ -143,6 +143,19 @@ if (bot) {
 
 export async function startBot() {
   if (bot) {
+    try {
+      await bot.api.setMyCommands([
+        { command: 'start', description: 'Show help and available commands' },
+        { command: 'help', description: 'Show help and available commands' },
+        { command: 'add_fighter', description: 'Add fighter: <squad_id> <callsign>' },
+        { command: 'add_commander', description: 'Add commander: <squad_id> <callsign>' },
+        { command: 'remove_user', description: 'Remove user by <pin_code>' },
+      ]);
+      console.log('[Bot] Commands registered with Telegram successfully.');
+    } catch (err) {
+      console.error('[Bot] Failed to set commands in Telegram:', err.message);
+    }
+
     bot.start({
       onStart: () => {
         console.log('[Bot] Grammy Telegram Bot CLI is running...');
