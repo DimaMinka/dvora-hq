@@ -18,6 +18,6 @@ export default [
   pluginJs.configs.recommended,
   {
     // Ignore frontend directory to let it run its own eslint
-    ignores: ['frontend/**/*', 'node_modules/**/*'],
+    ignores: ['frontend/', 'node_modules/'],
   },
 ];

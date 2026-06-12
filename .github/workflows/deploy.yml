@@ -19,7 +19,9 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm ci --prefix frontend
 
       - name: Run Linter (Backend and Frontend)
         run: npm run lint:all
