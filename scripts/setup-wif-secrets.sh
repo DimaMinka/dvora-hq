@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PROJECT_ID="dvora-hq-net"
+PROJECT_ID="dvora-hq-net-784d7"
 REPO="DimaMinka/dvora-hq"
 SA_NAME="github-deployer"
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
@@ -68,6 +68,7 @@ gcloud iam workload-identity-pools providers create-oidc github-provider \
   --workload-identity-pool="github-pool" \
   --issuer-uri="https://token.actions.githubusercontent.com" \
   --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
+  --attribute-condition="assertion.repository == '${REPO}'" \
   --display-name="GitHub Provider" \
   --project="${PROJECT_ID}" || true
 
