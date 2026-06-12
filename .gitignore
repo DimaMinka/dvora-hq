@@ -24,3 +24,6 @@ gcp-infra.log
 
 # OS files
 .DS_Store
+
+# Temporary Binaries
+cloud-sql-proxy
