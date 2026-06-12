@@ -27,3 +27,8 @@ gcp-infra.log
 
 # Temporary Binaries
 cloud-sql-proxy
+
+# Database backups and preview images
+dvora_db_backup.sql
+dvora_hq_preview.png
+

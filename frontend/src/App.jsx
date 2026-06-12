@@ -215,12 +215,12 @@ function App() {
     setIsLocked(true);
   };
 
-  const handleUnlock = async (phone, pin) => {
+  const handleUnlock = async (pin) => {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: phone, pin }),
+        body: JSON.stringify({ pin }),
       });
 
       if (!res.ok) {

@@ -23,9 +23,9 @@ if (bot) {
     const helpMessage =
       `⚡ *DVORA HQ // INTEL BOT CLI* ⚡\n\n` +
       `Available command protocols:\n` +
-      `• \`/add_fighter <phone> <squad_id> <callsign>\` — Generate PIN and authorize fighter.\n` +
-      `• \`/add_commander <phone> <squad_id> <callsign>\` — Generate PIN and authorize commander.\n` +
-      `• \`/remove_user <phone>\` — Evict phone record from tactical database.\n\n` +
+      `• \`/add_fighter <squad_id> <callsign>\` — Generate PIN and authorize fighter.\n` +
+      `• \`/add_commander <squad_id> <callsign>\` — Generate PIN and authorize commander.\n` +
+      `• \`/remove_user <pin_code>\` — Evict user record from tactical database.\n\n` +
       `_Secure tactical sync protocols active._`;
     return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
   });
@@ -33,10 +33,10 @@ if (bot) {
   // Command: Add Fighter
   bot.command('add_fighter', async (ctx) => {
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
-    const [phone, squadId, callsign] = args;
+    const [squadId, callsign] = args;
 
-    if (!phone || !squadId || !callsign) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_fighter <phone> <squad_id> <callsign>`', {
+    if (!squadId || !callsign) {
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_fighter <squad_id> <callsign>`', {
         parse_mode: 'Markdown',
       });
     }
@@ -51,13 +51,12 @@ if (bot) {
 
       const pool = await getDbPool();
       await pool.query(
-        'INSERT INTO users (phone_number, pin_hash, role, squad_id, callsign) VALUES (?, ?, "fighter", ?, ?) ON DUPLICATE KEY UPDATE pin_hash = ?, squad_id = ?, callsign = ?',
-        [phone, pinHash, squadId, callsign, pinHash, squadId, callsign]
+        'INSERT INTO users (pin_code, pin_hash, role, squad_id, callsign) VALUES (?, ?, "fighter", ?, ?)',
+        [pin, pinHash, squadId, callsign]
       );
 
       return ctx.reply(
         `✅ *FIGHTER AUTHORIZED SUCCESSFULLY*\n\n` +
-          `• *Phone:* \`${phone}\`\n` +
           `• *Squad ID:* \`${squadId}\`\n` +
           `• *Callsign:* \`${callsign}\`\n` +
           `• *One-Time PIN:* \`${pin}\`\n\n` +
@@ -73,10 +72,10 @@ if (bot) {
   // Command: Add Commander
   bot.command('add_commander', async (ctx) => {
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
-    const [phone, squadId, callsign] = args;
+    const [squadId, callsign] = args;
 
-    if (!phone || !squadId || !callsign) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_commander <phone> <squad_id> <callsign>`', {
+    if (!squadId || !callsign) {
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_commander <squad_id> <callsign>`', {
         parse_mode: 'Markdown',
       });
     }
@@ -91,13 +90,12 @@ if (bot) {
 
       const pool = await getDbPool();
       await pool.query(
-        'INSERT INTO users (phone_number, pin_hash, role, squad_id, callsign) VALUES (?, ?, "commander", ?, ?) ON DUPLICATE KEY UPDATE pin_hash = ?, squad_id = ?, callsign = ?',
-        [phone, pinHash, squadId, callsign, pinHash, squadId, callsign]
+        'INSERT INTO users (pin_code, pin_hash, role, squad_id, callsign) VALUES (?, ?, "commander", ?, ?)',
+        [pin, pinHash, squadId, callsign]
       );
 
       return ctx.reply(
         `✅ *COMMANDER AUTHORIZED SUCCESSFULLY*\n\n` +
-          `• *Phone:* \`${phone}\`\n` +
           `• *Squad ID:* \`${squadId}\`\n` +
           `• *Callsign:* \`${callsign}\`\n` +
           `• *One-Time PIN:* \`${pin}\`\n\n` +
@@ -112,23 +110,23 @@ if (bot) {
 
   // Command: Remove User
   bot.command('remove_user', async (ctx) => {
-    const phone = ctx.match ? ctx.match.trim() : '';
+    const pinCode = ctx.match ? ctx.match.trim() : '';
 
-    if (!phone) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/remove_user <phone>`', { parse_mode: 'Markdown' });
+    if (!pinCode) {
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/remove_user <pin_code>`', { parse_mode: 'Markdown' });
     }
 
     try {
       const pool = await getDbPool();
-      const [result] = await pool.query('DELETE FROM users WHERE phone_number = ?', [phone]);
+      const [result] = await pool.query('DELETE FROM users WHERE pin_code = ?', [pinCode]);
 
       if (result.affectedRows === 0) {
-        return ctx.reply(`⚠️ *NO RECORD*: Phone \`${phone}\` was not found.`, {
+        return ctx.reply(`⚠️ *NO RECORD*: PIN code \`${pinCode}\` was not found.`, {
           parse_mode: 'Markdown',
         });
       }
 
-      return ctx.reply(`✅ *USER EVICTED*: Phone \`${phone}\` has been revoked from access list.`, {
+      return ctx.reply(`✅ *USER EVICTED*: PIN code \`${pinCode}\` has been revoked from access list.`, {
         parse_mode: 'Markdown',
       });
     } catch (err) {

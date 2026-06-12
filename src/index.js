@@ -69,8 +69,8 @@ app.get('/health', (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
   const { phone_number, pin, role, squad_id } = req.body;
 
-  if (!phone_number || !pin || !role || !squad_id) {
-    return res.status(400).json({ error: 'phone_number, pin, role, and squad_id are required' });
+  if (!pin || !role || !squad_id) {
+    return res.status(400).json({ error: 'pin, role, and squad_id are required' });
   }
 
   try {
@@ -82,8 +82,8 @@ app.post('/api/auth/register', async (req, res) => {
 
     const pool = await getDbPool();
     await pool.query(
-      'INSERT INTO users (phone_number, pin_hash, role, squad_id) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE pin_hash = ?, role = ?, squad_id = ?',
-      [phone_number, pinHash, role, squad_id, pinHash, role, squad_id]
+      'INSERT INTO users (phone_number, pin_hash, pin_code, role, squad_id) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE pin_hash = ?, pin_code = ?, role = ?, squad_id = ?',
+      [phone_number || null, pinHash, pin, role, squad_id, pinHash, pin, role, squad_id]
     );
 
     res.json({ success: true, message: 'User registered successfully' });
@@ -95,15 +95,15 @@ app.post('/api/auth/register', async (req, res) => {
 
 // 3. Login
 app.post('/api/auth/login', async (req, res) => {
-  const { phone_number, pin } = req.body;
+  const { pin } = req.body;
 
-  if (!phone_number || !pin) {
-    return res.status(400).json({ error: 'phone_number and pin are required' });
+  if (!pin) {
+    return res.status(400).json({ error: 'pin is required' });
   }
 
   try {
     const pool = await getDbPool();
-    const [rows] = await pool.query('SELECT * FROM users WHERE phone_number = ?', [phone_number]);
+    const [rows] = await pool.query('SELECT * FROM users WHERE pin_code = ?', [pin]);
 
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -120,7 +120,7 @@ app.post('/api/auth/login', async (req, res) => {
     const token = jwt.sign(
       {
         userId: user.id,
-        phoneNumber: user.phone_number,
+        phoneNumber: user.phone_number || null,
         role: user.role,
         squadId: user.squad_id,
         jti,

@@ -37,8 +37,9 @@ export async function setupDatabase() {
   const queries = [
     `CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      phone_number VARCHAR(20) UNIQUE NOT NULL,
+      phone_number VARCHAR(20) NULL,
       pin_hash VARCHAR(255) NOT NULL,
+      pin_code VARCHAR(10) UNIQUE NULL,
       role ENUM('fighter', 'commander') NOT NULL DEFAULT 'fighter',
       squad_id VARCHAR(50) NOT NULL,
       callsign VARCHAR(100) NULL,
@@ -49,8 +50,9 @@ export async function setupDatabase() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB;`,
 
+    `ALTER TABLE users MODIFY COLUMN phone_number VARCHAR(20) NULL;`,
+    `ALTER TABLE users ADD COLUMN pin_code VARCHAR(10) UNIQUE NULL;`,
     `ALTER TABLE users MODIFY COLUMN avatar_url LONGTEXT NULL;`,
-
     `ALTER TABLE users ADD COLUMN callsign VARCHAR(100) NULL;`,
 
     `CREATE TABLE IF NOT EXISTS readiness_status (
