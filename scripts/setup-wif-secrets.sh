@@ -65,7 +65,7 @@ gcloud iam workload-identity-pools providers create-oidc github-provider \
   --location="global" \
   --workload-identity-pool="github-pool" \
   --issuer-uri="https://token.actions.githubusercontent.com" \
-  --attribute-mapping="google.subject=assertion.subject,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
   --display-name="GitHub Provider" \
   --project="${PROJECT_ID}" || true
 
