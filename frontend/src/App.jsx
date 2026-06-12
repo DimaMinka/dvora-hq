@@ -424,228 +424,111 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen bg-bf-dark text-slate-300 font-mono tracking-wide p-4 sm:p-8 relative overflow-x-hidden dvora-bg hud-grid`}
+      className={`min-h-screen bg-bf-dark text-slate-300 font-mono tracking-wide p-4 sm:p-6 relative overflow-x-hidden dvora-bg hud-grid`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-bf-cyan to-transparent opacity-50"></div>
 
-      <header className="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-bf-border/60 pb-6 glass-panel p-4 clip-hud">
-        <div className="w-full sm:w-auto">
-          <div className="text-xs text-bf-cyan opacity-70 mb-1">{dict.metaStatus}</div>
-          <h1 className="text-3xl font-black text-white tracking-widest sm:text-4xl">
-            DVORA <span className="text-bf-orange animate-pulse">HQ v2.1</span>
+      <header className="max-w-md mx-auto mb-6 flex justify-between items-center gap-4 border-b border-bf-border/60 pb-4 glass-panel p-4 clip-hud">
+        <div>
+          <div className="text-[10px] text-bf-cyan opacity-70 mb-0.5">{dict.metaStatus}</div>
+          <h1 className="text-xl font-black text-white tracking-widest">
+            DVORA <span className="text-bf-orange animate-pulse">HQ</span>
           </h1>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+        <div className="flex items-center gap-2">
           <div className="flex p-0.5 bg-bf-dark border border-bf-border clip-btn">
             <button
               onClick={() => setLang('en')}
-              className={`px-3 py-1 text-xs font-bold clip-btn transition-all ${lang === 'en' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'}`}
+              className={`px-2 py-0.5 text-[10px] font-bold clip-btn transition-all ${lang === 'en' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'}`}
             >
               ENG
             </button>
             <button
               onClick={() => setLang('he')}
-              className={`px-3 py-1 text-xs font-bold clip-btn transition-all ${lang === 'he' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'}`}
+              className={`px-2 py-0.5 text-[10px] font-bold clip-btn transition-all ${lang === 'he' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'}`}
             >
               עבר
             </button>
           </div>
 
-          <div className="text-right text-xs border border-bf-border p-2 bg-bf-dark/80 clip-btn w-full sm:w-auto flex sm:flex-col justify-between">
-            <div>
-              <span className="text-slate-500">{dict.sysLoc}</span>{' '}
-              <span className="text-bf-cyan font-bold">EU-WEST.GCP</span>
-            </div>
-            <div>
-              <span className="text-slate-500">{dict.security}</span>{' '}
-              <span className="text-bf-orange font-bold">STRICT_AUTH</span>
-            </div>
-          </div>
+          {!isLocked && (
+            <button
+              onClick={handleLogout}
+              className="bg-bf-orange/20 border border-bf-orange/60 text-bf-orange px-2 py-0.5 text-[10px] uppercase font-bold clip-btn hover:bg-bf-orange/30 transition-all cursor-pointer"
+            >
+              {lang === 'en' ? 'LOCK' : 'נעילה'}
+            </button>
+          )}
         </div>
       </header>
 
-      <section className="max-w-6xl mx-auto mb-8 p-6 glass-panel border border-bf-border/50 clip-hud">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="w-2 h-10 bg-bf-orange"></span>
-          <div>
-            <div className="text-[10px] text-bf-orange font-bold font-mono tracking-widest">
-              // MISSION_STATEMENT
-            </div>
-            <h2 className="text-xl font-black text-white uppercase">{dict.appDescTitle}</h2>
-          </div>
-        </div>
-        <p className="text-sm text-slate-300 max-w-3xl leading-relaxed">{dict.appDescText}</p>
-      </section>
-
-      <main className="max-w-6xl mx-auto grid gap-6 md:grid-cols-3">
-        <section className="md:col-span-2 space-y-6">
-          <div className="flex items-center gap-2 border-b border-bf-cyan/30 pb-2">
-            <span className="w-2 h-2 bg-bf-cyan"></span>
-            <h2 className="text-sm font-black text-white uppercase tracking-widest">
-              {dict.capsTitle}
-            </h2>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {dict.cards.map((card, idx) => (
-              <div
-                key={idx}
-                className="p-5 bg-bf-slate/75 border border-bf-border/80 clip-hud relative group hover:border-bf-cyan/50 transition-all backdrop-blur-sm"
-              >
-                <div
-                  className={`absolute top-0 ${isRtl ? 'left-0' : 'right-0'} w-8 h-8 border-t-2 ${isRtl ? 'border-l-2' : 'border-r-2'} border-bf-cyan opacity-20 group-hover:opacity-100 transition-opacity`}
-                ></div>
-                <div className="text-xs text-bf-cyan mb-2 font-bold">{card.tag}</div>
-                <h3 className="text-base font-bold text-white mb-2 uppercase">{card.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{card.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="space-y-6">
-          <div className="flex items-center gap-2 border-b border-bf-orange/30 pb-2">
-            <span className="w-2 h-2 bg-bf-orange animate-ping"></span>
-            <h2 className="text-sm font-black text-white uppercase tracking-widest">
-              {dict.nodesTitle}
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <button
-              onClick={() => setRole('soldier')}
-              className={`w-full text-left p-2.5 text-[11px] uppercase transition-all border clip-btn ${role === 'soldier' ? 'font-black bg-bf-cyan text-bf-dark border-bf-cyan' : 'font-bold border-bf-border text-slate-400 hover:border-bf-cyan/50 hover:text-white'}`}
-            >
-              {dict.btnSoldier}
-            </button>
-            <button
-              onClick={() => setRole('commander')}
-              className={`w-full text-left p-2.5 text-[11px] uppercase transition-all border clip-btn ${role === 'commander' ? 'font-black bg-bf-cyan text-bf-dark border-bf-cyan' : 'font-bold border-bf-border text-slate-400 hover:border-bf-cyan/50 hover:text-white'}`}
-            >
-              {dict.btnCommander}
-            </button>
-            <button
-              onClick={() => setRole('admin')}
-              className={`w-full text-left p-2.5 text-[11px] uppercase transition-all border clip-btn ${role === 'admin' ? 'font-black bg-bf-cyan text-bf-dark border-bf-cyan' : 'font-bold border-bf-border text-slate-400 hover:border-bf-cyan/50 hover:text-white'}`}
-            >
-              {dict.btnAdmin}
-            </button>
-          </div>
-
-          <div className="p-4 glass-panel border-2 border-bf-cyan/30 clip-hud relative flex flex-col justify-between min-h-[440px]">
-            {isLocked ? (
-              <LockScreen onUnlock={handleUnlock} />
-            ) : (
-              <>
-                {role === 'soldier' &&
-                  (user && !user.specialization ? (
-                    <Onboarding lang={lang} onComplete={handleOnboardingComplete} />
-                  ) : (
-                    <FighterDashboard
-                      lang={lang}
-                      checklist={checklist}
-                      onToggleChecklist={toggleChecklist}
-                      alarmActive={alarmActive}
-                      onSendReport={handleSendReport}
-                      user={user}
-                    />
-                  ))}
-
-                {role === 'commander' && (
-                  <CommanderDashboard
+      <main className="max-w-md mx-auto">
+        <div className="p-4 glass-panel border-2 border-bf-cyan/30 clip-hud relative flex flex-col justify-between min-h-[440px]">
+          {isLocked ? (
+            <LockScreen onUnlock={handleUnlock} />
+          ) : (
+            <>
+              {role === 'soldier' &&
+                (user && !user.specialization ? (
+                  <Onboarding lang={lang} onComplete={handleOnboardingComplete} />
+                ) : (
+                  <FighterDashboard
                     lang={lang}
+                    checklist={checklist}
+                    onToggleChecklist={toggleChecklist}
                     alarmActive={alarmActive}
-                    onToggleAlarm={handleToggleAlarm}
-                    squadMembers={squadMembers}
+                    onSendReport={handleSendReport}
+                    user={user}
                   />
-                )}
+                ))}
 
-                {role === 'admin' && (
-                  <div className="space-y-4 w-full">
-                    <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
-                      {dict.roles[role].feed}
-                    </div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wider">
-                      {dict.roles[role].title}
-                    </h3>
-                    <div className="bg-bf-dark border border-bf-border p-3 rounded font-mono text-[11px] space-y-2">
-                      <div className="text-slate-500">/admin_panel initialized...</div>
-                      <div className="text-slate-300">
-                        <span className="text-bf-cyan">$</span> /add_user +79991112233 "REAPER"
-                        "ALPHA"
-                      </div>
-                      <div className="text-bf-cyan font-bold">
-                        [SUCCESS] USER INJECTED INTO WHITELIST
-                      </div>
-                      <div className="text-slate-400">
-                        GEN_PIN:{' '}
-                        <span className="text-bf-orange font-bold font-black tracking-widest">
-                          5492A
-                        </span>
-                      </div>
-                      <div className="text-slate-300 animate-pulse">
-                        <span className="text-bf-cyan">$</span>{' '}
-                        <span className="bg-bf-cyan text-bf-dark font-bold px-0.5">_</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+              {role === 'commander' && (
+                <CommanderDashboard
+                  lang={lang}
+                  alarmActive={alarmActive}
+                  onToggleAlarm={handleToggleAlarm}
+                  squadMembers={squadMembers}
+                />
+              )}
 
-                <div className="w-full pt-3 mt-4 border-t border-bf-border space-y-2 z-20">
-                  <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">
-                    {dict.simTitle}
+              {role === 'admin' && (
+                <div className="space-y-4 w-full">
+                  <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
+                    {dict.roles[role].feed}
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      onClick={() => setAlarmActive(true)}
-                      className="w-full bg-bf-orange/20 border border-bf-orange text-bf-orange py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-bf-orange/30 transition-all cursor-pointer"
-                    >
-                      Alarm On
-                    </button>
-                    <button
-                      onClick={() => setAlarmActive(false)}
-                      className="w-full bg-slate-800 border border-slate-700 text-slate-400 py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-slate-700 transition-all cursor-pointer"
-                    >
-                      Alarm Off
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full bg-bf-orange/10 border border-bf-orange/40 text-bf-orange py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-bf-orange/20 transition-all cursor-pointer"
-                    >
-                      Lock
-                    </button>
+                  <h3 className="text-sm font-black text-white uppercase tracking-wider">
+                    {dict.roles[role].title}
+                  </h3>
+                  <div className="bg-bf-dark border border-bf-border p-3 rounded font-mono text-[11px] space-y-2">
+                    <div className="text-slate-500">/admin_panel initialized...</div>
+                    <div className="text-slate-300">
+                      <span className="text-bf-cyan">$</span> /add_user +79991112233 "REAPER"
+                      "ALPHA"
+                    </div>
+                    <div className="text-bf-cyan font-bold">
+                      [SUCCESS] USER INJECTED INTO WHITELIST
+                    </div>
+                    <div className="text-slate-400">
+                      GEN_PIN:{' '}
+                      <span className="text-bf-orange font-bold font-black tracking-widest">
+                        5492A
+                      </span>
+                    </div>
+                    <div className="text-slate-300 animate-pulse">
+                      <span className="text-bf-cyan">$</span>{' '}
+                      <span className="bg-bf-cyan text-bf-dark font-bold px-0.5">_</span>
+                    </div>
                   </div>
                 </div>
-              </>
-            )}
-          </div>
-        </section>
+              )}
+            </>
+          )}
+        </div>
       </main>
 
-      <section className="max-w-6xl mx-auto mt-12 mb-16">
-        <div className="flex items-center gap-2 border-b border-bf-border pb-2 mb-6">
-          <span className="w-2 h-2 bg-slate-500"></span>
-          <h2 className="text-sm font-black text-white uppercase tracking-widest">
-            {dict.techTitle}
-          </h2>
-        </div>
-
-        <div className="border border-bf-border bg-bf-slate/40 glass-panel clip-hud overflow-hidden">
-          {dict.tech.map((t, idx) => (
-            <div
-              key={idx}
-              className="p-4 sm:grid sm:grid-cols-3 gap-4 hover:bg-bf-slate/50 transition-all border-b border-bf-border last:border-0"
-            >
-              <div className="font-bold text-bf-cyan uppercase mb-1 sm:mb-0">{t.name}</div>
-              <div className="sm:col-span-2 text-slate-400">{t.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <footer className="max-w-6xl mx-auto border-t border-bf-border pt-6 text-center text-[10px] text-slate-600 tracking-widest">
+      <footer className="max-w-md mx-auto mt-8 text-center text-[8px] text-slate-600 tracking-widest uppercase">
         {dict.footer}
       </footer>
     </div>
