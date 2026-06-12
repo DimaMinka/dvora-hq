@@ -25,7 +25,8 @@ if (bot) {
       `Available command protocols:\n` +
       `• \`/add_fighter <squad_id> <callsign>\` — Generate PIN and authorize fighter.\n` +
       `• \`/add_commander <squad_id> <callsign>\` — Generate PIN and authorize commander.\n` +
-      `• \`/remove_user <pin_code>\` — Evict user record from tactical database.\n\n` +
+      `• \`/remove_user <pin_code>\` — Evict user record from tactical database.\n` +
+      `• \`/list_users\` — Display all authorized operators in the database.\n\n` +
       `_Secure tactical sync protocols active._`;
     return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
   });
@@ -113,7 +114,9 @@ if (bot) {
     const pinCode = ctx.match ? ctx.match.trim() : '';
 
     if (!pinCode) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/remove_user <pin_code>`', { parse_mode: 'Markdown' });
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/remove_user <pin_code>`', {
+        parse_mode: 'Markdown',
+      });
     }
 
     try {
@@ -126,11 +129,40 @@ if (bot) {
         });
       }
 
-      return ctx.reply(`✅ *USER EVICTED*: PIN code \`${pinCode}\` has been revoked from access list.`, {
-        parse_mode: 'Markdown',
-      });
+      return ctx.reply(
+        `✅ *USER EVICTED*: PIN code \`${pinCode}\` has been revoked from access list.`,
+        {
+          parse_mode: 'Markdown',
+        }
+      );
     } catch (err) {
       console.error('[Bot] Remove user database error:', err.message);
+      return ctx.reply(`❌ *DATABASE FAILURE*: \`${err.message}\``, { parse_mode: 'Markdown' });
+    }
+  });
+
+  // Command: List Users
+  bot.command('list_users', async (ctx) => {
+    try {
+      const pool = await getDbPool();
+      const [rows] = await pool.query(
+        'SELECT pin_code, role, squad_id, callsign FROM users ORDER BY squad_id, role, callsign'
+      );
+
+      if (rows.length === 0) {
+        return ctx.reply('⚠️ *NO USERS*: The database is currently empty.', {
+          parse_mode: 'Markdown',
+        });
+      }
+
+      let response = `⚡ *DVORA HQ // AUTHORIZED OPERATORS* ⚡\n\n`;
+      rows.forEach((row, idx) => {
+        response += `${idx + 1}. *[${row.role.toUpperCase()}]* \`${row.callsign || 'N/A'}\` (Squad: \`${row.squad_id || 'N/A'}\`) | PIN: \`${row.pin_code}\`\n`;
+      });
+
+      return ctx.reply(response, { parse_mode: 'Markdown' });
+    } catch (err) {
+      console.error('[Bot] List users database error:', err.message);
       return ctx.reply(`❌ *DATABASE FAILURE*: \`${err.message}\``, { parse_mode: 'Markdown' });
     }
   });
@@ -150,6 +182,7 @@ export async function startBot() {
         { command: 'add_fighter', description: 'Add fighter: <squad_id> <callsign>' },
         { command: 'add_commander', description: 'Add commander: <squad_id> <callsign>' },
         { command: 'remove_user', description: 'Remove user by <pin_code>' },
+        { command: 'list_users', description: 'List all authorized users' },
       ]);
       console.log('[Bot] Commands registered with Telegram successfully.');
     } catch (err) {
