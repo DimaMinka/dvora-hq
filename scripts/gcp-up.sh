@@ -32,23 +32,24 @@ gcloud services enable \
   cloudtasks.googleapis.com \
   secretmanager.googleapis.com \
   storage.googleapis.com \
-  iam.googleapis.com
+  iam.googleapis.com \
+  --project="${PROJECT_ID}"
 
 # 2. Create Cloud Storage Bucket
 echo "[2/4] Checking and creating Cloud Storage bucket..."
-if gcloud storage buckets describe "gs://${BUCKET_NAME}" &>/dev/null; then
+if gcloud storage buckets describe "gs://${BUCKET_NAME}" --project="${PROJECT_ID}" &>/dev/null; then
   echo "Bucket gs://${BUCKET_NAME} already exists."
-else
-  gcloud storage buckets create "gs://${BUCKET_NAME}" --location="${REGION}"
+  else
+  gcloud storage buckets create "gs://${BUCKET_NAME}" --location="${REGION}" --project="${PROJECT_ID}"
   echo "Bucket gs://${BUCKET_NAME} created successfully."
 fi
 
 # 3. Create Cloud Tasks Queue
 echo "[3/4] Checking and creating Cloud Tasks queue..."
-if gcloud tasks queues describe "${QUEUE_NAME}" --location="${REGION}" &>/dev/null; then
+if gcloud tasks queues describe "${QUEUE_NAME}" --location="${REGION}" --project="${PROJECT_ID}" &>/dev/null; then
   echo "Queue ${QUEUE_NAME} already exists."
 else
-  if ! gcloud tasks queues create "${QUEUE_NAME}" --location="${REGION}" 2>queue_err.log; then
+  if ! gcloud tasks queues create "${QUEUE_NAME}" --location="${REGION}" --project="${PROJECT_ID}" 2>queue_err.log; then
     if grep -q "existed too recently" queue_err.log; then
       echo "WARNING: Could not create queue '${QUEUE_NAME}' because it was deleted too recently."
       echo "GCP enforces a cooldown period before a deleted queue name can be reused."
@@ -65,13 +66,14 @@ fi
 
 # 4. Create Cloud SQL (MySQL 8) Database Instance
 echo "[4/4] Creating Cloud SQL instance (db-f1-micro) - this might take 5-10 minutes..."
-if gcloud sql instances describe "${DB_INSTANCE_NAME}" &>/dev/null; then
+if gcloud sql instances describe "${DB_INSTANCE_NAME}" --project="${PROJECT_ID}" &>/dev/null; then
   echo "Database instance ${DB_INSTANCE_NAME} already exists."
 else
   gcloud sql instances create "${DB_INSTANCE_NAME}" \
     --database-version=MYSQL_8_0 \
     --tier=db-f1-micro \
     --region="${REGION}" \
+    --project="${PROJECT_ID}" \
     --async
   echo "Database instance ${DB_INSTANCE_NAME} creation initiated in the background."
   echo "Monitor creation status using: gcloud sql instances list"
