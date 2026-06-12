@@ -13,6 +13,7 @@ gcloud services enable \
   cloudresourcemanager.googleapis.com \
   artifactregistry.googleapis.com \
   run.googleapis.com \
+  firebase.googleapis.com \
   --project="${PROJECT_ID}"
 
 echo "=== [2/7] Creating Artifact Registry ==="
