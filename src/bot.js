@@ -277,11 +277,11 @@ if (bot) {
 
       const userDoc = snapshot.docs[0];
       const u = userDoc.data();
-
+      const roleDoc = u.role ? u.role.toUpperCase() : 'OPERATOR';
       let response =
-        `⚡ *DVORA HQ // OPERATOR PROFILE* ⚡\n\n` +
+        `⚡ *DVORA HQ // ${roleDoc} PROFILE* ⚡\n\n` +
         `• *TG Username:* \`@${tgUsername}\`\n` +
-        `• *Role:* \`${u.role.toUpperCase()}\`\n` +
+        `• *Role:* \`${roleDoc}\`\n` +
         `• *Squad:* \`${u.squad_id}\`\n` +
         `• *Access PIN:* \`${u.pin_code}\`\n`;
 

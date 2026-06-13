@@ -190,7 +190,7 @@ function LockScreen({ onUnlock }) {
               ))}
               <button
                 onClick={handleBackspace}
-                className="w-16 h-12 bg-bf-slate/80 border border-bf-border text-bf-orange font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all"
+                className="w-16 h-12 bg-bf-slate/80 border border-bf-border text-bf-orange text-xl font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all"
               >
                 ⌫
               </button>
@@ -215,7 +215,7 @@ function LockScreen({ onUnlock }) {
               ))}
               <button
                 onClick={handleBackspace}
-                className="col-span-2 w-full h-10 bg-bf-slate/80 border border-bf-border text-bf-orange text-xs font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all"
+                className="col-span-2 w-full h-10 bg-bf-slate/80 border border-bf-border text-bf-orange text-sm font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all"
               >
                 ⌫
               </button>
