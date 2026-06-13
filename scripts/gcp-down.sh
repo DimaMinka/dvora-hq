@@ -27,9 +27,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   # 0. Export Database Backup to GCS and download locally
   echo "[0/3] Creating database backup and exporting to gs://${BUCKET_NAME}..."
   DB_NAME=${DB_NAME:-"dvora_db"}
-  if gcloud sql instances describe "${DB_INSTANCE_NAME}" &>/dev/null; then
+  if gcloud sql instances describe "${DB_INSTANCE_NAME}" --project="${PROJECT_ID}" &>/dev/null; then
     # Give Cloud SQL service account access to bucket to write export
-    SQL_SA=$(gcloud sql instances describe "${DB_INSTANCE_NAME}" --format="value(serviceAccountEmailAddress)")
+    SQL_SA=$(gcloud sql instances describe "${DB_INSTANCE_NAME}" --project="${PROJECT_ID}" --format="value(serviceAccountEmailAddress)")
     if [ ! -z "$SQL_SA" ]; then
       gcloud storage buckets add-iam-policy-binding "gs://${BUCKET_NAME}" \
         --member="serviceAccount:${SQL_SA}" \
@@ -38,7 +38,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
     echo "Exporting database to SQL dump..."
     gcloud sql export sql "${DB_INSTANCE_NAME}" "gs://${BUCKET_NAME}/dvora_db_backup.sql" \
-      --database="${DB_NAME}" --quiet || true
+      --database="${DB_NAME}" --project="${PROJECT_ID}" --quiet || true
     
     echo "Downloading database backup locally..."
     gcloud storage cp "gs://${BUCKET_NAME}/dvora_db_backup.sql" "./dvora_db_backup.sql" || true
@@ -49,8 +49,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   # 1. Delete Cloud SQL Instance
   echo "[1/3] Deleting Cloud SQL instance ${DB_INSTANCE_NAME}..."
-  if gcloud sql instances describe "${DB_INSTANCE_NAME}" &>/dev/null; then
-    gcloud sql instances delete "${DB_INSTANCE_NAME}" --quiet
+  if gcloud sql instances describe "${DB_INSTANCE_NAME}" --project="${PROJECT_ID}" &>/dev/null; then
+    gcloud sql instances delete "${DB_INSTANCE_NAME}" --project="${PROJECT_ID}" --quiet
     echo "Database instance ${DB_INSTANCE_NAME} deleted."
   else
     echo "Database instance ${DB_INSTANCE_NAME} does not exist."
@@ -58,10 +58,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   # 2. Delete Cloud Storage Bucket
   echo "[2/3] Deleting Cloud Storage bucket gs://${BUCKET_NAME}..."
-  if gcloud storage buckets describe "gs://${BUCKET_NAME}" &>/dev/null; then
+  if gcloud storage buckets describe "gs://${BUCKET_NAME}" --project="${PROJECT_ID}" &>/dev/null; then
     # Empty bucket first
     gsutil rm -r "gs://${BUCKET_NAME}/**" || true
-    gcloud storage buckets delete "gs://${BUCKET_NAME}" --quiet
+    gcloud storage buckets delete "gs://${BUCKET_NAME}" --project="${PROJECT_ID}" --quiet
     echo "Bucket gs://${BUCKET_NAME} deleted."
   else
     echo "Bucket gs://${BUCKET_NAME} does not exist."
@@ -69,8 +69,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   # 3. Delete Cloud Tasks Queue
   echo "[3/3] Deleting Cloud Tasks queue ${QUEUE_NAME}..."
-  if gcloud tasks queues describe "${QUEUE_NAME}" --location="${REGION}" &>/dev/null; then
-    gcloud tasks queues delete "${QUEUE_NAME}" --location="${REGION}" --quiet
+  if gcloud tasks queues describe "${QUEUE_NAME}" --location="${REGION}" --project="${PROJECT_ID}" &>/dev/null; then
+    gcloud tasks queues delete "${QUEUE_NAME}" --location="${REGION}" --project="${PROJECT_ID}" --quiet
     echo "Queue ${QUEUE_NAME} deleted."
   else
     echo "Queue ${QUEUE_NAME} does not exist."
