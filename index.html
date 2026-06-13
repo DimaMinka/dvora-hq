@@ -295,8 +295,8 @@
           cards: [
             {
               tag: '[01_SECURE_ACCESS]',
-              title: '2FA Tactical Lock Screen',
-              desc: 'Strict pairing of Telegram native hardware verification with an encrypted numeric-alpha PIN. Hard token wipe executed precisely at T-120 minutes.',
+              title: 'Tactical PIN Lock Screen',
+              desc: 'Direct authentication using a unique, encrypted numeric-alpha PIN. Hard token wipe executed precisely at T-120 minutes.',
             },
             {
               tag: '[02_AI_RENDER]',
@@ -320,8 +320,8 @@
               desc: 'Isolated environment container. Param `min-instances: 1` targeted to completely vaporize Telegram webhook latency.',
             },
             {
-              name: '[DATABASE] Cloud SQL',
-              desc: 'MySQL 8 instance running restricted connection parameters (`poolSize: 2`) preventing serverless memory collapse.',
+              name: '[DATABASE] Cloud Firestore',
+              desc: 'Serverless NoSQL document store providing sub-millisecond lookups with zero idle costs and automatic horizontal scaling.',
             },
             {
               name: '[CYPHER] Argon2id',
@@ -338,7 +338,7 @@
               op: 'OPERATOR: REAPER',
               squad: 'SQUAD: ALPHA (01)',
               tasks: [
-                'Pass 2FA validation sequence (Native Phone Identity + Hash PIN)',
+                'Pass validation sequence (Unique Encrypted PIN)',
                 'Report real-time combat status toggles [Weapons, Transport, Comms, Meds]',
                 'Inject raw unencrypted asset bottleneck text directly up the chain',
               ],
@@ -356,7 +356,7 @@
               feed: '[NODE_FEED: TELEGRAM_BOT_CLI]',
               title: 'INTEL COMMAND LINE',
               tasks: [
-                'Inject pre-approved network whitelist entries (Phone Identity Vectors)',
+                'Inject pre-approved network whitelist entries (Fighter Identity Vectors)',
                 'Deploy automatically generated unique PIN codes (5-digits + 1-alpha)',
                 'Zero layout footprint within client Mini App interface',
               ],
@@ -371,7 +371,7 @@
           simTitle: '// פעולות סימולטור מקומי',
           appDescTitle: 'חמ"ל מבצעים טקטי',
           appDescText:
-            'מערכת Dvora HQ הינה פלטפורמת סנכרון טקטית מאובטחת ביותר, המיועדת למוזמנים בלבד ומיושמת באופן מובנה вתוך המערכת של טלגרם. המערכת נבנתה עבור מבצעים מהירים בשטח, ומבטיחה תיאום מצב מיידי, מעקב משאבים מבוזר והפעלה בזמן אמת של צוותים תחת מעטפת אבטחה קשיחה.',
+            'מערכת Dvora HQ הינה פלטפורמת סנכרון טקטית מאובטחת ביותר, המיועדת למוזמנים בלבד ומיושמת באופן מובנה בתוך המערכת של טלגרם. המערכת נבנתה עבור מבצעים מהירים בשטח, ומבטיחה תיאום מצב מיידי, מעקב משאבים מבוזר והפעלה בזמן אמת של צוותים תחת מעטפת אבטחה קשיחה.',
           footer: 'זרם נתונים קריטי // אבטחה מנוהלת על ידי פרוטוקול דבורה // לא זוהתה דליפת נתונים',
           sysLoc: 'מיקום מערכת:',
           security: 'רמת אבטחה:',
@@ -383,13 +383,13 @@
           cards: [
             {
               tag: '[01_אבטחת_גישה]',
-              title: 'מסך נעילה טקטי 2FA',
-              desc: 'הצמדה קשיחה בין אימות טלפון מובנה של טלגרם לבין קוד PIN מוצפן. מחיקת טוקן מוחלטת מתבצעת בדיוק ב-T-120 דקות.',
+              title: 'מסך נעילה טקטי לפי קוד PIN',
+              desc: 'אימות ישיר ומאובטח באמצעות קוד PIN טקטי ייחודי. מחיקת טוקן מוחלטת מתבצעת בדיוק ב-T-120 דקות.',
             },
             {
               tag: '[02_עיבוד_AI]',
               title: 'ביומטריה של ציוד',
-              desc: 'פרוטוקולי קליטה מעריכים את נשק הלוחם וההתמחות שלו. תורים אסינכроניים בענן מייצרים אווטאר טקטי קבוע למטריצת הפרופיל.',
+              desc: 'פרוטוקולי קליטה מעריכים את נשק הלוחם וההתמחות שלו. תורים אסינכרוניים בענן מייצרים אווטאר טקטי קבוע למטריצת הפרופיל.',
             },
             {
               tag: '[03_מרכז_סטאטוס]',
@@ -405,11 +405,11 @@
           tech: [
             {
               name: '[מנוע] Cloud Run',
-              desc: 'סביבת קונטיינרים מבודדת. הגדרת מיниמום אינסטנס 1 על מנת לנטרל לחלוטין את השהיית הוובהוקס של טלגרם.',
+              desc: 'סביבת קונטיינרים מבודדת. הגדרת מינימום אינסטנס 1 על מנת לנטרל לחלוטין את השהיית הוובהוקס של טלגרם.',
             },
             {
-              name: '[בסיס נתונים] Cloud SQL',
-              desc: 'מסד נתונים MySQL 8 המриץ הגדרות חיבור מוגבלות למניעת קריסת זיכרון שרברלס.',
+              name: '[בסיס נתונים] Cloud Firestore',
+              desc: 'מסד נתונים Serverless NoSQL מהיר במיוחד, ללא עלות אחזקה קבועה ועם אפס זמני המתנה לעליית שרת.',
             },
             {
               name: '[הצפנה] Argon2id',
@@ -426,7 +426,7 @@
               op: 'מפעיל: REAPER',
               squad: 'צוות: אלפא (01)',
               tasks: [
-                'מעבר רצף אימות 2FA (זיהוי טלפון מובנה + קוד PIN מוצפן)',
+                'מעבר רצף אימות טקטי (קוד PIN ייחודי מוצפן)',
                 'דיווח מוכנות קרבית בזמן אמת [נשק, רכב, קשר, רפואה]',
                 'הזרקת דיווחי תקלות לוגיסטיות בטקסט חופשי ישירות לדרג הפיקוד',
               ],
@@ -444,7 +444,7 @@
               feed: '[ערוץ_נתונים: ממשק_בוט_CLI]',
               title: 'שורת פקודה מודיעינית',
               tasks: [
-                'הזרקת מספרי טלפון מאושרים מראש לרשימה הלבנה',
+                'הזרקת לוחמים מאושרים מראש לרשימה הלבנה',
                 'הנפקת קודי PIN ייחודיים ומאובטחים (5 ספרות + אות אחת)',
                 'אפס טביעת רגל ויזואלית בתוך ממשק המיני-אפליקציה של הלוחמים',
               ],

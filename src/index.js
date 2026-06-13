@@ -9,7 +9,10 @@ import { startBot } from './bot.js';
 const app = express();
 
 // Initialize Google Gen AI SDK if key is configured
-const ai = config.aiApiKey && config.aiApiKey !== 'your_api_key' ? new GoogleGenAI({ apiKey: config.aiApiKey }) : null;
+const ai =
+  config.aiApiKey && config.aiApiKey !== 'your_api_key'
+    ? new GoogleGenAI({ apiKey: config.aiApiKey })
+    : null;
 
 if (!ai) {
   console.log('[System] Gemini API Key not configured. AI avatar generation disabled.');
@@ -24,7 +27,10 @@ app.use((req, res, next) => {
 // Basic CORS middleware (highly restricted for production, local allowed for development)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
   if (req.method === 'OPTIONS') {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     return res.status(200).json({});
@@ -92,14 +98,17 @@ app.post('/api/auth/register', async (req, res) => {
     });
 
     const db = getDb();
-    await db.collection('users').doc(pin).set({
-      phone_number: phone_number || null,
-      pin_hash: pinHash,
-      pin_code: pin,
-      role,
-      squad_id,
-      created_at: new Date().toISOString(),
-    });
+    await db
+      .collection('users')
+      .doc(pin)
+      .set({
+        phone_number: phone_number || null,
+        pin_hash: pinHash,
+        pin_code: pin,
+        role,
+        squad_id,
+        created_at: new Date().toISOString(),
+      });
 
     res.json({ success: true, message: 'User registered successfully' });
   } catch (err) {
@@ -301,14 +310,17 @@ app.post('/api/user/readiness', authenticateToken, async (req, res) => {
 
   try {
     const db = getDb();
-    await db.collection('readiness_status').doc(req.user.userId).set({
-      weapons_ready: Number(weapons_ready),
-      transport_ready: Number(transport_ready),
-      comms_ready: Number(comms_ready),
-      meds_ready: Number(meds_ready),
-      note: note || '',
-      updated_at: new Date().toISOString(),
-    });
+    await db
+      .collection('readiness_status')
+      .doc(req.user.userId)
+      .set({
+        weapons_ready: Number(weapons_ready),
+        transport_ready: Number(transport_ready),
+        comms_ready: Number(comms_ready),
+        meds_ready: Number(meds_ready),
+        note: note || '',
+        updated_at: new Date().toISOString(),
+      });
 
     res.json({ success: true, message: 'Readiness status updated' });
   } catch (err) {
@@ -325,7 +337,8 @@ app.get('/api/squad/status', authenticateToken, async (req, res) => {
 
   try {
     const db = getDb();
-    const usersSnapshot = await db.collection('users')
+    const usersSnapshot = await db
+      .collection('users')
       .where('squad_id', '==', req.user.squadId)
       .where('role', '==', 'fighter')
       .get();
