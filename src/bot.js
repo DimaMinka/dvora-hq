@@ -29,7 +29,7 @@ if (bot) {
   };
 
   // Command: Help and Start
-  bot.command(['start', 'help'], (ctx) => {
+  bot.command(['start', 'help'], async (ctx) => {
     const verDisplay = config.version ? ` \`[${config.version.substring(0, 7)}]\`` : '';
     if (!isAdmin(ctx)) {
       return ctx.reply(
@@ -37,6 +37,26 @@ if (bot) {
           `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
         { parse_mode: 'Markdown' }
       );
+    }
+
+    // Dynamically register full admin commands autocomplete scope for this admin user chat
+    try {
+      await ctx.api.setMyCommands(
+        [
+          { command: 'start', description: 'Show help and available commands' },
+          { command: 'help', description: 'Show help and available commands' },
+          { command: 'my_profile', description: 'Display your tactical profile and access PIN' },
+          { command: 'add_fighter', description: 'Add fighter: <squad_id> <tg_username>' },
+          { command: 'add_commander', description: 'Add commander: <squad_id> <tg_username>' },
+          { command: 'remove_user', description: 'Remove user by <pin_code>' },
+          { command: 'list_users', description: 'List all authorized users' },
+        ],
+        {
+          scope: { type: 'chat', chat_id: ctx.chat.id },
+        }
+      );
+    } catch (err) {
+      console.error('[Bot] Failed to dynamically set admin commands:', err.message);
     }
 
     const helpMessage =
