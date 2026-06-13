@@ -352,6 +352,14 @@ function App() {
     }).catch((err) => console.error('[API] Failed to toggle alarm:', err.message));
   };
 
+  // Initialize Telegram WebApp SDK
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+  }, []);
+
   // 1. Initial Load: Check token
   useEffect(() => {
     const token = localStorage.getItem('dvora_token');

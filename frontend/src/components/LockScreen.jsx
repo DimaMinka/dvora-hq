@@ -99,7 +99,19 @@ function LockScreen({ onUnlock }) {
         </div>
         {(() => {
           const lastOperatorStr = localStorage.getItem('dvora_last_operator');
-          const lastOperator = lastOperatorStr ? JSON.parse(lastOperatorStr) : null;
+          let lastOperator = lastOperatorStr ? JSON.parse(lastOperatorStr) : null;
+
+          // Fallback to Telegram Web App SDK context if no local storage cache exists
+          if (!lastOperator && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+            const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+            if (tgUser.username) {
+              lastOperator = {
+                tg_username: tgUser.username,
+                avatar_url: tgUser.photo_url || null,
+              };
+            }
+          }
+
           if (lastOperator) {
             return (
               <div className="flex flex-col items-center gap-2 mb-2 p-3 bg-bf-dark/60 border border-bf-cyan/20 clip-btn">
