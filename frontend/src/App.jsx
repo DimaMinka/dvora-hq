@@ -357,8 +357,28 @@ function App() {
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
+
+      const updateTelegramThemeColors = () => {
+        // Check if light mode is active (prefers-color-scheme: light)
+        const isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        const themeColor = isLight ? '#e8dcc4' : '#050b0e'; // Desert sand vs Dark tactical
+        
+        try {
+          window.Telegram.WebApp.setHeaderColor(themeColor);
+          window.Telegram.WebApp.setBackgroundColor(themeColor);
+        } catch (e) {
+          console.error('[TG WebApp] Failed to update theme colors:', e);
+        }
+      };
+
+      updateTelegramThemeColors();
+
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+      mediaQuery.addEventListener('change', updateTelegramThemeColors);
+      return () => mediaQuery.removeEventListener('change', updateTelegramThemeColors);
     }
   }, []);
+
 
   // 1. Initial Load: Check token
   useEffect(() => {
