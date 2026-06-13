@@ -41,6 +41,11 @@ function LockScreen({ onUnlock }) {
       const newPin = pin + char;
       setPin(newPin);
 
+      // Automatically switch to letters when 5 digits are entered
+      if (newPin.length === 5) {
+        setKeyboardMode('alpha');
+      }
+
       // Automatically submit when the 6-character passcode is reached
       if (newPin.length === 6) {
         handleSubmit(newPin);
@@ -50,12 +55,20 @@ function LockScreen({ onUnlock }) {
 
   const handleBackspace = () => {
     setError(null);
-    setPin((prev) => prev.slice(0, -1));
+    setPin((prev) => {
+      const newPin = prev.slice(0, -1);
+      // Automatically switch back to numbers if length falls below 5
+      if (newPin.length < 5) {
+        setKeyboardMode('numeric');
+      }
+      return newPin;
+    });
   };
 
   const handleClear = () => {
     setError(null);
     setPin('');
+    setKeyboardMode('numeric');
   };
 
   const handleSubmit = (finalPin) => {
@@ -170,15 +183,7 @@ function LockScreen({ onUnlock }) {
             </div>
           )}
 
-          {/* Toggle between Numeric and Alpha keypad modes */}
-          <div className="pt-2">
-            <button
-              onClick={() => setKeyboardMode((prev) => (prev === 'numeric' ? 'alpha' : 'numeric'))}
-              className="w-full py-2 bg-bf-dark border border-bf-cyan/30 text-bf-cyan text-[10px] font-black uppercase clip-btn hover:border-bf-cyan/80 hover:bg-bf-cyan/10 transition-all duration-200"
-            >
-              SWITCH TO {keyboardMode === 'numeric' ? 'LETTERS [A-Z]' : 'NUMBERS [0-9]'}
-            </button>
-          </div>
+          {/* Keyboard toggle is now automatic */}
         </div>
       </div>
     </div>
