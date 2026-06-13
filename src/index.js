@@ -173,6 +173,9 @@ app.post('/api/auth/login', async (req, res) => {
         specialization: user.specialization || null,
         weaponry: user.weaponry || null,
         gear: user.gear || null,
+        optics: user.optics || null,
+        accessories: user.accessories || null,
+        meds: user.meds || null,
         avatar_url: user.avatar_url || null,
         alarm_active: alarmActive,
         readiness,
@@ -231,7 +234,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
 
 // 5.5 Onboarding (Fighter loadout selection & AI avatar generation)
 app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
-  const { specialization, weaponry, gear } = req.body;
+  const { specialization, weaponry, gear, optics, accessories, meds } = req.body;
 
   if (!specialization || !weaponry || !gear) {
     return res.status(400).json({ error: 'specialization, weaponry, and gear are required' });
@@ -241,21 +244,168 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
     const db = getDb();
     const userRef = db.collection('users').doc(req.user.userId);
 
-    // Save selections
-    await userRef.update({
+    const updateData = {
       specialization,
       weaponry,
       gear,
-    });
+    };
+    if (optics !== undefined) updateData.optics = optics;
+    if (accessories !== undefined) updateData.accessories = accessories;
+    if (meds !== undefined) updateData.meds = meds;
+
+    // Save selections
+    await userRef.update(updateData);
 
     let avatarUrl = null;
     if (ai) {
       try {
         console.log(`[API] Generating AI avatar for user ${req.user.userId}...`);
-        const prompt = `Ultra-realistic 3D render, photorealistic textures, diffuse soft overcast daylight. A high-fidelity tactical modern military special operations soldier avatar.
-Role/Specialization: ${specialization}.
-Primary weapon: ${weaponry} (highly customized, tan collapsible stock, extended M-LOK handguard, ACOG magnified optic, suppressor).
-Gear & Loadout: ${gear} (Ranger Green plate carrier, Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud, balaclava face mask, blue/white Israeli flag patch on right shoulder, low-profile belt rig).
+        const specializationsList = [
+          { id: 'commander', en: 'Commander' },
+          { id: 'marksman', en: 'Marksman' },
+          { id: 'negev', en: 'Negev Gunner' },
+          { id: 'medic', en: 'Medic' },
+          { id: 'hummer', en: 'Hummer Driver' },
+          { id: 'flyer', en: 'Flyer 72 Driver' },
+          { id: 'savana', en: 'Savana Driver' },
+          { id: 'fighter', en: 'Fighter' },
+          { id: 'shotgun', en: 'Shotgunner' },
+          { id: 'avata', en: 'Avata Pilot' },
+          { id: 'evo', en: 'EVO Pilot' },
+          { id: 'fpv', en: 'FPV Pilot' },
+          { id: 'comms', en: 'Comms Operator' },
+        ];
+        const formattedSpec = specialization
+          .split(',')
+          .map((s) => {
+            const match = specializationsList.find((x) => x.id === s.trim().toLowerCase());
+            return match ? match.en : s.trim();
+          })
+          .join(', ');
+
+        const primaryWeaponsList = [
+          { id: 'm4', en: 'M4 Carbine' },
+          { id: 'm4_smash', en: 'M4 SMASH (Pegayon)' },
+          { id: 'm16', en: 'M16 Carbine' },
+          { id: 'negev', en: 'Negev LMG' },
+          { id: 'negev_7', en: 'Negev 7 LMG' },
+        ];
+        const secondaryWeaponsList = [
+          { id: 'glock', en: 'Glock 19 Pistol' },
+          { id: 'glock_17', en: 'Glock 17 Pistol' },
+          { id: 'sig', en: 'Sig Sauer' },
+          { id: 'iwi_masada', en: 'IWI Masada' },
+          { id: 'jericho', en: 'Jericho' },
+          { id: 'pistol', en: 'Pistol' },
+          { id: 'knife', en: 'Tactical Knife' },
+          { id: 'shotgun_s', en: 'Remington Shotgun' },
+          { id: 'law', en: 'M72 LAW Rocket Launcher' },
+          { id: 'm203', en: 'M203 Grenade Launcher' },
+        ];
+
+        const parts = weaponry ? weaponry.split(';') : ['m4'];
+        const primaryId = parts[0];
+        const secondaryIds = parts[1] ? parts[1].split(',') : [];
+
+        const pMatch = primaryWeaponsList.find((w) => w.id === primaryId.trim().toLowerCase());
+        const primaryLabel = pMatch ? pMatch.en : primaryId;
+
+        let weaponryLabel = primaryLabel;
+        if (secondaryIds.length > 0) {
+          const secondaryLabels = secondaryIds.map((id) => {
+            const match = secondaryWeaponsList.find((w) => w.id === id.trim().toLowerCase());
+            return match ? match.en : id.trim();
+          });
+          weaponryLabel = `${primaryLabel} and secondary weapons: ${secondaryLabels.join(', ')}`;
+        }
+
+        const opticsList = [
+          { id: 'm5', en: 'Meprolight M5 red dot sight' },
+          { id: 'trijicon', en: 'Trijicon ACOG magnified optic' },
+          { id: 'custom', en: 'custom optic sight' },
+          { id: 'lior', en: 'Lior night vision sight' },
+          { id: 'akila', en: 'Akila night vision sight' },
+          { id: 'thermo_custom', en: 'custom thermal scope' },
+          { id: 'thermo_idf', en: 'IDF standard thermal scope' },
+        ];
+
+        const accessoriesList = [
+          { id: 'laser_peq', en: 'PEQ laser sight' },
+          { id: 'rifle_light', en: 'weapon-mounted tactical flashlight' },
+          { id: 'pistol_light', en: 'pistol-mounted tactical flashlight' },
+          { id: 'shot_shell', en: 'Shot-Shell split ammunition carrier' },
+          { id: 'frag_1', en: 'a fragmentation grenade' },
+          { id: 'frag_2', en: 'two fragmentation grenades' },
+          { id: 'smoke_blue', en: 'a blue smoke grenade' },
+          { id: 'smoke_grey', en: 'a grey smoke grenade' },
+        ];
+
+        const gearsList = [
+          { id: 'vest', en: 'tactical combat vest/plate carrier' },
+          { id: 'helmet', en: 'tactical high-cut helmet' },
+          { id: 'military_phone', en: 'red military field telephone' },
+          { id: 'comms_710', en: 'PRC-710 tactical radio antenna' },
+          { id: 'combat_headset', en: 'combat communication headset' },
+          { id: 'tactical_glasses', en: 'tactical goggles' },
+          { id: 'knee_pads', en: 'protective combat knee pads' },
+          { id: 'tactical_gloves', en: 'tactical combat gloves' },
+          { id: 'shacham', en: 'Shacham night vision device' },
+          { id: 'adi', en: 'Adi night vision device' },
+          { id: 'nyx', en: 'Nyx thermal camera' },
+        ];
+
+        const medsList = [
+          { id: 'personal_bandage', en: 'personal medical bandage pouch' },
+          { id: 'cat_tourniquet', en: 'CAT tourniquet' },
+          { id: 'tactical_soft_stretcher', en: 'tactical fabric soft stretcher' },
+        ];
+
+        const formattedOptics = optics
+          ? optics
+              .split(',')
+              .map((id) => {
+                const match = opticsList.find((o) => o.id === id.trim().toLowerCase());
+                return match ? match.en : id.trim();
+              })
+              .join(', ')
+          : 'none';
+
+        const formattedAccs = accessories
+          ? accessories
+              .split(',')
+              .map((id) => {
+                const match = accessoriesList.find((a) => a.id === id.trim().toLowerCase());
+                return match ? match.en : id.trim();
+              })
+              .join(', ')
+          : 'none';
+
+        const formattedGear = gear
+          ? gear
+              .split(',')
+              .map((id) => {
+                const match = gearsList.find((g) => g.id === id.trim().toLowerCase());
+                return match ? match.en : id.trim();
+              })
+              .join(', ')
+          : 'none';
+
+        const formattedMeds = meds
+          ? meds
+              .split(',')
+              .map((id) => {
+                const match = medsList.find((m) => m.id === id.trim().toLowerCase());
+                return match ? match.en : id.trim();
+              })
+              .join(', ')
+          : 'none';
+
+        const prompt = `Ultra-realistic 3D render, photorealistic textures, diffuse soft overcast daylight. A high-fidelity tactical modern military special operations soldier avatar. The soldier is always wearing a black tactical balaclava face mask covering the head and face, showing only the eyes.
+Role/Specialization: ${formattedSpec}.
+Primary weapon: ${weaponryLabel} equipped with ${formattedOptics} (highly customized, tan collapsible stock, extended M-LOK handguard, suppressor).
+Tactical Accessories: ${formattedAccs}.
+Medical Equipment: ${formattedMeds}.
+Gear & Loadout: ${formattedGear} (Ranger Green plate carrier, Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud, balaclava face mask, blue/white Israeli flag patch on right shoulder, low-profile belt rig).
 Pose: Tactically standing on a rocky hill looking forward. Background: Distant damaged village on a hillside. Professional studio quality game asset.`;
         const aiResponse = await ai.models.generateImages({
           model: 'imagen-4.0-generate-001',
@@ -294,6 +444,9 @@ Pose: Tactically standing on a rocky hill looking forward. Background: Distant d
         specialization,
         weaponry,
         gear,
+        optics: optics || null,
+        accessories: accessories || null,
+        meds: meds || null,
         avatar_url: avatarUrl,
         alarm_active: false,
         readiness: null,
