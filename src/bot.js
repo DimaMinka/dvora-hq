@@ -219,6 +219,62 @@ if (bot) {
     }
   });
 
+  // Command: My Profile (Available to all registered operators)
+  bot.command('my_profile', async (ctx) => {
+    const tgUsername = ctx.from?.username;
+    if (!tgUsername) {
+      return ctx.reply(
+        '⚠️ *ERROR*: Telegram username handle not found. Please set one in Telegram settings.',
+        {
+          parse_mode: 'Markdown',
+        }
+      );
+    }
+
+    try {
+      const db = getDb();
+      const cleaned = tgUsername.toLowerCase().replace(/^@/, '');
+
+      const snapshot = await db
+        .collection('users')
+        .where('tg_username', 'in', [cleaned, `@${cleaned}`])
+        .get();
+
+      if (snapshot.empty) {
+        return ctx.reply(
+          `❌ *ACCESS DENIED*\n\n` +
+            `Your Telegram handle \`@${tgUsername}\` is not paired with any authorized operator node.\n` +
+            `Contact a commander to whitelist your access PIN.`,
+          { parse_mode: 'Markdown' }
+        );
+      }
+
+      const userDoc = snapshot.docs[0];
+      const u = userDoc.data();
+
+      let response =
+        `⚡ *DVORA HQ // OPERATOR PROFILE* ⚡\n\n` +
+        `• *TG Username:* \`@${tgUsername}\`\n` +
+        `• *Role:* \`${u.role.toUpperCase()}\`\n` +
+        `• *Squad:* \`${u.squad_id}\`\n` +
+        `• *Access PIN:* \`${u.pin_code}\`\n`;
+
+      if (u.specialization) {
+        response +=
+          `• *Specialization:* \`${u.specialization}\`\n` +
+          `• *Primary Weapon:* \`${u.weaponry}\`\n` +
+          `• *Selected Gear:* \`${u.gear}\`\n`;
+      }
+
+      response += `\n_Keep your access PIN secure. Do not share it with unauthorized personnel._`;
+
+      return ctx.reply(response, { parse_mode: 'Markdown' });
+    } catch (err) {
+      console.error('[Bot] My Profile command error:', err.message);
+      return ctx.reply(`❌ *DATABASE FAILURE*: \`${err.message}\``, { parse_mode: 'Markdown' });
+    }
+  });
+
   // Catch unhandled bot errors
   bot.catch((err) => {
     console.error('[Bot] Unhandled error occurred:', err.message);
@@ -231,6 +287,7 @@ export async function startBot() {
       await bot.api.setMyCommands([
         { command: 'start', description: 'Show help and available commands' },
         { command: 'help', description: 'Show help and available commands' },
+        { command: 'my_profile', description: 'Display your tactical profile and access PIN' },
         { command: 'add_fighter', description: 'Add fighter: <squad_id> <tg_username>' },
         { command: 'add_commander', description: 'Add commander: <squad_id> <tg_username>' },
         { command: 'remove_user', description: 'Remove user by <pin_code>' },
