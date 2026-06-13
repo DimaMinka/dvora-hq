@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 
 const specializationsList = [
@@ -264,52 +265,15 @@ export default function FighterDashboard({
             <div className="text-[10px] text-slate-400 truncate">
               {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
             </div>
+            {user?.specialization && (
+              <div className="text-[10px] text-slate-400 truncate">
+                ROLE: {getSpecializationLabel(user.specialization)}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Loadout Biometrics Details */}
-        {user?.specialization && (
-          <div className="grid grid-cols-3 gap-y-2 gap-x-1.5 pt-1.5 border-t border-bf-border/40 text-[8px] font-mono uppercase text-slate-400">
-            <div>
-              <span className="text-slate-600 block">// ROLE</span>
-              <span className="text-bf-cyan font-bold truncate block">{getSpecializationLabel(user.specialization)}</span>
-            </div>
-            <div>
-              <span className="text-slate-600 block">// WEAPON</span>
-              <span className="text-bf-cyan font-bold truncate block">{getWeaponryLabel(user.weaponry)}</span>
-            </div>
-            <div className="min-w-0">
-              <span className="text-slate-600 block">// GEAR</span>
-              <span className="text-bf-cyan font-bold truncate block" title={getGearLabel(user.gear)}>
-                {getGearLabel(user.gear)}
-              </span>
-            </div>
-            {user.optics && (
-              <div>
-                <span className="text-slate-600 block">// OPTICS</span>
-                <span className="text-bf-cyan font-bold truncate block" title={getOpticsLabel(user.optics)}>
-                  {getOpticsLabel(user.optics)}
-                </span>
-              </div>
-            )}
-            {user.accessories && (
-              <div className="col-span-2 min-w-0">
-                <span className="text-slate-600 block">// ACCESSORIES</span>
-                <span className="text-bf-cyan font-bold truncate block" title={getAccessoriesLabel(user.accessories)}>
-                  {getAccessoriesLabel(user.accessories)}
-                </span>
-              </div>
-            )}
-            {user.meds && (
-              <div className="col-span-3 min-w-0">
-                <span className="text-slate-600 block">// MEDICAL</span>
-                <span className="text-bf-cyan font-bold truncate block" title={getMedsLabel(user.meds)}>
-                  {getMedsLabel(user.meds)}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+
       </div>
 
       {/* Alarm Alert Box */}
