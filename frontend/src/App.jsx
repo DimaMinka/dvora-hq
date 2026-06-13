@@ -285,9 +285,9 @@ function App() {
     setAlarmActive(false);
   };
 
-  const toggleChecklist = async (key) => {
+  const toggleChecklist = async (key, forcedValue) => {
     const currentVal = checklist[key] ?? 0;
-    const nextVal = (currentVal + 1) % 3;
+    const nextVal = forcedValue !== undefined ? forcedValue : (currentVal + 1) % 3;
 
     const newChecklist = {
       ...checklist,

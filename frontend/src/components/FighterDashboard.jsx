@@ -90,6 +90,82 @@ export default function FighterDashboard({
   const [reportText, setReportText] = React.useState('');
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const [isSending, setIsSending] = React.useState(false);
+  const [showWeaponPanel, setShowWeaponPanel] = React.useState(false);
+  const [weaponStatus, setWeaponStatus] = React.useState({});
+
+  const getWeaponItems = React.useCallback(() => {
+    const items = [];
+    if (!user) return items;
+
+    const parts = user.weaponry ? user.weaponry.split(';') : [];
+    const primaryId = parts[0];
+    if (primaryId) {
+      const pMatch = primaryWeaponsList.find((w) => w.id === primaryId.trim().toLowerCase());
+      items.push({
+        id: `wpn-${primaryId.trim()}`,
+        label: pMatch ? (lang === 'he' ? pMatch.he : pMatch.en) : primaryId,
+        type: 'PRIMARY',
+      });
+    }
+
+    const secondaryIds = parts[1] ? parts[1].split(',') : [];
+    secondaryIds.forEach((id) => {
+      const cleanId = id.trim();
+      if (cleanId) {
+        const match = secondaryWeaponsList.find((w) => w.id === cleanId.toLowerCase());
+        items.push({
+          id: `wpn-${cleanId}`,
+          label: match ? (lang === 'he' ? match.he : match.en) : cleanId,
+          type: 'SECONDARY',
+        });
+      }
+    });
+
+    if (user.optics) {
+      user.optics.split(',').forEach((id) => {
+        const cleanId = id.trim();
+        if (cleanId) {
+          const match = opticsList.find((o) => o.id === cleanId.toLowerCase());
+          items.push({
+            id: `opt-${cleanId}`,
+            label: match ? (lang === 'he' ? match.he : match.en) : cleanId,
+            type: 'OPTIC',
+          });
+        }
+      });
+    }
+
+    if (user.accessories) {
+      user.accessories.split(',').forEach((id) => {
+        const cleanId = id.trim();
+        if (cleanId) {
+          const match = accessoriesList.find((a) => a.id === cleanId.toLowerCase());
+          items.push({
+            id: `acc-${cleanId}`,
+            label: match ? (lang === 'he' ? match.he : match.en) : cleanId,
+            type: 'ACCESSORY',
+          });
+        }
+      });
+    }
+
+    return items;
+  }, [user, lang]);
+
+  const handleToggleWeaponItem = (itemId) => {
+    const nextStatus = weaponStatus[itemId] === false ? true : false;
+    const newWeaponStatus = {
+      ...weaponStatus,
+      [itemId]: nextStatus,
+    };
+    setWeaponStatus(newWeaponStatus);
+
+    const allItems = getWeaponItems();
+    const hasIssue = allItems.some((item) => newWeaponStatus[item.id] === false);
+    if (onToggleChecklist) {
+      onToggleChecklist('wpn', hasIssue ? 2 : 1);
+    }
+  };
 
   const getWeaponryLabel = (wpnString) => {
     if (!wpnString) return '';
@@ -266,8 +342,16 @@ export default function FighterDashboard({
               {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
             </div>
             {user?.specialization && (
-              <div className="text-[10px] text-slate-400 truncate">
-                ROLE: {getSpecializationLabel(user.specialization)}
+              <div className="text-[10px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
+                <span className="shrink-0">ROLE:</span>
+                <div className="overflow-hidden whitespace-nowrap flex-1 flex font-bold text-bf-cyan">
+                  <span className="animate-marquee pr-6 shrink-0">
+                    {getSpecializationLabel(user.specialization)}
+                  </span>
+                  <span className="animate-marquee pr-6 shrink-0" aria-hidden="true">
+                    {getSpecializationLabel(user.specialization)}
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -313,8 +397,14 @@ export default function FighterDashboard({
           return (
             <button
               key={item.key}
-              type="button"
-              onClick={() => onToggleChecklist && onToggleChecklist(item.key)}
+              onClick={() => {
+                if (item.key === 'wpn') {
+                  setShowWeaponPanel(true);
+                } else {
+                  setShowWeaponPanel(false);
+                }
+                onToggleChecklist && onToggleChecklist(item.key);
+              }}
               className={`p-2 bg-bf-dark/90 border text-left clip-btn transition-all duration-200 cursor-pointer select-none hover:border-white/40 ${btnBorderClass}`}
             >
               <div className="text-[8px] text-slate-500">{item.label}</div>
@@ -323,6 +413,40 @@ export default function FighterDashboard({
           );
         })}
       </div>
+
+      {/* Collapsible Weapon Details Panel */}
+      {showWeaponPanel && checklist.wpn !== 0 && user && (
+        <div className="p-3 bg-bf-dark/95 border border-bf-cyan/40 clip-btn glass-panel text-[10px] space-y-2 animate-fade-in">
+          <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-1 flex justify-between">
+            <span>// LOADOUT WEAPONRY MATRIX</span>
+            <span className="text-bf-cyan">{lang === 'en' ? 'TAP STATUS TO TOGGLE' : 'הקש לשינוי סטטוס'}</span>
+          </div>
+          <div className="space-y-1.5 font-mono">
+            {getWeaponItems().map((item) => {
+              const isOk = weaponStatus[item.id] !== false; // defaults to true
+              return (
+                <div key={item.id} className="flex items-center justify-between p-1.5 bg-bf-slate/50 border border-bf-border/60 clip-btn gap-3">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[7px] text-slate-600 block">// {item.type}</span>
+                    <span className="text-white font-bold text-[9px] uppercase tracking-wider block truncate">{item.label}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleWeaponItem(item.id)}
+                    className={`w-8 h-8 flex items-center justify-center font-black text-xs clip-btn border transition-all duration-150 cursor-pointer ${
+                      isOk
+                        ? 'border-bf-cyan/60 bg-bf-cyan/10 text-bf-cyan hover:bg-bf-cyan/20'
+                        : 'border-bf-orange/60 bg-bf-orange/10 text-bf-orange hover:bg-bf-orange/20 shadow-[0_0_8px_rgba(255,84,0,0.15)]'
+                    }`}
+                  >
+                    {isOk ? 'V' : 'X'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Report Form */}
       <form onSubmit={handleSend} className="space-y-2">
