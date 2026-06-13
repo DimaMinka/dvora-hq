@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050b0e" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#e8dcc4" media="(prefers-color-scheme: light)" />
     <title>DVORA HQ // TACTICAL BATTLE NETWORK</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,11 +21,11 @@
           extend: {
             colors: {
               bf: {
-                dark: '#050b0e',
-                slate: '#0d181e',
-                cyan: '#00f0ff',
-                orange: '#ff5400',
-                border: '#162b35',
+                dark: 'var(--color-bf-dark)',
+                slate: 'var(--color-bf-slate)',
+                cyan: 'var(--color-bf-cyan)',
+                orange: 'var(--color-bf-orange)',
+                border: 'var(--color-bf-border)',
               },
             },
             fontFamily: {
@@ -36,8 +38,29 @@
       };
     </script>
     <style>
+      :root {
+        --color-bf-dark: #050b0e;
+        --color-bf-slate: #0d181e;
+        --color-bf-cyan: #00f0ff;
+        --color-bf-orange: #ff5400;
+        --color-bf-border: #162b35;
+        --color-text-main: #cbd5e1;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --color-bf-dark: #e8dcc4;        /* Light sand background */
+          --color-bf-slate: #f4ebdb;       /* Lighter sand panel background */
+          --color-bf-cyan: #705335;        /* Camo dark brown for accents and headers */
+          --color-bf-orange: #b24900;      /* Contrast rust/camber orange */
+          --color-bf-border: #d2c0a0;      /* Sand border */
+          --color-text-main: #4a3728;      /* Tactical dark brown */
+        }
+      }
+
       /* Интеграция твоего фона с адаптацией под десктоп */
       .dvora-bg {
+        background-color: var(--color-bf-dark);
         background-image:
           linear-gradient(
             to bottom,
@@ -50,6 +73,19 @@
         background-position: center top;
         background-repeat: no-repeat;
         background-attachment: fixed;
+      }
+
+      @media (prefers-color-scheme: light) {
+        .dvora-bg {
+          background-image:
+            linear-gradient(
+              to bottom,
+              rgba(232, 220, 196, 0.85),
+              rgba(232, 220, 196, 0.6) 30%,
+              rgba(232, 220, 196, 0.95)
+            ),
+            url('https://i.ibb.co/6R496p0c/IMG-8704.png') !important;
+        }
       }
 
       /* Для десктопов делаем cover, чтобы не было пустых полей по бокам, но центрируем по арту */
@@ -69,6 +105,15 @@
           100% 4px,
           20px 20px,
           20px 20px;
+      }
+
+      @media (prefers-color-scheme: light) {
+        .hud-grid {
+          background:
+            linear-gradient(rgba(232, 220, 196, 0.25) 50%, rgba(232, 220, 196, 0.45) 50%),
+            linear-gradient(90deg, rgba(112, 83, 53, 0.04) 1px, transparent 1px),
+            linear-gradient(rgba(112, 83, 53, 0.04) 1px, transparent 1px) !important;
+        }
       }
 
       .clip-hud {
@@ -106,6 +151,51 @@
         background: rgba(13, 24, 30, 0.75);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
+      }
+
+      @media (prefers-color-scheme: light) {
+        .glass-panel {
+          background: rgba(244, 235, 219, 0.75) !important;
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Global text overrides for landing page light mode */
+        body {
+          color: var(--color-text-main) !important;
+        }
+
+        .text-white {
+          color: #271a10 !important;
+        }
+
+        .text-slate-300 {
+          color: #4a3728 !important;
+        }
+
+        .text-slate-400 {
+          color: #634d3b !important;
+        }
+
+        .text-slate-500 {
+          color: #836e59 !important;
+        }
+
+        .text-slate-600 {
+          color: #9c8a77 !important;
+        }
+
+        .border-bf-border\/60 {
+          border-color: rgba(112, 83, 53, 0.35) !important;
+        }
+
+        /* Adjust button background hover classes */
+        .hover\:text-white:hover {
+          color: #1e1b18 !important;
+        }
+
+        .bg-bf-cyan\/10 {
+          background-color: rgba(112, 83, 53, 0.1) !important;
+        }
       }
     </style>
   </head>
