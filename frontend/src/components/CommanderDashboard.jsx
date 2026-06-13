@@ -53,7 +53,7 @@ export default function CommanderDashboard({
       return {
         id: idx,
         time: timeStr,
-        user: m.callsign || m.phone_number,
+        user: m.tg_username ? '@' + m.tg_username : m.phone_number,
         action: `REPORT: ${m.note}`,
       };
     });
@@ -86,7 +86,9 @@ export default function CommanderDashboard({
                   className="w-4 h-4 rounded-full object-cover border border-bf-cyan/30 shrink-0"
                 />
               )}
-              <span className="truncate">{m.callsign || m.phone_number}</span>
+              <span className="truncate">
+                {m.tg_username ? '@' + m.tg_username : m.phone_number}
+              </span>
             </div>
             {(() => {
               const getDotClass = (val) => {

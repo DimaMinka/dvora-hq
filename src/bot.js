@@ -23,8 +23,8 @@ if (bot) {
     const helpMessage =
       `⚡ *DVORA HQ // INTEL BOT CLI* ⚡\n\n` +
       `Available command protocols:\n` +
-      `• \`/add_fighter <squad_id> <callsign>\` — Generate PIN and authorize fighter.\n` +
-      `• \`/add_commander <squad_id> <callsign>\` — Generate PIN and authorize commander.\n` +
+      `• \`/add_fighter <squad_id> <tg_username>\` — Generate PIN and authorize fighter.\n` +
+      `• \`/add_commander <squad_id> <tg_username>\` — Generate PIN and authorize commander.\n` +
       `• \`/remove_user <pin_code>\` — Evict user record from tactical database.\n` +
       `• \`/list_users\` — Display all authorized operators in the database.\n\n` +
       `_Secure tactical sync protocols active._`;
@@ -34,10 +34,10 @@ if (bot) {
   // Command: Add Fighter
   bot.command('add_fighter', async (ctx) => {
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
-    const [squadId, callsign] = args;
+    const [squadId, tgUsername] = args;
 
-    if (!squadId || !callsign) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_fighter <squad_id> <callsign>`', {
+    if (!squadId || !tgUsername) {
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_fighter <squad_id> <tg_username>`', {
         parse_mode: 'Markdown',
       });
     }
@@ -56,14 +56,14 @@ if (bot) {
         pin_hash: pinHash,
         role: 'fighter',
         squad_id: squadId,
-        callsign: callsign,
+        tg_username: tgUsername,
         created_at: new Date().toISOString(),
       });
 
       return ctx.reply(
         `✅ *FIGHTER AUTHORIZED SUCCESSFULLY*\n\n` +
           `• *Squad ID:* \`${squadId}\`\n` +
-          `• *Callsign:* \`${callsign}\`\n` +
+          `• *TG Username:* \`@${tgUsername.replace(/^@/, '')}\`\n` +
           `• *One-Time PIN:* \`${pin}\`\n\n` +
           `_Distribute PIN securely. Token will wipe in 120 min post-login._`,
         { parse_mode: 'Markdown' }
@@ -77,10 +77,10 @@ if (bot) {
   // Command: Add Commander
   bot.command('add_commander', async (ctx) => {
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
-    const [squadId, callsign] = args;
+    const [squadId, tgUsername] = args;
 
-    if (!squadId || !callsign) {
-      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_commander <squad_id> <callsign>`', {
+    if (!squadId || !tgUsername) {
+      return ctx.reply('⚠️ *FORMAT REQUIRED*: `/add_commander <squad_id> <tg_username>`', {
         parse_mode: 'Markdown',
       });
     }
@@ -99,14 +99,14 @@ if (bot) {
         pin_hash: pinHash,
         role: 'commander',
         squad_id: squadId,
-        callsign: callsign,
+        tg_username: tgUsername,
         created_at: new Date().toISOString(),
       });
 
       return ctx.reply(
         `✅ *COMMANDER AUTHORIZED SUCCESSFULLY*\n\n` +
           `• *Squad ID:* \`${squadId}\`\n` +
-          `• *Callsign:* \`${callsign}\`\n` +
+          `• *TG Username:* \`@${tgUsername.replace(/^@/, '')}\`\n` +
           `• *One-Time PIN:* \`${pin}\`\n\n` +
           `_Distribute PIN securely._`,
         { parse_mode: 'Markdown' }
@@ -168,7 +168,8 @@ if (bot) {
       let idx = 1;
       snapshot.forEach((doc) => {
         const row = doc.data();
-        response += `${idx}. *[${row.role.toUpperCase()}]* \`${row.callsign || 'N/A'}\` (Squad: \`${row.squad_id || 'N/A'}\`) | PIN: \`${row.pin_code}\`\n`;
+        const usernameDisplay = row.tg_username ? `@${row.tg_username.replace(/^@/, '')}` : 'N/A';
+        response += `${idx}. *[${row.role.toUpperCase()}]* \`${usernameDisplay}\` (Squad: \`${row.squad_id || 'N/A'}\`) | PIN: \`${row.pin_code}\`\n`;
         idx++;
       });
 
@@ -191,8 +192,8 @@ export async function startBot() {
       await bot.api.setMyCommands([
         { command: 'start', description: 'Show help and available commands' },
         { command: 'help', description: 'Show help and available commands' },
-        { command: 'add_fighter', description: 'Add fighter: <squad_id> <callsign>' },
-        { command: 'add_commander', description: 'Add commander: <squad_id> <callsign>' },
+        { command: 'add_fighter', description: 'Add fighter: <squad_id> <tg_username>' },
+        { command: 'add_commander', description: 'Add commander: <squad_id> <tg_username>' },
         { command: 'remove_user', description: 'Remove user by <pin_code>' },
         { command: 'list_users', description: 'List all authorized users' },
       ]);
@@ -205,6 +206,8 @@ export async function startBot() {
       onStart: () => {
         console.log('[Bot] Grammy Telegram Bot CLI is running...');
       },
+    }).catch((err) => {
+      console.error('[Bot] Telegram Bot failed to start/run:', err.message);
     });
   }
 }

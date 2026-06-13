@@ -41,7 +41,7 @@ data_layer:
       method: firestore_sdk
       max_total_connections: serverless_auto
     schema_notes:
-      - 'users: doc_id (pin_code), phone_number, pin_hash, role, squad_id, callsign, specialization, weaponry, gear, avatar_url, created_at'
+      - 'users: doc_id (pin_code), phone_number, pin_hash, role, squad_id, tg_username, specialization, weaponry, gear, avatar_url, created_at'
       - 'readiness_status: doc_id (user_id), weapons_ready, transport_ready, comms_ready, meds_ready, note, updated_at'
       - 'commander_reports: doc_id (squad_id), alarm_active, user_id, updated_at'
       - 'revoked_tokens: doc_id (jti), expires_at'

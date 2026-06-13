@@ -80,7 +80,9 @@ export default function FighterDashboard({
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-white font-black text-xs uppercase tracking-wider truncate">
-              {user ? `OPERATOR: ${user.callsign || user.phone_number}` : d.opName}
+              {user
+                ? `OPERATOR: ${user.tg_username ? '@' + user.tg_username : user.phone_number}`
+                : d.opName}
             </div>
             <div className="text-[10px] text-slate-400 truncate">
               {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
