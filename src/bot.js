@@ -30,16 +30,17 @@ if (bot) {
 
   // Command: Help and Start
   bot.command(['start', 'help'], (ctx) => {
+    const verDisplay = config.version ? ` \`[${config.version.substring(0, 7)}]\`` : '';
     if (!isAdmin(ctx)) {
       return ctx.reply(
-        `⚡ *DVORA HQ // SECURE PROTOCOL* ⚡\n\n` +
+        `⚡ *DVORA HQ // SECURE PROTOCOL* ${verDisplay} ⚡\n\n` +
           `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
         { parse_mode: 'Markdown' }
       );
     }
 
     const helpMessage =
-      `⚡ *DVORA HQ // INTEL BOT CLI* ⚡\n\n` +
+      `⚡ *DVORA HQ // INTEL BOT CLI* ${verDisplay} ⚡\n\n` +
       `Available command protocols:\n` +
       `• \`/add_fighter <squad_id> <tg_username>\` — Generate PIN and authorize fighter.\n` +
       `• \`/add_commander <squad_id> <tg_username>\` — Generate PIN and authorize commander.\n` +

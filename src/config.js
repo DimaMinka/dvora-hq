@@ -1,6 +1,8 @@
 import 'dotenv/config';
+import { version } from './version.js';
 
 export const config = {
+  version,
   appName: process.env.APP_NAME || 'Dvora HQ',
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 8080,

@@ -556,8 +556,11 @@ function App() {
         </div>
       </main>
 
-      <footer className="max-w-md mx-auto mt-8 text-center text-[8px] text-slate-600 tracking-widest uppercase">
-        {dict.footer}
+      <footer className="max-w-md mx-auto mt-8 text-center text-[8px] text-slate-600 tracking-widest uppercase space-y-1">
+        <div>{dict.footer}</div>
+        <div className="text-bf-cyan/60 font-mono">
+          SYS_VER: {(import.meta.env.VITE_APP_VERSION || 'local-dev').substring(0, 7)}
+        </div>
       </footer>
     </div>
   );

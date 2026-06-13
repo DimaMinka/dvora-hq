@@ -53,6 +53,7 @@ jobs:
 
       - name: Build and Push Container
         run: |
+          echo "export const version = '${{ github.sha }}';" > src/version.js
           docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/dvora-repo/dvora-backend:${{ github.sha }} .
           docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/dvora-repo/dvora-backend:${{ github.sha }}
 
@@ -88,6 +89,8 @@ jobs:
           npm ci --prefix frontend
 
       - name: Build Frontend
+        env:
+          VITE_APP_VERSION: ${{ github.sha }}
         run: npm run build:frontend
 
       - name: Deploy to Firebase Hosting
