@@ -34,18 +34,17 @@ compute:
 # ─────────────────────────────────────────
 data_layer:
   primary_db:
-    service: cloud_sql
-    engine: mysql_8
-    tier: db-f1-micro
+    service: cloud_firestore
+    mode: native
+    edition: standard
     connection:
-      method: cloud_sql_connector
-      pool_size_per_instance: 2
-      max_total_connections: 'max_instances × pool_size = 20 × 2 = 40'
+      method: firestore_sdk
+      max_total_connections: serverless_auto
     schema_notes:
-      - 'users: id, phone_number, pin_hash (argon2id), created_at'
-      - 'readiness_status: separate table, FK → users.id'
-      - 'commander_reports: separate table, FK → users.id'
-      - 'revoked_tokens: jti VARCHAR(36), expires_at DATETIME, INDEX(expires_at)'
+      - 'users: doc_id (pin_code), phone_number, pin_hash, role, squad_id, callsign, specialization, weaponry, gear, avatar_url, created_at'
+      - 'readiness_status: doc_id (user_id), weapons_ready, transport_ready, comms_ready, meds_ready, note, updated_at'
+      - 'commander_reports: doc_id (squad_id), alarm_active, user_id, updated_at'
+      - 'revoked_tokens: doc_id (jti), expires_at'
 
   object_storage:
     service: cloud_storage

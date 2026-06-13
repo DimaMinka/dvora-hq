@@ -64,19 +64,14 @@ else
   rm -f queue_err.log
 fi
 
-# 4. Create Cloud SQL (MySQL 8) Database Instance
-echo "[4/4] Creating Cloud SQL instance (db-f1-micro) - this might take 5-10 minutes..."
-if gcloud sql instances describe "${DB_INSTANCE_NAME}" --project="${PROJECT_ID}" &>/dev/null; then
-  echo "Database instance ${DB_INSTANCE_NAME} already exists."
+# 4. Create Cloud Firestore Database Instance
+echo "[4/4] Ensuring Cloud Firestore database (default) exists..."
+gcloud services enable firestore.googleapis.com --project="${PROJECT_ID}"
+if gcloud firestore databases describe --project="${PROJECT_ID}" &>/dev/null; then
+  echo "Firestore database (default) already exists."
 else
-  gcloud sql instances create "${DB_INSTANCE_NAME}" \
-    --database-version=MYSQL_8_0 \
-    --tier=db-f1-micro \
-    --region="${REGION}" \
-    --project="${PROJECT_ID}" \
-    --async
-  echo "Database instance ${DB_INSTANCE_NAME} creation initiated in the background."
-  echo "Monitor creation status using: gcloud sql instances list"
+  gcloud firestore databases create --location="${REGION}" --project="${PROJECT_ID}" || true
+  echo "Firestore database (default) setup completed."
 fi
 
 echo "============================================="

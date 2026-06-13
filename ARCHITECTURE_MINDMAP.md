@@ -17,13 +17,13 @@ mindmap
         Asset optimization
         Proxies "/api" to Cloud Run
     Data Layer
-      Cloud SQL (MySQL 8)
-        Users Table
-        Readiness checklist
-        Commander logs
+      Cloud Firestore
+        Users Collection
+        Readiness Statuses
+        Commander Logs
         Revoked JWTs
       Local Access
-        Cloud SQL Proxy Tunnel
+        Direct Firestore SDK (IAM Auth)
     Security & Auth
       Tactical Login
         6-char PIN
@@ -34,11 +34,13 @@ mindmap
       CI/CD Security
         Workload Identity Federation (OIDC)
         Zero stored passwords
+      Firebase IAM
+        Least privilege access
     Async & AI
       AI Avatars
         Google GenAI SDK
         Imagen 4.0 Model
-        Base64 db storage
+        Base64 document storage
       Cloud Tasks
         Task queue: avatar-generation
     Integrations
@@ -56,8 +58,8 @@ mindmap
 
 ### 2. Data Layer
 
-- **Cloud SQL (MySQL 8)**: Manages relational application state. Contains user tactical profiles (including Argon2id PIN hashes), checklist statuses, commander logs, and a token deny-list.
-- **Cloud SQL Proxy**: Used locally by developers to tunnel securely to the remote database using IAM authentication.
+- **Cloud Firestore**: A fully serverless, NoSQL document store that manages all tactical state. User profiles are stored in the `users` collection using their unique 6-character PIN code as the document ID for O(1) direct lookups. Other collections include `readiness_status`, `commander_reports`, and `revoked_tokens`.
+- **Local Access**: Developers connect securely to the live database using standard Application Default Credentials (ADC) without requiring a database proxy.
 
 ### 3. Security & Auth
 

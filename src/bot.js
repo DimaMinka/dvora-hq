@@ -1,7 +1,7 @@
 import { Bot } from 'grammy';
 import argon2 from 'argon2';
 import { config } from './config.js';
-import { getDbPool } from './db.js';
+import { getDb } from './db.js';
 
 if (!config.botToken || config.botToken === 'your_bot_token') {
   console.log('[Bot] TELEGRAM_BOT_TOKEN not configured. Bot execution disabled.');
@@ -50,11 +50,15 @@ if (bot) {
         parallelism: 1,
       });
 
-      const pool = await getDbPool();
-      await pool.query(
-        'INSERT INTO users (pin_code, pin_hash, role, squad_id, callsign) VALUES (?, ?, "fighter", ?, ?)',
-        [pin, pinHash, squadId, callsign]
-      );
+      const db = getDb();
+      await db.collection('users').doc(pin).set({
+        pin_code: pin,
+        pin_hash: pinHash,
+        role: 'fighter',
+        squad_id: squadId,
+        callsign: callsign,
+        created_at: new Date().toISOString(),
+      });
 
       return ctx.reply(
         `✅ *FIGHTER AUTHORIZED SUCCESSFULLY*\n\n` +
@@ -89,11 +93,15 @@ if (bot) {
         parallelism: 1,
       });
 
-      const pool = await getDbPool();
-      await pool.query(
-        'INSERT INTO users (pin_code, pin_hash, role, squad_id, callsign) VALUES (?, ?, "commander", ?, ?)',
-        [pin, pinHash, squadId, callsign]
-      );
+      const db = getDb();
+      await db.collection('users').doc(pin).set({
+        pin_code: pin,
+        pin_hash: pinHash,
+        role: 'commander',
+        squad_id: squadId,
+        callsign: callsign,
+        created_at: new Date().toISOString(),
+      });
 
       return ctx.reply(
         `✅ *COMMANDER AUTHORIZED SUCCESSFULLY*\n\n` +
@@ -120,14 +128,17 @@ if (bot) {
     }
 
     try {
-      const pool = await getDbPool();
-      const [result] = await pool.query('DELETE FROM users WHERE pin_code = ?', [pinCode]);
+      const db = getDb();
+      const userRef = db.collection('users').doc(pinCode);
+      const doc = await userRef.get();
 
-      if (result.affectedRows === 0) {
+      if (!doc.exists) {
         return ctx.reply(`⚠️ *NO RECORD*: PIN code \`${pinCode}\` was not found.`, {
           parse_mode: 'Markdown',
         });
       }
+
+      await userRef.delete();
 
       return ctx.reply(
         `✅ *USER EVICTED*: PIN code \`${pinCode}\` has been revoked from access list.`,
@@ -144,20 +155,21 @@ if (bot) {
   // Command: List Users
   bot.command('list_users', async (ctx) => {
     try {
-      const pool = await getDbPool();
-      const [rows] = await pool.query(
-        'SELECT pin_code, role, squad_id, callsign FROM users ORDER BY squad_id, role, callsign'
-      );
+      const db = getDb();
+      const snapshot = await db.collection('users').get();
 
-      if (rows.length === 0) {
+      if (snapshot.empty) {
         return ctx.reply('⚠️ *NO USERS*: The database is currently empty.', {
           parse_mode: 'Markdown',
         });
       }
 
       let response = `⚡ *DVORA HQ // AUTHORIZED OPERATORS* ⚡\n\n`;
-      rows.forEach((row, idx) => {
-        response += `${idx + 1}. *[${row.role.toUpperCase()}]* \`${row.callsign || 'N/A'}\` (Squad: \`${row.squad_id || 'N/A'}\`) | PIN: \`${row.pin_code}\`\n`;
+      let idx = 1;
+      snapshot.forEach((doc) => {
+        const row = doc.data();
+        response += `${idx}. *[${row.role.toUpperCase()}]* \`${row.callsign || 'N/A'}\` (Squad: \`${row.squad_id || 'N/A'}\`) | PIN: \`${row.pin_code}\`\n`;
+        idx++;
       });
 
       return ctx.reply(response, { parse_mode: 'Markdown' });

@@ -1,22 +1,33 @@
 import express from 'express';
-import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
+import argon2 from 'argon2';
 import { GoogleGenAI } from '@google/genai';
 import { config } from './config.js';
-import { setupDatabase, getDbPool } from './db.js';
+import { setupDatabase, getDb } from './db.js';
 import { startBot } from './bot.js';
 
 const app = express();
-const ai = config.aiApiKey ? new GoogleGenAI({ apiKey: config.aiApiKey }) : null;
+
+// Initialize Google Gen AI SDK if key is configured
+const ai = config.aiApiKey && config.aiApiKey !== 'your_api_key' ? new GoogleGenAI({ apiKey: config.aiApiKey }) : null;
+
+if (!ai) {
+  console.log('[System] Gemini API Key not configured. AI avatar generation disabled.');
+}
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`[API] ${req.method} ${req.path}`);
+  next();
+});
+
+// Basic CORS middleware (highly restricted for production, local allowed for development)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    return res.status(200).json({});
   }
   next();
 });
@@ -45,9 +56,9 @@ async function authenticateToken(req, res, next) {
     const decoded = jwt.verify(token, config.jwtSecret);
 
     // Check if token is revoked
-    const pool = await getDbPool();
-    const [revoked] = await pool.query('SELECT 1 FROM revoked_tokens WHERE jti = ?', [decoded.jti]);
-    if (revoked.length > 0) {
+    const db = getDb();
+    const revokedDoc = await db.collection('revoked_tokens').doc(decoded.jti).get();
+    if (revokedDoc.exists) {
       return res.status(401).json({ error: 'Token has been revoked' });
     }
 
@@ -80,16 +91,20 @@ app.post('/api/auth/register', async (req, res) => {
       parallelism: 1,
     });
 
-    const pool = await getDbPool();
-    await pool.query(
-      'INSERT INTO users (phone_number, pin_hash, pin_code, role, squad_id) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE pin_hash = ?, pin_code = ?, role = ?, squad_id = ?',
-      [phone_number || null, pinHash, pin, role, squad_id, pinHash, pin, role, squad_id]
-    );
+    const db = getDb();
+    await db.collection('users').doc(pin).set({
+      phone_number: phone_number || null,
+      pin_hash: pinHash,
+      pin_code: pin,
+      role,
+      squad_id,
+      created_at: new Date().toISOString(),
+    });
 
     res.json({ success: true, message: 'User registered successfully' });
   } catch (err) {
     console.error('[API] Register error:', err.message);
-    res.status(500).json({ error: 'Database transaction failed' });
+    res.status(500).json({ error: 'Database operations failed' });
   }
 });
 
@@ -102,14 +117,14 @@ app.post('/api/auth/login', async (req, res) => {
   }
 
   try {
-    const pool = await getDbPool();
-    const [rows] = await pool.query('SELECT * FROM users WHERE pin_code = ?', [pin]);
+    const db = getDb();
+    const userDoc = await db.collection('users').doc(pin).get();
 
-    if (rows.length === 0) {
+    if (!userDoc.exists) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const user = rows[0];
+    const user = userDoc.data();
     const isPinValid = await argon2.verify(user.pin_hash, pin);
 
     if (!isPinValid) {
@@ -119,41 +134,36 @@ app.post('/api/auth/login', async (req, res) => {
     const jti = Math.random().toString(36).substring(2) + Date.now().toString(36);
     const token = jwt.sign(
       {
-        userId: user.id,
+        userId: user.pin_code,
         phoneNumber: user.phone_number || null,
         role: user.role,
         squadId: user.squad_id,
         jti,
       },
       config.jwtSecret,
-      { expiresIn: '2h' } // 2 hours expiration as per lockscreen requirement
+      { expiresIn: '2h' }
     );
 
-    // Fetch additional fields for full user state
-    const [alarmRows] = await pool.query(
-      'SELECT alarm_active FROM commander_reports WHERE squad_id = ? ORDER BY updated_at DESC LIMIT 1',
-      [user.squad_id]
-    );
-    const alarmActive = alarmRows.length > 0 ? Boolean(alarmRows[0].alarm_active) : false;
+    // Fetch squad alarm status
+    const alarmDoc = await db.collection('commander_reports').doc(user.squad_id).get();
+    const alarmActive = alarmDoc.exists ? Boolean(alarmDoc.data().alarm_active) : false;
 
-    const [readinessRows] = await pool.query(
-      'SELECT weapons_ready, transport_ready, comms_ready, meds_ready, note FROM readiness_status WHERE user_id = ?',
-      [user.id]
-    );
-    const readiness = readinessRows.length > 0 ? readinessRows[0] : null;
+    // Fetch user readiness status
+    const readinessDoc = await db.collection('readiness_status').doc(user.pin_code).get();
+    const readiness = readinessDoc.exists ? readinessDoc.data() : null;
 
     res.json({
       token,
       user: {
-        id: user.id,
+        id: user.pin_code,
         phone_number: user.phone_number,
         role: user.role,
         squad_id: user.squad_id,
-        callsign: user.callsign,
-        specialization: user.specialization,
-        weaponry: user.weaponry,
-        gear: user.gear,
-        avatar_url: user.avatar_url,
+        callsign: user.callsign || null,
+        specialization: user.specialization || null,
+        weaponry: user.weaponry || null,
+        gear: user.gear || null,
+        avatar_url: user.avatar_url || null,
         alarm_active: alarmActive,
         readiness,
       },
@@ -167,13 +177,12 @@ app.post('/api/auth/login', async (req, res) => {
 // 4. Logout
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
   try {
-    const pool = await getDbPool();
-    const expiresAt = new Date(req.user.exp * 1000);
+    const db = getDb();
+    const expiresAt = new Date(req.user.exp * 1000).toISOString();
 
-    await pool.query('INSERT INTO revoked_tokens (jti, expires_at) VALUES (?, ?)', [
-      req.user.jti,
-      expiresAt,
-    ]);
+    await db.collection('revoked_tokens').doc(req.user.jti).set({
+      expires_at: expiresAt,
+    });
 
     res.json({ success: true, message: 'Logged out successfully' });
   } catch (err) {
@@ -185,31 +194,23 @@ app.post('/api/auth/logout', authenticateToken, async (req, res) => {
 // 5. Get current profile
 app.get('/api/user/profile', authenticateToken, async (req, res) => {
   try {
-    const pool = await getDbPool();
-    const [rows] = await pool.query(
-      'SELECT id, phone_number, role, squad_id, callsign, specialization, weaponry, gear, avatar_url FROM users WHERE id = ?',
-      [req.user.userId]
-    );
+    const db = getDb();
+    const userDoc = await db.collection('users').doc(req.user.userId).get();
 
-    if (rows.length === 0) {
+    if (!userDoc.exists) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const user = rows[0];
+    const user = userDoc.data();
 
     // Fetch squad alarm status
-    const [alarmRows] = await pool.query(
-      'SELECT alarm_active FROM commander_reports WHERE squad_id = ? ORDER BY updated_at DESC LIMIT 1',
-      [user.squad_id]
-    );
-    user.alarm_active = alarmRows.length > 0 ? Boolean(alarmRows[0].alarm_active) : false;
+    const alarmDoc = await db.collection('commander_reports').doc(user.squad_id).get();
+    user.alarm_active = alarmDoc.exists ? Boolean(alarmDoc.data().alarm_active) : false;
 
     // Fetch user readiness status
-    const [readinessRows] = await pool.query(
-      'SELECT weapons_ready, transport_ready, comms_ready, meds_ready, note FROM readiness_status WHERE user_id = ?',
-      [user.id]
-    );
-    user.readiness = readinessRows.length > 0 ? readinessRows[0] : null;
+    const readinessDoc = await db.collection('readiness_status').doc(req.user.userId).get();
+    user.readiness = readinessDoc.exists ? readinessDoc.data() : null;
+    user.id = user.pin_code;
 
     res.json(user);
   } catch (err) {
@@ -227,15 +228,15 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
   }
 
   try {
-    const pool = await getDbPool();
+    const db = getDb();
+    const userRef = db.collection('users').doc(req.user.userId);
 
     // Save selections
-    await pool.query('UPDATE users SET specialization = ?, weaponry = ?, gear = ? WHERE id = ?', [
+    await userRef.update({
       specialization,
       weaponry,
       gear,
-      req.user.userId,
-    ]);
+    });
 
     let avatarUrl = null;
     if (ai) {
@@ -259,10 +260,9 @@ Pose: Tactically standing on a rocky hill looking forward. Background: Distant d
         if (aiResponse?.generatedImages?.[0]?.image?.imageBytes) {
           const base64Bytes = aiResponse.generatedImages[0].image.imageBytes;
           avatarUrl = `data:image/jpeg;base64,${base64Bytes}`;
-          await pool.query('UPDATE users SET avatar_url = ? WHERE id = ?', [
-            avatarUrl,
-            req.user.userId,
-          ]);
+          await userRef.update({
+            avatar_url: avatarUrl,
+          });
           console.log(
             `[API] AI avatar successfully generated and saved for user ${req.user.userId}`
           );
@@ -280,7 +280,7 @@ Pose: Tactically standing on a rocky hill looking forward. Background: Distant d
         phone_number: req.user.phoneNumber,
         role: req.user.role,
         squad_id: req.user.squadId,
-        callsign: req.user.callsign,
+        callsign: req.user.callsign || null,
         specialization,
         weaponry,
         gear,
@@ -300,18 +300,15 @@ app.post('/api/user/readiness', authenticateToken, async (req, res) => {
   const { weapons_ready, transport_ready, comms_ready, meds_ready, note } = req.body;
 
   try {
-    const pool = await getDbPool();
-    await pool.query(
-      `INSERT INTO readiness_status (user_id, weapons_ready, transport_ready, comms_ready, meds_ready, note) 
-       VALUES (?, ?, ?, ?, ?, ?) 
-       ON DUPLICATE KEY UPDATE 
-       weapons_ready = VALUES(weapons_ready), 
-       transport_ready = VALUES(transport_ready), 
-       comms_ready = VALUES(comms_ready), 
-       meds_ready = VALUES(meds_ready), 
-       note = VALUES(note)`,
-      [req.user.userId, weapons_ready, transport_ready, comms_ready, meds_ready, note || '']
-    );
+    const db = getDb();
+    await db.collection('readiness_status').doc(req.user.userId).set({
+      weapons_ready: Number(weapons_ready),
+      transport_ready: Number(transport_ready),
+      comms_ready: Number(comms_ready),
+      meds_ready: Number(meds_ready),
+      note: note || '',
+      updated_at: new Date().toISOString(),
+    });
 
     res.json({ success: true, message: 'Readiness status updated' });
   } catch (err) {
@@ -327,15 +324,31 @@ app.get('/api/squad/status', authenticateToken, async (req, res) => {
   }
 
   try {
-    const pool = await getDbPool();
-    const [rows] = await pool.query(
-      `SELECT u.id, u.phone_number, u.role, u.squad_id, u.avatar_url,
-              r.weapons_ready, r.transport_ready, r.comms_ready, r.meds_ready, r.note, r.updated_at
-       FROM users u
-       LEFT JOIN readiness_status r ON u.id = r.user_id
-       WHERE u.squad_id = ? AND u.role = 'fighter'`,
-      [req.user.squadId]
-    );
+    const db = getDb();
+    const usersSnapshot = await db.collection('users')
+      .where('squad_id', '==', req.user.squadId)
+      .where('role', '==', 'fighter')
+      .get();
+
+    const rows = [];
+    for (const userDoc of usersSnapshot.docs) {
+      const userData = userDoc.data();
+      const readinessDoc = await db.collection('readiness_status').doc(userDoc.id).get();
+      const readiness = readinessDoc.exists ? readinessDoc.data() : {};
+      rows.push({
+        id: userDoc.id,
+        phone_number: userData.phone_number || null,
+        role: userData.role,
+        squad_id: userData.squad_id,
+        avatar_url: userData.avatar_url || null,
+        weapons_ready: readiness.weapons_ready || 0,
+        transport_ready: readiness.transport_ready || 0,
+        comms_ready: readiness.comms_ready || 0,
+        meds_ready: readiness.meds_ready || 0,
+        note: readiness.note || null,
+        updated_at: readiness.updated_at || null,
+      });
+    }
 
     res.json(rows);
   } catch (err) {
@@ -357,11 +370,13 @@ app.post('/api/squad/alarm', authenticateToken, async (req, res) => {
   }
 
   try {
-    const pool = await getDbPool();
-    await pool.query(
-      'INSERT INTO commander_reports (user_id, squad_id, alarm_active) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE alarm_active = VALUES(alarm_active)',
-      [req.user.userId, req.user.squadId, alarm_active]
-    );
+    const db = getDb();
+    await db.collection('commander_reports').doc(req.user.squadId).set({
+      user_id: req.user.userId,
+      squad_id: req.user.squadId,
+      alarm_active,
+      updated_at: new Date().toISOString(),
+    });
 
     res.json({ success: true, alarm_active, message: `Squad alarm set to ${alarm_active}` });
   } catch (err) {
