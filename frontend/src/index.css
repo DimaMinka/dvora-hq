@@ -1,11 +1,31 @@
 @import 'tailwindcss';
 
-@theme {
+:root {
   --color-bf-dark: #050b0e;
   --color-bf-slate: #0d181e;
   --color-bf-cyan: #00f0ff;
   --color-bf-orange: #ff5400;
   --color-bf-border: #162b35;
+  --color-text-main: #cbd5e1; /* slate-300 default */
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bf-dark: #e8dcc4;        /* Light sand background */
+    --color-bf-slate: #f4ebdb;       /* Lighter sand panel background */
+    --color-bf-cyan: #705335;        /* Camo dark brown for accents and headers */
+    --color-bf-orange: #b24900;      /* Contrast rust/camber orange */
+    --color-bf-border: #d2c0a0;      /* Sand border */
+    --color-text-main: #4a3728;      /* Tactical dark brown */
+  }
+}
+
+@theme {
+  --color-bf-dark: var(--color-bf-dark);
+  --color-bf-slate: var(--color-bf-slate);
+  --color-bf-cyan: var(--color-bf-cyan);
+  --color-bf-orange: var(--color-bf-orange);
+  --color-bf-border: var(--color-bf-border);
 
   --font-heb: 'Rubik', sans-serif;
   --font-heb-title: 'Rubik Mono One', sans-serif;
@@ -13,8 +33,8 @@
 
 /* Custom styles from mockup */
 .dvora-bg {
-  background-color: #050b0e;
-  background-image: radial-gradient(circle at center, #0c181f 0%, #050b0e 100%);
+  background-color: var(--color-bf-dark);
+  background-image: radial-gradient(circle at center, var(--color-bf-slate) 0%, var(--color-bf-dark) 100%);
   background-attachment: fixed;
 }
 
@@ -27,6 +47,19 @@
     100% 4px,
     20px 20px,
     20px 20px;
+}
+
+@media (prefers-color-scheme: light) {
+  .hud-grid {
+    background:
+      linear-gradient(rgba(232, 220, 196, 0.85) 50%, rgba(232, 220, 196, 0.92) 50%),
+      linear-gradient(90deg, rgba(112, 83, 53, 0.03) 1px, transparent 1px),
+      linear-gradient(rgba(112, 83, 53, 0.03) 1px, transparent 1px) !important;
+    background-size:
+      100% 4px,
+      20px 20px,
+      20px 20px !important;
+  }
 }
 
 .clip-hud {
@@ -49,3 +82,101 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
+
+@media (prefers-color-scheme: light) {
+  .glass-panel {
+    background: rgba(244, 235, 219, 0.75) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+/* Global Light Mode overrides for texts and states */
+@media (prefers-color-scheme: light) {
+  /* Default page text */
+  .min-h-screen, body {
+    color: var(--color-text-main) !important;
+  }
+
+  .text-white {
+    color: #271a10 !important; /* Very dark tactical brown */
+  }
+
+  .text-slate-300 {
+    color: #4a3728 !important; /* Dark brown */
+  }
+
+  .text-slate-400 {
+    color: #634d3b !important; /* Medium-dark brown */
+  }
+
+  .text-slate-500 {
+    color: #836e59 !important; /* Muted camo brown */
+  }
+
+  .text-slate-600 {
+    color: #9c8a77 !important; /* Light camo brown */
+  }
+
+  /* Borders & Grids */
+  .border-bf-border\/40 {
+    border-color: rgba(112, 83, 53, 0.25) !important;
+  }
+
+  .border-bf-cyan\/40 {
+    border-color: rgba(112, 83, 53, 0.4) !important;
+  }
+
+  .border-bf-orange\/60 {
+    border-color: rgba(178, 73, 0, 0.6) !important;
+  }
+
+  .border-bf-border\/60 {
+    border-color: rgba(112, 83, 53, 0.35) !important;
+  }
+
+  /* Form Inputs */
+  input[type="text"], input[type="password"], input[type="tel"] {
+    background-color: #f4ebdb !important;
+    color: #271a10 !important;
+    border-color: #d2c0a0 !important;
+  }
+
+  input::placeholder {
+    color: #836e59 !important;
+    opacity: 0.7;
+  }
+
+  /* Glow effects override */
+  .animate-pulse.text-bf-orange {
+    text-shadow: 0 0 8px rgba(178, 73, 0, 0.2);
+  }
+
+  /* Onboarding / Selection States */
+  .bg-bf-cyan\/10 {
+    background-color: rgba(112, 83, 53, 0.1) !important;
+  }
+
+  .hover\:bg-bf-cyan\/20:hover {
+    background-color: rgba(112, 83, 53, 0.18) !important;
+  }
+
+  .disabled\:bg-bf-slate\/40 {
+    background-color: rgba(244, 235, 219, 0.4) !important;
+  }
+
+  .disabled\:text-slate-500 {
+    color: #9c8a77 !important;
+  }
+
+  /* Buttons hover states */
+  .hover\:text-white:hover {
+    color: #1e1b18 !important;
+  }
+
+  /* Specific overlays like lock screen PIN buttons */
+  .bg-bf-dark\/50 {
+    background-color: rgba(232, 220, 196, 0.5) !important;
+  }
+}
+
+
