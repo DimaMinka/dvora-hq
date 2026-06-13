@@ -10,13 +10,28 @@ export default function FighterDashboard({
 }) {
   const [reportText, setReportText] = React.useState('');
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [isSending, setIsSending] = React.useState(false);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (onSendReport) {
-      onSendReport(reportText);
+    const trimmed = reportText.trim();
+    if (trimmed.length < 10) {
+      alert(lang === 'en' ? 'REPORT MUST BE AT LEAST 10 CHARACTERS' : 'הדיווח חייב להכיל לפחות 10 תווים');
+      return;
     }
-    setReportText('');
+    if (isSending) return;
+
+    setIsSending(true);
+    try {
+      if (onSendReport) {
+        await onSendReport(reportText);
+      }
+      setReportText('');
+    } catch (err) {
+      console.error('[Dashboard] Error sending report:', err);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const textDict = {
@@ -161,19 +176,23 @@ export default function FighterDashboard({
 
       {/* Report Form */}
       <form onSubmit={handleSend} className="space-y-2">
-        <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn focus-within:border-bf-cyan/60 transition-colors">
+        <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn focus-within:border-bf-cyan/60 transition-colors relative">
           <textarea
             value={reportText}
             onChange={(e) => setReportText(e.target.value)}
             placeholder={d.placeholder}
-            className="w-full h-14 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 resize-none uppercase text-[10px] font-mono outline-none"
+            className="w-full h-14 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 pb-4 resize-none uppercase text-[10px] font-mono outline-none"
           />
+          <div className={`absolute bottom-1 right-2 text-[8px] font-mono select-none ${reportText.trim().length >= 10 ? 'text-bf-cyan' : 'text-slate-600'}`}>
+            {reportText.trim().length}/10 CHARS
+          </div>
         </div>
         <button
           type="submit"
-          className="w-full py-2 bg-bf-cyan/10 border border-bf-cyan/40 hover:bg-bf-cyan/20 hover:border-bf-cyan text-bf-cyan font-bold text-xs uppercase clip-btn transition-all duration-200 cursor-pointer"
+          disabled={reportText.trim().length === 0 || isSending}
+          className="w-full py-2 bg-bf-cyan/10 border border-bf-cyan/40 hover:bg-bf-cyan/20 hover:border-bf-cyan text-bf-cyan font-bold text-xs uppercase clip-btn transition-all duration-200 cursor-pointer disabled:bg-bf-slate/40 disabled:border-bf-border disabled:text-slate-500 disabled:cursor-not-allowed"
         >
-          {d.btnSend}
+          {isSending ? (lang === 'en' ? 'TRANSMITTING...' : 'שולח...') : d.btnSend}
         </button>
       </form>
 
