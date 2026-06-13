@@ -492,27 +492,33 @@ function App() {
             <LockScreen onUnlock={handleUnlock} />
           ) : (
             <>
-              {role === 'soldier' &&
-                (user && !user.specialization ? (
-                  <Onboarding lang={lang} onComplete={handleOnboardingComplete} />
-                ) : (
-                  <FighterDashboard
-                    lang={lang}
-                    checklist={checklist}
-                    onToggleChecklist={toggleChecklist}
-                    alarmActive={alarmActive}
-                    onSendReport={handleSendReport}
-                    user={user}
-                  />
-                ))}
+              {user && !user.specialization ? (
+                <Onboarding lang={lang} onComplete={handleOnboardingComplete} />
+              ) : (
+                <>
+                  {role === 'soldier' && (
+                    <FighterDashboard
+                      lang={lang}
+                      checklist={checklist}
+                      onToggleChecklist={toggleChecklist}
+                      alarmActive={alarmActive}
+                      onSendReport={handleSendReport}
+                      user={user}
+                    />
+                  )}
 
-              {role === 'commander' && (
-                <CommanderDashboard
-                  lang={lang}
-                  alarmActive={alarmActive}
-                  onToggleAlarm={handleToggleAlarm}
-                  squadMembers={squadMembers}
-                />
+                  {role === 'commander' && (
+                    <CommanderDashboard
+                      lang={lang}
+                      alarmActive={alarmActive}
+                      onToggleAlarm={handleToggleAlarm}
+                      squadMembers={squadMembers}
+                      user={user}
+                      checklist={checklist}
+                      onToggleChecklist={toggleChecklist}
+                    />
+                  )}
+                </>
               )}
 
               {role === 'admin' && (

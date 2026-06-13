@@ -341,7 +341,6 @@ app.get('/api/squad/status', authenticateToken, async (req, res) => {
     const usersSnapshot = await db
       .collection('users')
       .where('squad_id', '==', req.user.squadId)
-      .where('role', '==', 'fighter')
       .get();
 
     const rows = [];
@@ -355,6 +354,7 @@ app.get('/api/squad/status', authenticateToken, async (req, res) => {
         role: userData.role,
         squad_id: userData.squad_id,
         avatar_url: userData.avatar_url || null,
+        tg_username: userData.tg_username || null,
         weapons_ready: readiness.weapons_ready || 0,
         transport_ready: readiness.transport_ready || 0,
         comms_ready: readiness.comms_ready || 0,

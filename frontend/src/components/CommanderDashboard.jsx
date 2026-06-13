@@ -5,8 +5,12 @@ export default function CommanderDashboard({
   alarmActive = false,
   onToggleAlarm,
   squadMembers = [],
+  user,
+  checklist = { wpn: 0, trsp: 0, com: 0, med: 0 },
+  onToggleChecklist,
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const textDict = {
     en: {
@@ -22,6 +26,15 @@ export default function CommanderDashboard({
       trsp: 'TRSP',
       com: 'COM',
       med: 'MED',
+      opName: 'OPERATOR: REAPER',
+      opSquad: 'SQUAD: ALPHA (01)',
+      weapons: '01_WEAPONS',
+      transport: '02_TRANSPORT',
+      comms: '03_COMMS',
+      medkit: '04_MED_KIT',
+      ready: 'READY',
+      issue: 'ISSUE',
+      pending: 'PENDING',
     },
     he: {
       title: '// לוח_פיקוד_אסטרטגי // מפקד',
@@ -36,6 +49,15 @@ export default function CommanderDashboard({
       trsp: 'רכב',
       com: 'קשר',
       med: 'רפו',
+      opName: 'מפעיל: REAPER',
+      opSquad: 'צוות: אלפא (01)',
+      weapons: '01_נשק',
+      transport: '02_רכב',
+      comms: '03_קשר',
+      medkit: '04_רפואה',
+      ready: 'תקין',
+      issue: 'תקלה',
+      pending: 'טרם נקבע',
     },
   };
 
@@ -61,6 +83,95 @@ export default function CommanderDashboard({
   return (
     <div className="space-y-4 w-full animate-fade-in relative">
       <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
+
+      {/* Commander's Own Operator Info */}
+      <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
+            {user?.avatar_url ? (
+              <img
+                src={user.avatar_url}
+                alt="Tactical Avatar"
+                className="w-full h-full object-cover cursor-zoom-in"
+                onClick={() => setLightboxOpen(true)}
+              />
+            ) : (
+              <>
+                <div className="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
+                <span className="text-bf-cyan text-base font-black">⚡</span>
+              </>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-white font-black text-xs uppercase tracking-wider truncate">
+              {user
+                ? `COMMANDER: ${user.tg_username ? '@' + user.tg_username : user.phone_number}`
+                : d.opName}
+            </div>
+            <div className="text-[10px] text-slate-400 truncate">
+              {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
+            </div>
+          </div>
+        </div>
+
+        {/* Loadout Biometrics Details */}
+        {user?.specialization && (
+          <div className="grid grid-cols-3 gap-1.5 pt-1.5 border-t border-bf-border/40 text-[8px] font-mono uppercase text-slate-400">
+            <div>
+              <span className="text-slate-600 block">// ROLE</span>
+              <span className="text-bf-cyan font-bold truncate block">{user.specialization}</span>
+            </div>
+            <div>
+              <span className="text-slate-600 block">// WEAPON</span>
+              <span className="text-bf-cyan font-bold truncate block">{user.weaponry}</span>
+            </div>
+            <div className="min-w-0">
+              <span className="text-slate-600 block">// GEAR</span>
+              <span className="text-bf-cyan font-bold truncate block" title={user.gear}>
+                {user.gear}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Commander's Own Checklist Toggles */}
+      <div className="grid grid-cols-2 gap-1.5">
+        {[
+          { key: 'wpn', label: d.weapons },
+          { key: 'trsp', label: d.transport },
+          { key: 'com', label: d.comms },
+          { key: 'med', label: d.medkit },
+        ].map((item) => {
+          const val = checklist[item.key] ?? 0;
+          const label = item.label;
+          let btnStyle = 'border-bf-border bg-bf-dark/40 text-slate-500';
+          let statusLabel = d.pending;
+
+          if (val === 1) {
+            btnStyle =
+              'border-bf-cyan/60 bg-bf-cyan/10 text-bf-cyan shadow-[inset_0_0_8px_rgba(0,240,255,0.15)]';
+            statusLabel = d.ready;
+          } else if (val === 2) {
+            btnStyle = 'border-bf-orange/60 bg-bf-orange/10 text-bf-orange';
+            statusLabel = d.issue;
+          }
+
+          return (
+            <button
+              key={item.key}
+              onClick={() => onToggleChecklist(item.key)}
+              className={`p-2 border font-bold text-[9px] clip-btn flex flex-col items-center justify-center transition-all ${btnStyle}`}
+            >
+              <div>{label}</div>
+              <div className="text-[7px] opacity-80 mt-0.5">{statusLabel}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="border-t border-bf-border/60 my-2"></div>
+
       <h3 className="text-sm font-black text-white uppercase tracking-wider">{d.squadTitle}</h3>
 
       {/* Grid of squad members */}
@@ -161,6 +272,20 @@ export default function CommanderDashboard({
           >
             {d.closeLogs}
           </button>
+        </div>
+      )}
+
+      {/* Lightbox for avatar zoom */}
+      {lightboxOpen && user?.avatar_url && (
+        <div
+          className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <img
+            src={user.avatar_url}
+            alt="Tactical Avatar Zoomed"
+            className="max-w-full max-h-full object-contain border border-bf-cyan/30 clip-hud shadow-2xl"
+          />
         </div>
       )}
     </div>
