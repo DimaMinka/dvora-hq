@@ -18,8 +18,26 @@ function generateTacticalPin() {
 }
 
 if (bot) {
+  const adminString = config.telegramAdminUsernames;
+  const adminUsernames = adminString
+    .split(',')
+    .map((name) => name.trim().toLowerCase().replace(/^@/, ''));
+
+  const isAdmin = (ctx) => {
+    const username = ctx.from?.username?.toLowerCase();
+    return username && adminUsernames.includes(username);
+  };
+
   // Command: Help and Start
   bot.command(['start', 'help'], (ctx) => {
+    if (!isAdmin(ctx)) {
+      return ctx.reply(
+        `⚡ *DVORA HQ // SECURE PROTOCOL* ⚡\n\n` +
+          `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
+        { parse_mode: 'Markdown' }
+      );
+    }
+
     const helpMessage =
       `⚡ *DVORA HQ // INTEL BOT CLI* ⚡\n\n` +
       `Available command protocols:\n` +
@@ -33,6 +51,11 @@ if (bot) {
 
   // Command: Add Fighter
   bot.command('add_fighter', async (ctx) => {
+    if (!isAdmin(ctx)) {
+      return ctx.reply('❌ *ACCESS DENIED*: Unauthorized operator signature.', {
+        parse_mode: 'Markdown',
+      });
+    }
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
     const [squadId, tgUsername] = args;
 
@@ -76,6 +99,11 @@ if (bot) {
 
   // Command: Add Commander
   bot.command('add_commander', async (ctx) => {
+    if (!isAdmin(ctx)) {
+      return ctx.reply('❌ *ACCESS DENIED*: Unauthorized operator signature.', {
+        parse_mode: 'Markdown',
+      });
+    }
     const args = ctx.match ? ctx.match.trim().split(/\s+/) : [];
     const [squadId, tgUsername] = args;
 
@@ -119,6 +147,11 @@ if (bot) {
 
   // Command: Remove User
   bot.command('remove_user', async (ctx) => {
+    if (!isAdmin(ctx)) {
+      return ctx.reply('❌ *ACCESS DENIED*: Unauthorized operator signature.', {
+        parse_mode: 'Markdown',
+      });
+    }
     const pinCode = ctx.match ? ctx.match.trim() : '';
 
     if (!pinCode) {
@@ -154,6 +187,11 @@ if (bot) {
 
   // Command: List Users
   bot.command('list_users', async (ctx) => {
+    if (!isAdmin(ctx)) {
+      return ctx.reply('❌ *ACCESS DENIED*: Unauthorized operator signature.', {
+        parse_mode: 'Markdown',
+      });
+    }
     try {
       const db = getDb();
       const snapshot = await db.collection('users').get();

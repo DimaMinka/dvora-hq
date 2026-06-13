@@ -7,6 +7,7 @@ export const config = {
   botToken: process.env.TELEGRAM_BOT_TOKEN,
   jwtSecret: process.env.JWT_SECRET,
   aiApiKey: process.env.AI_API_KEY,
+  telegramAdminUsernames: process.env.TELEGRAM_ADMIN_USERNAMES || 'dimaminka',
   gcpProjectId: process.env.GCP_PROJECT_ID,
   gcpRegion: process.env.GCP_REGION || 'europe-west1',
   gcsAvatarBucket: process.env.GCS_AVATAR_BUCKET,
