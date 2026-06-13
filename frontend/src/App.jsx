@@ -230,6 +230,13 @@ function App() {
 
       const data = await res.json();
       localStorage.setItem('dvora_token', data.token);
+      localStorage.setItem(
+        'dvora_last_operator',
+        JSON.stringify({
+          tg_username: data.user.tg_username,
+          avatar_url: data.user.avatar_url,
+        })
+      );
       setUser(data.user);
       setRole(data.user.role === 'fighter' ? 'soldier' : data.user.role);
 
@@ -268,6 +275,13 @@ function App() {
 
     const data = await res.json();
     setUser(data.user);
+    localStorage.setItem(
+      'dvora_last_operator',
+      JSON.stringify({
+        tg_username: data.user.tg_username,
+        avatar_url: data.user.avatar_url,
+      })
+    );
     setAlarmActive(false);
   };
 

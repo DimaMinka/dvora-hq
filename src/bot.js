@@ -202,12 +202,14 @@ export async function startBot() {
       console.error('[Bot] Failed to set commands in Telegram:', err.message);
     }
 
-    bot.start({
-      onStart: () => {
-        console.log('[Bot] Grammy Telegram Bot CLI is running...');
-      },
-    }).catch((err) => {
-      console.error('[Bot] Telegram Bot failed to start/run:', err.message);
-    });
+    bot
+      .start({
+        onStart: () => {
+          console.log('[Bot] Grammy Telegram Bot CLI is running...');
+        },
+      })
+      .catch((err) => {
+        console.error('[Bot] Telegram Bot failed to start/run:', err.message);
+      });
   }
 }

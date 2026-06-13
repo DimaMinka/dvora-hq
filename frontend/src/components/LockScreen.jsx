@@ -97,9 +97,42 @@ function LockScreen({ onUnlock }) {
         <div className="text-[10px] text-bf-cyan font-bold tracking-widest uppercase animate-pulse">
           // SECURITY_GATEWAY // SECURE_SHELL
         </div>
-        <h2 className="text-xl font-black text-white tracking-widest uppercase">
-          ENTER ACCESS CREDENTIALS
-        </h2>
+        {(() => {
+          const lastOperatorStr = localStorage.getItem('dvora_last_operator');
+          const lastOperator = lastOperatorStr ? JSON.parse(lastOperatorStr) : null;
+          if (lastOperator) {
+            return (
+              <div className="flex flex-col items-center gap-2 mb-2 p-3 bg-bf-dark/60 border border-bf-cyan/20 clip-btn">
+                <div className="w-14 h-14 bg-bf-slate border border-bf-cyan/30 relative flex items-center justify-center overflow-hidden rounded-full shrink-0">
+                  {lastOperator.avatar_url ? (
+                    <img
+                      src={lastOperator.avatar_url}
+                      alt="Tactical Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-bf-cyan text-xl font-black">⚡</span>
+                  )}
+                </div>
+                <div>
+                  <div className="text-[8px] text-slate-500 font-mono font-bold tracking-widest uppercase">
+                    // CURRENT_OPERATOR
+                  </div>
+                  <div className="text-white font-black text-xs uppercase tracking-wider">
+                    {lastOperator.tg_username
+                      ? `@${lastOperator.tg_username.replace(/^@/, '')}`
+                      : 'SECURE_NODE'}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          return (
+            <h2 className="text-xl font-black text-white tracking-widest uppercase">
+              ENTER ACCESS CREDENTIALS
+            </h2>
+          );
+        })()}
 
         {/* PIN Code Verification */}
 
