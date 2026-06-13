@@ -288,10 +288,6 @@ export async function startBot() {
         { command: 'start', description: 'Show help and available commands' },
         { command: 'help', description: 'Show help and available commands' },
         { command: 'my_profile', description: 'Display your tactical profile and access PIN' },
-        { command: 'add_fighter', description: 'Add fighter: <squad_id> <tg_username>' },
-        { command: 'add_commander', description: 'Add commander: <squad_id> <tg_username>' },
-        { command: 'remove_user', description: 'Remove user by <pin_code>' },
-        { command: 'list_users', description: 'List all authorized users' },
       ]);
       console.log('[Bot] Commands registered with Telegram successfully.');
     } catch (err) {
