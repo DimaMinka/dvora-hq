@@ -95,14 +95,17 @@ if (bot) {
       });
 
       const db = getDb();
-      await db.collection('users').doc(pin).set({
-        pin_code: pin,
-        pin_hash: pinHash,
-        role: 'fighter',
-        squad_id: squadId,
-        tg_username: tgUsername,
-        created_at: new Date().toISOString(),
-      });
+      await db
+        .collection('users')
+        .doc(pin)
+        .set({
+          pin_code: pin,
+          pin_hash: pinHash,
+          role: 'fighter',
+          squad_id: squadId,
+          tg_username: tgUsername.toLowerCase().replace(/^@/, ''),
+          created_at: new Date().toISOString(),
+        });
 
       return ctx.reply(
         `✅ *FIGHTER AUTHORIZED SUCCESSFULLY*\n\n` +
@@ -143,14 +146,17 @@ if (bot) {
       });
 
       const db = getDb();
-      await db.collection('users').doc(pin).set({
-        pin_code: pin,
-        pin_hash: pinHash,
-        role: 'commander',
-        squad_id: squadId,
-        tg_username: tgUsername,
-        created_at: new Date().toISOString(),
-      });
+      await db
+        .collection('users')
+        .doc(pin)
+        .set({
+          pin_code: pin,
+          pin_hash: pinHash,
+          role: 'commander',
+          squad_id: squadId,
+          tg_username: tgUsername.toLowerCase().replace(/^@/, ''),
+          created_at: new Date().toISOString(),
+        });
 
       return ctx.reply(
         `✅ *COMMANDER AUTHORIZED SUCCESSFULLY*\n\n` +
