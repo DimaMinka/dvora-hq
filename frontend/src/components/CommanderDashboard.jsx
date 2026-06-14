@@ -99,6 +99,7 @@ export default function CommanderDashboard({
   const [showMedicalPanel, setShowMedicalPanel] = useState(false);
   const [showGearPanel, setShowGearPanel] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState(null);
 
   const getGearItems = useCallback(() => {
     const items = [];
@@ -316,6 +317,7 @@ export default function CommanderDashboard({
   const d = textDict[lang] || textDict.en;
 
   const handleShowIssues = (member, category) => {
+    setSelectedProfile(null);
     if (category === 'trsp') {
       setSelectedIssue(null);
       return;
@@ -708,7 +710,18 @@ export default function CommanderDashboard({
                 <div
                   className="grid grid-cols-5 text-[10px] items-center p-1.5 bg-bf-dark/40 border border-bf-border/40 clip-btn"
                 >
-                  <div className="truncate text-slate-300 font-bold flex items-center gap-1">
+                  <div
+                    onClick={() => {
+                      setSelectedIssue(null);
+                      if (selectedProfile && selectedProfile.id === m.id) {
+                        setSelectedProfile(null);
+                      } else {
+                        setSelectedProfile(m);
+                      }
+                    }}
+                    className="truncate text-slate-300 font-bold flex items-center gap-1 cursor-pointer hover:text-bf-cyan transition-colors"
+                    title="Toggle Profile Dossier"
+                  >
                     <img
                       src={m.avatar_url || '/avatar-placeholder.png'}
                       alt=""
@@ -793,6 +806,47 @@ export default function CommanderDashboard({
                     </div>
                   </div>
                 )}
+
+                {selectedProfile && selectedProfile.id === m.id && (
+                  <div className="p-2 bg-bf-slate/90 border-x border-b border-bf-cyan/40 text-[9px] font-mono space-y-1.5 animate-fade-in relative -mt-1 mx-0.5 z-10 clip-btn shadow-[0_4px_12px_rgba(0,240,255,0.1)]">
+                    <div className="text-[7px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-0.5 flex justify-between">
+                      <span>// PERSONNEL_FILE</span>
+                      <span className="text-bf-cyan">[OPERATOR_PROFILE]</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
+                        <img
+                          src={selectedProfile.avatar_url || '/avatar-placeholder.png'}
+                          alt="Operator Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-white font-black text-[11px] uppercase tracking-wider truncate">
+                          {selectedProfile.tg_username ? `@${selectedProfile.tg_username}` : selectedProfile.phone_number}
+                        </div>
+                        {selectedProfile.specialization && (() => {
+                          const label = getSpecializationLabel(selectedProfile.specialization);
+                          const isLong = label.length > 18;
+                          return (
+                            <div className="text-[9px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
+                              <span className="shrink-0 text-slate-500">ROLE:</span>
+                              {isLong ? (
+                                <div className="overflow-hidden whitespace-nowrap flex-1 flex font-bold text-bf-cyan">
+                                  <span className="animate-marquee pr-4 shrink-0">{label}</span>
+                                  <span className="animate-marquee pr-4 shrink-0" aria-hidden="true">{label}</span>
+                                </div>
+                              ) : (
+                                <span className="font-bold text-bf-cyan truncate">{label}</span>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </React.Fragment>
             );
           })
@@ -857,6 +911,7 @@ export default function CommanderDashboard({
           />
         </div>
       )}
+
     </div>
   );
 }
