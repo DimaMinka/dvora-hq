@@ -5,6 +5,7 @@ import { startBot } from './bot.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import squadRoutes from './routes/squad.js';
+import rotationRoutes from './routes/rotations.js';
 
 const app = express();
 
@@ -52,6 +53,7 @@ setupDatabase()
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/squad', squadRoutes);
+app.use('/api/rotations', rotationRoutes);
 
 // Start Express Server
 const port = config.port;
