@@ -1,11 +1,8 @@
 import {
-  specializationsList,
   primaryWeaponsList,
   secondaryWeaponsList,
   opticsList,
-  accessoriesList,
-  gearsList,
-  medsList
+  accessoriesList
 } from '@shared/loadout-data.js';
 
 export function resolveLabel(id, list, lang) {
