@@ -460,7 +460,7 @@ Pose: Tactically standing on a rocky hill looking forward. Background: Distant d
 
 // 6. Update Readiness (Fighter)
 app.post('/api/user/readiness', authenticateToken, async (req, res) => {
-  const { weapons_ready, transport_ready, comms_ready, meds_ready, note } = req.body;
+  const { weapons_ready, transport_ready, comms_ready, meds_ready, gear_ready, note } = req.body;
 
   try {
     const db = getDb();
@@ -469,9 +469,10 @@ app.post('/api/user/readiness', authenticateToken, async (req, res) => {
       .doc(req.user.userId)
       .set({
         weapons_ready: Number(weapons_ready),
-        transport_ready: Number(transport_ready),
+        transport_ready: Number(transport_ready || 0),
         comms_ready: Number(comms_ready),
         meds_ready: Number(meds_ready),
+        gear_ready: Number(gear_ready || 0),
         note: note || '',
         updated_at: new Date().toISOString(),
       });
@@ -512,6 +513,7 @@ app.get('/api/squad/status', authenticateToken, async (req, res) => {
         transport_ready: readiness.transport_ready || 0,
         comms_ready: readiness.comms_ready || 0,
         meds_ready: readiness.meds_ready || 0,
+        gear_ready: readiness.gear_ready || 0,
         note: readiness.note || null,
         updated_at: readiness.updated_at || null,
       });

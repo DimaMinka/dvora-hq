@@ -185,15 +185,15 @@ export default function CommanderDashboard({
       closeLogs: 'CLOSE DRAWER',
       member: 'MEMBER',
       wpn: 'WPN',
-      trsp: 'TRSP',
-      com: 'COM',
       med: 'MED',
+      gear: 'GER',
+      trsp: 'TRS',
       opName: 'OPERATOR: REAPER',
       opSquad: 'SQUAD: ALPHA (01)',
       weapons: '01_WEAPONS',
-      transport: '02_TRANSPORT',
-      comms: '03_COMMS',
-      medkit: '04_MED_KIT',
+      medkit: '02_MED_KIT',
+      gearLabel: '03_GEAR',
+      transport: '04_TRANSPORT',
       ready: 'READY',
       issue: 'ISSUE',
       pending: 'PENDING',
@@ -208,15 +208,15 @@ export default function CommanderDashboard({
       closeLogs: 'סגור מגירה',
       member: 'לוחם',
       wpn: 'נשק',
-      trsp: 'רכב',
-      com: 'קשר',
       med: 'רפו',
+      gear: 'ציוד',
+      trsp: 'רכב',
       opName: 'מפעיל: REAPER',
       opSquad: 'צוות: אלפא (01)',
       weapons: '01_נשק',
-      transport: '02_רכב',
-      comms: '03_קשר',
-      medkit: '04_רפואה',
+      medkit: '02_רפואה',
+      gearLabel: '03_ציוד',
+      transport: '04_רכב',
       ready: 'תקין',
       issue: 'תקלה',
       pending: 'טרם נקבע',
@@ -325,9 +325,9 @@ export default function CommanderDashboard({
       <div className="grid grid-cols-2 gap-1.5">
         {[
           { key: 'wpn', label: d.weapons },
-          { key: 'trsp', label: d.transport },
-          { key: 'com', label: d.comms },
           { key: 'med', label: d.medkit },
+          { key: 'gear', label: d.gearLabel },
+          { key: 'trsp', label: d.transport },
         ].map((item) => {
           const val = checklist[item.key] ?? 0;
           const label = item.label;
@@ -365,9 +365,9 @@ export default function CommanderDashboard({
         <div className="grid grid-cols-5 text-[8px] font-black text-slate-500 pb-1 border-b border-bf-border">
           <div className="col-span-1">{d.member}</div>
           <div className="text-center">{d.wpn}</div>
-          <div className="text-center">{d.trsp}</div>
-          <div className="text-center">{d.com}</div>
           <div className="text-center">{d.med}</div>
+          <div className="text-center">{d.gear}</div>
+          <div className="text-center">{d.trsp}</div>
         </div>
 
         {squadMembers.map((m) => (
@@ -400,13 +400,13 @@ export default function CommanderDashboard({
                     <span className={`w-2 h-2 rounded-full ${getDotClass(m.weapons_ready)}`} />
                   </div>
                   <div className="flex justify-center">
-                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.transport_ready)}`} />
-                  </div>
-                  <div className="flex justify-center">
-                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.comms_ready)}`} />
-                  </div>
-                  <div className="flex justify-center">
                     <span className={`w-2 h-2 rounded-full ${getDotClass(m.meds_ready)}`} />
+                  </div>
+                  <div className="flex justify-center">
+                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.gear_ready)}`} />
+                  </div>
+                  <div className="flex justify-center">
+                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.transport_ready)}`} />
                   </div>
                 </>
               );

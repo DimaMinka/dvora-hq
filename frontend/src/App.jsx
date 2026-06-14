@@ -194,7 +194,7 @@ function App() {
   const [checklist, setChecklist] = useState({
     wpn: 0,
     trsp: 0,
-    com: 0,
+    gear: 0,
     med: 0,
   });
 
@@ -243,9 +243,9 @@ function App() {
       if (data.user.readiness) {
         setChecklist({
           wpn: Number(data.user.readiness.weapons_ready),
-          trsp: Number(data.user.readiness.transport_ready),
-          com: Number(data.user.readiness.comms_ready),
           med: Number(data.user.readiness.meds_ready),
+          gear: Number(data.user.readiness.gear_ready || 0),
+          trsp: Number(data.user.readiness.transport_ready || 0),
         });
       }
       setAlarmActive(Boolean(data.user.alarm_active));
@@ -307,8 +307,8 @@ function App() {
       body: JSON.stringify({
         weapons_ready: newChecklist.wpn,
         transport_ready: newChecklist.trsp,
-        comms_ready: newChecklist.com,
         meds_ready: newChecklist.med,
+        gear_ready: newChecklist.gear || 0,
       }),
     }).catch((err) => console.error('[API] Failed to update readiness:', err.message));
   };
@@ -326,8 +326,8 @@ function App() {
       body: JSON.stringify({
         weapons_ready: checklist.wpn,
         transport_ready: checklist.trsp,
-        comms_ready: checklist.com,
         meds_ready: checklist.med,
+        gear_ready: checklist.gear || 0,
         note: text,
       }),
     })
@@ -401,9 +401,9 @@ function App() {
         if (profile.readiness) {
           setChecklist({
             wpn: Number(profile.readiness.weapons_ready),
-            trsp: Number(profile.readiness.transport_ready),
-            com: Number(profile.readiness.comms_ready),
             med: Number(profile.readiness.meds_ready),
+            gear: Number(profile.readiness.gear_ready || 0),
+            trsp: Number(profile.readiness.transport_ready || 0),
           });
         }
         setAlarmActive(Boolean(profile.alarm_active));
