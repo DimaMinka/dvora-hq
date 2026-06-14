@@ -500,6 +500,9 @@ app.get('/api/squad/status', authenticateToken, async (req, res) => {
     const rows = [];
     for (const userDoc of usersSnapshot.docs) {
       const userData = userDoc.data();
+      if (userData.role === 'commander') {
+        continue;
+      }
       const readinessDoc = await db.collection('readiness_status').doc(userDoc.id).get();
       const readiness = readinessDoc.exists ? readinessDoc.data() : {};
       rows.push({
