@@ -22,6 +22,7 @@ export default function FighterDashboard({
   const [reportText, setReportText] = useState('');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [activeTab, setActiveTab] = useState('rotation');
 
   const { activePanel, openPanel, closePanel } = useChecklistPanel();
 
@@ -44,7 +45,7 @@ export default function FighterDashboard({
     const trimmed = reportText.trim();
     if (trimmed.length < 10) {
       alert(
-        lang === 'en' ? 'REPORT MUST BE AT LEAST 10 CHARACTERS' : 'הדיווח חייב להכил לפחות 10 תווים'
+        lang === 'en' ? 'REPORT MUST BE AT LEAST 10 CHARACTERS' : 'הדיווח חייב להכיל לפחות 10 תווים'
       );
       return;
     }
@@ -87,7 +88,7 @@ export default function FighterDashboard({
       alarmStandby: 'סטאטוס // רשת_בהמתנה',
       alarmActive: '!! התרעת פריסה קרבית !!',
       btnSend: 'הזרקת דיווח תקלה',
-      placeholder: 'הקלד דיווח על בעיה טקטית или אירוע...',
+      placeholder: 'הקלד דיווח על בעיה טקטית או אירוע...',
       weapons: '01_נשק',
       medkit: '02_רפואה',
       gear: '03_ציוד',
@@ -108,107 +109,139 @@ export default function FighterDashboard({
     <div className="space-y-4 w-full animate-fade-in">
       <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
 
-      {/* Operator Info */}
-      <OperatorCard
-        user={user}
-        onAvatarClick={() => setLightboxOpen(true)}
-        placeholderName={d.opName}
-        placeholderSquad={d.opSquad}
-        specializationLabel={specializationLabel}
-      />
-
-      {/* Alarm Alert Box */}
-      <div
-        className={`p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 ${
-          alarmActive
-            ? 'bg-bf-orange/20 border-bf-orange text-bf-orange animate-pulse'
-            : 'bg-bf-cyan/10 border-bf-cyan/30 text-bf-cyan'
-        }`}
-      >
-        {alarmActive ? d.alarmActive : d.alarmStandby}
+      {/* Sub-navigation tabs */}
+      <div className="flex p-0.5 bg-bf-dark border border-bf-border clip-btn w-full">
+        <button
+          type="button"
+          onClick={() => setActiveTab('rotation')}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'rotation' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          {lang === 'en' ? '📅 ROTATIONS' : '📅 סבבים'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('readiness')}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'readiness' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          {lang === 'en' ? '🛡 READINESS' : '🛡 מוכנות'}
+        </button>
       </div>
 
-      {/* Checklist Toggles */}
-      <ChecklistToggleGrid
-        checklist={checklist}
-        onToggle={(key) => {
-          openPanel(key);
-          if (onToggleChecklist) {
-            onToggleChecklist(key);
-          }
-        }}
-        items={[
-          { key: 'wpn', label: d.weapons },
-          { key: 'med', label: d.medkit },
-          { key: 'gear', label: d.gear },
-          { key: 'trsp', label: d.transport },
-        ]}
-        labels={{
-          pending: d.pending,
-          ready: d.ready,
-          issue: d.issue,
-        }}
-      />
-
-      {/* Collapsible Weapon Details Panel */}
-      {activePanel === 'wpn' && checklist.wpn !== 0 && user && (
-        <ChecklistPanel
-          title="// LOADOUT WEAPONRY MATRIX"
-          lang={lang}
-          items={weaponItems}
-          statusMap={weaponStatus}
-          onToggleItem={(id) => handleToggleItem('wpn', id)}
-        />
-      )}
-
-      {/* Collapsible Medical Details Panel */}
-      {activePanel === 'med' && checklist.med !== 0 && user && (
-        <ChecklistPanel
-          title="// MEDICAL EQUIPMENT MATRIX"
-          lang={lang}
-          items={medItems}
-          statusMap={medicalStatus}
-          onToggleItem={(id) => handleToggleItem('med', id)}
-        />
-      )}
-
-      {/* Collapsible Gear Details Panel */}
-      {activePanel === 'gear' && checklist.gear !== 0 && user && (
-        <ChecklistPanel
-          title="// GEAR LOADOUT MATRIX"
-          lang={lang}
-          items={gearItems}
-          statusMap={gearStatus}
-          onToggleItem={(id) => handleToggleItem('gear', id)}
-        />
-      )}
-
-      {/* Rotation Schedule Widget */}
-      <RotationSchedule lang={lang} user={user} />
-
-      {/* Report Form */}
-      <form onSubmit={handleSend} className="space-y-2">
-        <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn focus-within:border-bf-cyan/60 transition-colors relative">
-          <textarea
-            value={reportText}
-            onChange={(e) => setReportText(e.target.value)}
-            placeholder={d.placeholder}
-            className="w-full h-14 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 pb-4 resize-none uppercase text-[10px] font-mono outline-none"
-          />
+      {/* TAB 1: ROTATIONS */}
+      {activeTab === 'rotation' && (
+        <div className="space-y-4 animate-fade-in">
+          {/* Alarm Alert Box */}
           <div
-            className={`absolute bottom-1 right-2 text-[8px] font-mono select-none ${reportText.trim().length >= 10 ? 'text-bf-cyan' : 'text-slate-600'}`}
+            className={`p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 ${
+              alarmActive
+                ? 'bg-bf-orange/20 border-bf-orange text-bf-orange animate-pulse'
+                : 'bg-bf-cyan/10 border-bf-cyan/30 text-bf-cyan'
+            }`}
           >
-            {reportText.trim().length}/10 CHARS
+            {alarmActive ? d.alarmActive : d.alarmStandby}
           </div>
+
+          {/* Rotation Schedule Widget */}
+          <RotationSchedule lang={lang} user={user} />
         </div>
-        <button
-          type="submit"
-          disabled={reportText.trim().length === 0 || isSending}
-          className="w-full py-2 bg-bf-cyan/10 border border-bf-cyan/40 hover:bg-bf-cyan/20 hover:border-bf-cyan text-bf-cyan font-bold text-xs uppercase clip-btn transition-all duration-200 cursor-pointer disabled:bg-bf-slate/40 disabled:border-bf-border disabled:text-slate-500 disabled:cursor-not-allowed"
-        >
-          {isSending ? (lang === 'en' ? 'TRANSMITTING...' : 'שולח...') : d.btnSend}
-        </button>
-      </form>
+      )}
+
+      {/* TAB 2: READINESS */}
+      {activeTab === 'readiness' && (
+        <div className="space-y-4 animate-fade-in">
+          {/* Operator Info */}
+          <OperatorCard
+            user={user}
+            onAvatarClick={() => setLightboxOpen(true)}
+            placeholderName={d.opName}
+            placeholderSquad={d.opSquad}
+            specializationLabel={specializationLabel}
+          />
+
+          {/* Checklist Toggles */}
+          <ChecklistToggleGrid
+            checklist={checklist}
+            onToggle={(key) => {
+              openPanel(key);
+              if (onToggleChecklist) {
+                onToggleChecklist(key);
+              }
+            }}
+            items={[
+              { key: 'wpn', label: d.weapons },
+              { key: 'med', label: d.medkit },
+              { key: 'gear', label: d.gear },
+              { key: 'trsp', label: d.transport },
+            ]}
+            labels={{
+              pending: d.pending,
+              ready: d.ready,
+              issue: d.issue,
+            }}
+          />
+
+          {/* Collapsible Weapon Details Panel */}
+          {activePanel === 'wpn' && checklist.wpn !== 0 && user && (
+            <ChecklistPanel
+              title="// LOADOUT WEAPONRY MATRIX"
+              lang={lang}
+              items={weaponItems}
+              statusMap={weaponStatus}
+              onToggleItem={(id) => handleToggleItem('wpn', id)}
+            />
+          )}
+
+          {/* Collapsible Medical Details Panel */}
+          {activePanel === 'med' && checklist.med !== 0 && user && (
+            <ChecklistPanel
+              title="// MEDICAL EQUIPMENT MATRIX"
+              lang={lang}
+              items={medItems}
+              statusMap={medicalStatus}
+              onToggleItem={(id) => handleToggleItem('med', id)}
+            />
+          )}
+
+          {/* Collapsible Gear Details Panel */}
+          {activePanel === 'gear' && checklist.gear !== 0 && user && (
+            <ChecklistPanel
+              title="// GEAR LOADOUT MATRIX"
+              lang={lang}
+              items={gearItems}
+              statusMap={gearStatus}
+              onToggleItem={(id) => handleToggleItem('gear', id)}
+            />
+          )}
+
+          {/* Report Form */}
+          <form onSubmit={handleSend} className="space-y-2">
+            <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn focus-within:border-bf-cyan/60 transition-colors relative">
+              <textarea
+                value={reportText}
+                onChange={(e) => setReportText(e.target.value)}
+                placeholder={d.placeholder}
+                className="w-full h-14 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 pb-4 resize-none uppercase text-[10px] font-mono outline-none"
+              />
+              <div
+                className={`absolute bottom-1 right-2 text-[8px] font-mono select-none ${reportText.trim().length >= 10 ? 'text-bf-cyan' : 'text-slate-600'}`}
+              >
+                {reportText.trim().length}/10 CHARS
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={reportText.trim().length === 0 || isSending}
+              className="w-full py-2 bg-bf-cyan/10 border border-bf-cyan/40 hover:bg-bf-cyan/20 hover:border-bf-cyan text-bf-cyan font-bold text-xs uppercase clip-btn transition-all duration-200 cursor-pointer disabled:bg-bf-slate/40 disabled:border-bf-border disabled:text-slate-500 disabled:cursor-not-allowed"
+            >
+              {isSending ? (lang === 'en' ? 'TRANSMITTING...' : 'שולח...') : d.btnSend}
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Lightbox Modal */}
       {lightboxOpen && (

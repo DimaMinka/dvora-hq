@@ -25,6 +25,7 @@ export default function CommanderDashboard({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [activeTab, setActiveTab] = useState('rotation');
 
   const { activePanel, openPanel, closePanel } = useChecklistPanel();
 
@@ -86,7 +87,7 @@ export default function CommanderDashboard({
       trsp: 'רכב',
       opName: 'מפעיל: REAPER',
       opSquad: 'צוות: אלפא (01)',
-      weapons: '01_נשк',
+      weapons: '01_נשק',
       medkit: '02_רפואה',
       gearLabel: '03_ציוד',
       transport: '04_רכב',
@@ -95,7 +96,7 @@ export default function CommanderDashboard({
       pending: 'טרם נקבע',
       selectedIssuesTitle: 'פירוט תקלות טקטי // דיווח חוסרים',
       allOperational: 'כלל הציוד והמשאבים של הלוחם תקינים לחלוטין',
-      notReadyStatus: 'לא סומנו תתי-פריטים כתקולים. סטטוס כללי מסומн כתקלה.',
+      notReadyStatus: 'לא סומנו תתי-פריטים כתקולים. סטטוס כללי מסומן כתקלה.',
       faultyItems: 'ציוד תקול / חסר:',
       btnDismiss: 'סגור פירוט',
     },
@@ -194,8 +195,41 @@ export default function CommanderDashboard({
     <div className="space-y-4 w-full animate-fade-in relative">
       <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
 
-      {/* Commander's Own Operator Info */}
-      <OperatorCard
+      {/* Sub-navigation tabs */}
+      <div className="flex p-0.5 bg-bf-dark border border-bf-border clip-btn w-full">
+        <button
+          type="button"
+          onClick={() => setActiveTab('rotation')}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'rotation' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          {lang === 'en' ? '📅 ROTATIONS' : '📅 סבבים'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('readiness')}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'readiness' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          {lang === 'en' ? '📊 SQUAD STATUS' : '📊 מצב הצוות'}
+        </button>
+      </div>
+
+      {/* TAB 1: ROTATIONS */}
+      {activeTab === 'rotation' && (
+        <div className="space-y-4 animate-fade-in">
+          {/* Rotation Schedule Widget */}
+          <RotationSchedule lang={lang} user={user} />
+        </div>
+      )}
+
+      {/* TAB 2: SQUAD STATUS */}
+      {activeTab === 'readiness' && (
+        <div className="space-y-4 animate-fade-in">
+          {/* Commander's Own Operator Info */}
+          <OperatorCard
         user={user}
         onAvatarClick={() => setLightboxOpen(true)}
         placeholderName={d.opName}
@@ -471,9 +505,6 @@ export default function CommanderDashboard({
         )}
       </div>
 
-      {/* Rotation Schedule Widget */}
-      <RotationSchedule lang={lang} user={user} />
-
       {/* Alarm override control */}
       <button
         onClick={onToggleAlarm}
@@ -517,6 +548,8 @@ export default function CommanderDashboard({
           >
             {d.closeLogs}
           </button>
+        </div>
+      )}
         </div>
       )}
 

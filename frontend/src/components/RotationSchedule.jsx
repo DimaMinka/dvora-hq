@@ -33,7 +33,7 @@ const i18n = {
     ],
   },
   he: {
-    title: '// לוח_סבבים // סנכрон',
+    title: '// לוח_סבבים // סנכרון',
     timeline: 'לוח זמנים',
     calendar: 'לוח שנה',
     alert: 'כוננות',
@@ -43,7 +43,7 @@ const i18n = {
     noRotation: 'לא נקבע סבב לשבוע זה',
     membersTitle: 'חברי הצוות',
     loading: 'טוען נתוני סבבים...',
-    error: 'שגיאה בסנכрон נתונים',
+    error: 'שגיאה בסנכרון נתונים',
     emptyCalendar: 'אין סבבים מתוזמנים',
     operatorStatus: {
       alert: 'כוננות מבצעית פעילה',
@@ -53,7 +53,7 @@ const i18n = {
     },
     daysLeft: (count) => {
       if (count === 0) return 'יום אחרון לסבב הנוכחי';
-      return `נותרו ${count} ימים לסיום הסבб`;
+      return `נותרו ${count} ימים לסיום הסבב`;
     },
     daysOfWeek: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'],
     months: [

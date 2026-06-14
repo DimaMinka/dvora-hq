@@ -113,7 +113,7 @@ export default function Onboarding({ lang = 'en', onComplete }) {
       less: '// SHOW LESS',
     },
     he: {
-      title: '// אתחול // כниסה_ראשונה',
+      title: '// אתחול // כניסה_ראשונה',
       subtitle: 'הגדרת פרופיל טקטי',
       lblSpec: '01_בחר_התמחות_מבצעית (בחירה מרובה)',
       lblWpn: '02_בחר_נשק_ראשי',
