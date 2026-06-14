@@ -204,7 +204,7 @@ export default function CommanderDashboard({
             activeTab === 'rotation' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
           }`}
         >
-          {lang === 'en' ? '📅 ROTATIONS' : '📅 סבבים'}
+          {lang === 'en' ? '// ROTATIONS' : '// סבבים'}
         </button>
         <button
           type="button"
@@ -213,7 +213,7 @@ export default function CommanderDashboard({
             activeTab === 'readiness' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
           }`}
         >
-          {lang === 'en' ? '📊 SQUAD STATUS' : '📊 מצב הצוות'}
+          {lang === 'en' ? '// SQUAD STATUS' : '// מצב הצוות'}
         </button>
       </div>
 

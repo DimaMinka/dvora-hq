@@ -118,7 +118,7 @@ export default function FighterDashboard({
             activeTab === 'rotation' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
           }`}
         >
-          {lang === 'en' ? '📅 ROTATIONS' : '📅 סבבים'}
+          {lang === 'en' ? '// ROTATIONS' : '// סבבים'}
         </button>
         <button
           type="button"
@@ -127,7 +127,7 @@ export default function FighterDashboard({
             activeTab === 'readiness' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
           }`}
         >
-          {lang === 'en' ? '🛡 READINESS' : '🛡 מוכנות'}
+          {lang === 'en' ? '// READINESS' : '// מוכנות'}
         </button>
       </div>
 
