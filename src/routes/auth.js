@@ -76,7 +76,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const jti = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const jti = (await import('crypto')).randomBytes(16).toString('hex');
     const token = jwt.sign(
       {
         userId: user.pin_code,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import LockScreen from './components/LockScreen.jsx';
 import FighterDashboard from './components/FighterDashboard.jsx';
 import CommanderDashboard from './components/CommanderDashboard.jsx';
@@ -202,6 +202,24 @@ function App() {
   const [medicalStatus, setMedicalStatus] = useState({});
   const [gearStatus, setGearStatus] = useState({});
 
+  const applyUserData = useCallback((profile) => {
+    setUser(profile);
+    setRole(profile.role === 'fighter' ? 'soldier' : profile.role);
+    if (profile.readiness) {
+      setChecklist({
+        wpn: Number(profile.readiness.weapons_ready),
+        med: Number(profile.readiness.meds_ready),
+        gear: Number(profile.readiness.gear_ready || 0),
+        trsp: Number(profile.readiness.transport_ready || 0),
+      });
+      setWeaponStatus(profile.readiness.weapon_status || {});
+      setMedicalStatus(profile.readiness.meds_status || {});
+      setGearStatus(profile.readiness.gear_status || {});
+    }
+    setAlarmActive(Boolean(profile.alarm_active));
+    setIsLocked(false);
+  }, []);
+
   const dict = i18n[lang];
   const isRtl = lang === 'he';
 
@@ -241,22 +259,7 @@ function App() {
           avatar_url: data.user.avatar_url,
         })
       );
-      setUser(data.user);
-      setRole(data.user.role === 'fighter' ? 'soldier' : data.user.role);
-
-      if (data.user.readiness) {
-        setChecklist({
-          wpn: Number(data.user.readiness.weapons_ready),
-          med: Number(data.user.readiness.meds_ready),
-          gear: Number(data.user.readiness.gear_ready || 0),
-          trsp: Number(data.user.readiness.transport_ready || 0),
-        });
-        setWeaponStatus(data.user.readiness.weapon_status || {});
-        setMedicalStatus(data.user.readiness.meds_status || {});
-        setGearStatus(data.user.readiness.gear_status || {});
-      }
-      setAlarmActive(Boolean(data.user.alarm_active));
-      setIsLocked(false);
+      applyUserData(data.user);
     } catch (err) {
       alert(`AUTH ERROR: ${err.message}`);
     }
@@ -425,28 +428,13 @@ function App() {
         return res.json();
       })
       .then((profile) => {
-        setUser(profile);
-        setRole(profile.role === 'fighter' ? 'soldier' : profile.role);
-
-        if (profile.readiness) {
-          setChecklist({
-            wpn: Number(profile.readiness.weapons_ready),
-            med: Number(profile.readiness.meds_ready),
-            gear: Number(profile.readiness.gear_ready || 0),
-            trsp: Number(profile.readiness.transport_ready || 0),
-          });
-          setWeaponStatus(profile.readiness.weapon_status || {});
-          setMedicalStatus(profile.readiness.meds_status || {});
-          setGearStatus(profile.readiness.gear_status || {});
-        }
-        setAlarmActive(Boolean(profile.alarm_active));
-        setIsLocked(false);
+        applyUserData(profile);
       })
       .catch(() => {
         localStorage.removeItem('dvora_token');
         setIsLocked(true);
       });
-  }, []);
+  }, [applyUserData]);
 
   // 2. Initial Commander Load & Polling for Alarm State (Fighters) or Squad Readiness (Commanders)
   useEffect(() => {
