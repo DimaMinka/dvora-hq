@@ -77,20 +77,24 @@ import { specializationsList, gearsList, medsList } from '@shared/loadout-data.j
 ### 3.4 Frontend: State & Component Architecture
 
 #### State ownership
+
 - **`App.jsx`** owns all global state: `user`, `role`, `checklist`, `weaponStatus`, `medicalStatus`, `gearStatus`, `alarmActive`, `isLocked`, `squadMembers`, `loadingMembers`.
 - **`applyUserData(profile)`** — a `useCallback` helper in `App.jsx` that applies a full user/profile API response to all relevant state slices. Always use it instead of calling `setUser` + `setChecklist` etc. individually.
 - Both `FighterDashboard` and `CommanderDashboard` receive status states (`weaponStatus`, `medicalStatus`, `gearStatus`) as **props** from `App.jsx`.
 
 #### Reusable UI components (`frontend/src/components/ui/`)
+
 - **`OperatorCard.jsx`** — displays operator avatar, username, squad, and specialization label (with marquee for long text). Used in both Fighter and Commander dashboards. Do not duplicate this markup.
 - **`ChecklistToggleGrid.jsx`** — renders the 2×2 grid of checklist toggle buttons (wpn/med/gear/trsp) with status coloring. Accepts `checklist`, `onToggle`, `items`, `labels`.
 - **`ChecklistPanel.jsx`** — collapsible detail panel for a checklist category. Accepts `title`, `lang`, `items`, `statusMap`, `onToggleItem`.
 
 #### Custom hooks (`frontend/src/hooks/`)
+
 - **`useChecklistPanel()`** — manages `activePanel` state (which of wpn/med/gear is open). Returns `{ activePanel, openPanel, closePanel }`. Only one panel is open at a time; panels are mutually exclusive.
 - **`useLoadoutItems(user, lang, statusMaps, onToggleChecklist)`** — derives `weaponItems`, `medItems`, `gearItems` from the user object and provides `handleToggleItem(category, itemId)`. Used in both dashboards to avoid logic duplication.
 
 #### Loadout utilities (`frontend/src/utils/loadout.js`)
+
 - **`resolveLabel(id, list, lang)`** — resolves a loadout item ID to its display label.
 - **`parseCommaList(str, list, prefix, type, lang)`** — parses a comma-separated loadout string into item objects `{ id, label, type }`.
 - **`parseWeaponry(user, lang)`** — parses the full weaponry string (primary; secondary) plus optics and accessories into a flat item array.
@@ -99,6 +103,7 @@ import { specializationsList, gearsList, medsList } from '@shared/loadout-data.j
 - **`computeChecklistStatus(items, statusMap)`** — returns `true` if any item has a `false` status (i.e., issue exists).
 
 #### Onboarding (`Onboarding.jsx`)
+
 - Uses the reusable `SelectionSection` internal component for every selection group (specs, weapons, optics, etc.).
 - Expand/collapse state is managed via a single `expandedSections` object + `toggleExpand(section)` helper — not individual `useState` booleans per section.
 - Multi-select toggling via `toggleMultiSelect(setter, id)` — not per-category toggle functions.

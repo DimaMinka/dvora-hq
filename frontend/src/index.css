@@ -11,12 +11,12 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    --color-bf-dark: #e8dcc4;        /* Light sand background */
-    --color-bf-slate: #f4ebdb;       /* Lighter sand panel background */
-    --color-bf-cyan: #705335;        /* Camo dark brown for accents and headers */
-    --color-bf-orange: #b24900;      /* Contrast rust/camber orange */
-    --color-bf-border: #d2c0a0;      /* Sand border */
-    --color-text-main: #4a3728;      /* Tactical dark brown */
+    --color-bf-dark: #e8dcc4; /* Light sand background */
+    --color-bf-slate: #f4ebdb; /* Lighter sand panel background */
+    --color-bf-cyan: #705335; /* Camo dark brown for accents and headers */
+    --color-bf-orange: #b24900; /* Contrast rust/camber orange */
+    --color-bf-border: #d2c0a0; /* Sand border */
+    --color-text-main: #4a3728; /* Tactical dark brown */
   }
 }
 
@@ -34,7 +34,11 @@
 /* Custom styles from mockup */
 .dvora-bg {
   background-color: var(--color-bf-dark);
-  background-image: radial-gradient(circle at center, var(--color-bf-slate) 0%, var(--color-bf-dark) 100%);
+  background-image: radial-gradient(
+    circle at center,
+    var(--color-bf-slate) 0%,
+    var(--color-bf-dark) 100%
+  );
   background-attachment: fixed;
 }
 
@@ -93,7 +97,8 @@
 /* Global Light Mode overrides for texts and states */
 @media (prefers-color-scheme: light) {
   /* Default page text */
-  .min-h-screen, body {
+  .min-h-screen,
+  body {
     color: var(--color-text-main) !important;
   }
 
@@ -135,7 +140,9 @@
   }
 
   /* Form Inputs */
-  input[type="text"], input[type="password"], input[type="tel"] {
+  input[type='text'],
+  input[type='password'],
+  input[type='tel'] {
     background-color: #f4ebdb !important;
     color: #271a10 !important;
     border-color: #d2c0a0 !important;
@@ -180,19 +187,22 @@
 }
 .scroll-container {
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 .scroll-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 .animate-marquee {
   display: inline-block;
   animation: marquee 12s linear infinite;
 }
-

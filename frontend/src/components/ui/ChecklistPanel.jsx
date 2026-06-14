@@ -1,4 +1,3 @@
-
 export default function ChecklistPanel({
   title,
   lang = 'en',
@@ -12,16 +11,23 @@ export default function ChecklistPanel({
     <div className="p-3 bg-bf-dark/95 border border-bf-cyan/40 clip-btn glass-panel text-[10px] space-y-2 animate-fade-in">
       <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-1 flex justify-between">
         <span>{title}</span>
-        <span className="text-bf-cyan">{lang === 'en' ? 'TAP STATUS TO TOGGLE' : 'הקש לשינוי סטטוס'}</span>
+        <span className="text-bf-cyan">
+          {lang === 'en' ? 'TAP STATUS TO TOGGLE' : 'הקש לשינוי סטטוס'}
+        </span>
       </div>
       <div className="space-y-1.5 font-mono">
         {items.map((item) => {
           const isOk = statusMap[item.id] !== false; // defaults to true
           return (
-            <div key={item.id} className="flex items-center justify-between p-1.5 bg-bf-slate/50 border border-bf-border/60 clip-btn gap-3">
+            <div
+              key={item.id}
+              className="flex items-center justify-between p-1.5 bg-bf-slate/50 border border-bf-border/60 clip-btn gap-3"
+            >
               <div className="min-w-0 flex-1">
                 <span className="text-[7px] text-slate-600 block">// {item.type}</span>
-                <span className="text-white font-bold text-[9px] uppercase tracking-wider block truncate">{item.label}</span>
+                <span className="text-white font-bold text-[9px] uppercase tracking-wider block truncate">
+                  {item.label}
+                </span>
               </div>
               <button
                 type="button"

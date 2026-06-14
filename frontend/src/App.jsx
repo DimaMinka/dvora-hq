@@ -313,7 +313,7 @@ function App() {
 
   const toggleChecklist = async (key, forcedValue, updatedSubStatus) => {
     const currentVal = checklist[key] ?? 0;
-    
+
     let nextVal;
     if (forcedValue !== undefined) {
       nextVal = forcedValue;
@@ -478,7 +478,7 @@ function App() {
         // Check if light mode is active (prefers-color-scheme: light)
         const isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
         const themeColor = isLight ? '#e8dcc4' : '#050b0e'; // Desert sand vs Dark tactical
-        
+
         try {
           window.Telegram.WebApp.setHeaderColor(themeColor);
           window.Telegram.WebApp.setBackgroundColor(themeColor);
@@ -494,7 +494,6 @@ function App() {
       return () => mediaQuery.removeEventListener('change', updateTelegramThemeColors);
     }
   }, []);
-
 
   // 1. Initial Load: Check token
   useEffect(() => {

@@ -4,16 +4,8 @@ import { useLoadoutItems } from '../hooks/useLoadoutItems.js';
 import OperatorCard from './ui/OperatorCard.jsx';
 import ChecklistToggleGrid from './ui/ChecklistToggleGrid.jsx';
 import ChecklistPanel from './ui/ChecklistPanel.jsx';
-import {
-  formatCommaLabel,
-  parseWeaponry,
-  parseCommaList,
-} from '../utils/loadout.js';
-import {
-  specializationsList,
-  gearsList,
-  medsList,
-} from '@shared/loadout-data.js';
+import { formatCommaLabel, parseWeaponry, parseCommaList } from '../utils/loadout.js';
+import { specializationsList, gearsList, medsList } from '@shared/loadout-data.js';
 
 export default function CommanderDashboard({
   lang = 'en',
@@ -158,8 +150,8 @@ export default function CommanderDashboard({
       category === 'wpn'
         ? member.weapons_ready
         : category === 'med'
-        ? member.meds_ready
-        : member.gear_ready;
+          ? member.meds_ready
+          : member.gear_ready;
 
     setSelectedIssue({
       memberId: member.id,
@@ -285,15 +277,26 @@ export default function CommanderDashboard({
               // CONNECTING TO SQUAD NODES // SCANNING STATUS...
             </div>
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="grid grid-cols-5 items-center p-1.5 bg-bf-dark/20 border border-bf-border/20 clip-btn opacity-60 animate-pulse">
+              <div
+                key={i}
+                className="grid grid-cols-5 items-center p-1.5 bg-bf-dark/20 border border-bf-border/20 clip-btn opacity-60 animate-pulse"
+              >
                 <div className="flex items-center gap-1.5 col-span-1">
                   <div className="w-4 h-4 rounded-full bg-slate-800 shrink-0"></div>
                   <div className="h-2 w-12 bg-slate-800 rounded"></div>
                 </div>
-                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
-                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
-                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
-                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
+                <div className="flex justify-center">
+                  <div className="w-2 h-2 rounded-full bg-slate-800"></div>
+                </div>
+                <div className="flex justify-center">
+                  <div className="w-2 h-2 rounded-full bg-slate-800"></div>
+                </div>
+                <div className="flex justify-center">
+                  <div className="w-2 h-2 rounded-full bg-slate-800"></div>
+                </div>
+                <div className="flex justify-center">
+                  <div className="w-2 h-2 rounded-full bg-slate-800"></div>
+                </div>
               </div>
             ))}
           </>
@@ -328,7 +331,8 @@ export default function CommanderDashboard({
                     const getDotClass = (val) => {
                       const status = val ?? 0;
                       if (status === 1) return 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]';
-                      if (status === 2) return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
+                      if (status === 2)
+                        return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
                       return 'bg-slate-700';
                     };
                     return (
@@ -339,7 +343,9 @@ export default function CommanderDashboard({
                             className="flex justify-center items-center w-full py-1 hover:bg-bf-slate/30 rounded cursor-pointer transition-all duration-150 active:scale-90"
                             title="Inspect Weapons"
                           >
-                            <span className={`w-2 h-2 rounded-full ${getDotClass(m.weapons_ready)}`} />
+                            <span
+                              className={`w-2 h-2 rounded-full ${getDotClass(m.weapons_ready)}`}
+                            />
                           </button>
                         </div>
                         <div className="flex justify-center">
@@ -361,7 +367,9 @@ export default function CommanderDashboard({
                           </button>
                         </div>
                         <div className="flex justify-center py-1">
-                          <span className={`w-2 h-2 rounded-full ${getDotClass(m.transport_ready)}`} />
+                          <span
+                            className={`w-2 h-2 rounded-full ${getDotClass(m.transport_ready)}`}
+                          />
                         </div>
                       </>
                     );
@@ -371,7 +379,9 @@ export default function CommanderDashboard({
                 {isSelected && (
                   <div className="p-2 bg-bf-slate/90 border-x border-b border-bf-orange/40 text-[9px] font-mono space-y-1.5 animate-fade-in relative -mt-1 mx-0.5 z-10 clip-btn shadow-[0_4px_12px_rgba(255,84,0,0.1)]">
                     <div className="text-[7px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-1 flex justify-between">
-                      <span>// {d.selectedIssuesTitle} // {selectedIssue.category}</span>
+                      <span>
+                        // {d.selectedIssuesTitle} // {selectedIssue.category}
+                      </span>
                     </div>
 
                     <div className="space-y-1 font-mono text-[8px]">
@@ -381,13 +391,15 @@ export default function CommanderDashboard({
                         </div>
                       ) : selectedIssue.items.length > 0 ? (
                         <div className="space-y-0.5">
-                           {selectedIssue.items.map((item, idx) => (
+                          {selectedIssue.items.map((item, idx) => (
                             <div
                               key={idx}
                               className="flex justify-between items-center p-1 bg-bf-orange/5 border border-bf-orange/30 clip-btn text-bf-orange shadow-[inset_0_0_8px_rgba(255,84,0,0.05)]"
                             >
                               <span className="text-[7px] text-slate-500">// {item.type}</span>
-                              <span className="font-bold uppercase tracking-wider">[X] {item.label}</span>
+                              <span className="font-bold uppercase tracking-wider">
+                                [X] {item.label}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -417,25 +429,37 @@ export default function CommanderDashboard({
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-white font-black text-[11px] uppercase tracking-wider truncate">
-                          {selectedProfile.tg_username ? `@${selectedProfile.tg_username}` : selectedProfile.phone_number}
+                          {selectedProfile.tg_username
+                            ? `@${selectedProfile.tg_username}`
+                            : selectedProfile.phone_number}
                         </div>
-                        {selectedProfile.specialization && (() => {
-                          const label = formatCommaLabel(selectedProfile.specialization, specializationsList, lang);
-                          const isLong = label.length > 18;
-                          return (
-                            <div className="text-[9px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
-                              <span className="shrink-0 text-slate-500">ROLE:</span>
-                              {isLong ? (
-                                <div className="overflow-hidden whitespace-nowrap flex-1 flex font-bold text-bf-cyan">
-                                  <span className="animate-marquee pr-4 shrink-0">{label}</span>
-                                  <span className="animate-marquee pr-4 shrink-0" aria-hidden="true">{label}</span>
-                                </div>
-                              ) : (
-                                <span className="font-bold text-bf-cyan truncate">{label}</span>
-                              )}
-                            </div>
-                          );
-                        })()}
+                        {selectedProfile.specialization &&
+                          (() => {
+                            const label = formatCommaLabel(
+                              selectedProfile.specialization,
+                              specializationsList,
+                              lang
+                            );
+                            const isLong = label.length > 18;
+                            return (
+                              <div className="text-[9px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
+                                <span className="shrink-0 text-slate-500">ROLE:</span>
+                                {isLong ? (
+                                  <div className="overflow-hidden whitespace-nowrap flex-1 flex font-bold text-bf-cyan">
+                                    <span className="animate-marquee pr-4 shrink-0">{label}</span>
+                                    <span
+                                      className="animate-marquee pr-4 shrink-0"
+                                      aria-hidden="true"
+                                    >
+                                      {label}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="font-bold text-bf-cyan truncate">{label}</span>
+                                )}
+                              </div>
+                            );
+                          })()}
                       </div>
                     </div>
                   </div>

@@ -6,7 +6,7 @@ import {
   opticsList,
   accessoriesList,
   gearsList,
-  medsList
+  medsList,
 } from '@shared/loadout-data.js';
 
 function SelectionSection({
@@ -22,8 +22,10 @@ function SelectionSection({
 }) {
   const displayedItems = isExpanded
     ? list
-    : list.filter((item, index) =>
-        index < 2 || (isSingleSelect ? selectedItems === item.id : selectedItems.includes(item.id))
+    : list.filter(
+        (item, index) =>
+          index < 2 ||
+          (isSingleSelect ? selectedItems === item.id : selectedItems.includes(item.id))
       );
 
   return (
@@ -33,7 +35,9 @@ function SelectionSection({
       </label>
       <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
         {displayedItems.map((item) => {
-          const isSelected = isSingleSelect ? selectedItems === item.id : selectedItems.includes(item.id);
+          const isSelected = isSingleSelect
+            ? selectedItems === item.id
+            : selectedItems.includes(item.id);
           return (
             <button
               key={item.id}

@@ -5,7 +5,7 @@ import {
   opticsList,
   accessoriesList,
   gearsList,
-  medsList
+  medsList,
 } from './loadout-data.js';
 
 const aiDescriptions = {
@@ -44,7 +44,14 @@ const aiDescriptions = {
   tactical_soft_stretcher: 'tactical fabric soft stretcher',
 };
 
-export function formatLoadoutForAIPrompt({ specialization, weaponry, optics, accessories, gear, meds }) {
+export function formatLoadoutForAIPrompt({
+  specialization,
+  weaponry,
+  optics,
+  accessories,
+  gear,
+  meds,
+}) {
   const formattedSpec = (specialization || '')
     .split(',')
     .map((s) => {

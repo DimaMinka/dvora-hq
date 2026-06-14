@@ -9,9 +9,8 @@ import {
   opticsList,
   accessoriesList,
   gearsList,
-  medsList
+  medsList,
 } from '../shared/loadout-data.js';
-
 
 if (!config.botToken || config.botToken === 'your_bot_token') {
   console.log('[Bot] TELEGRAM_BOT_TOKEN not configured. Bot execution disabled.');
@@ -34,7 +33,6 @@ async function hashPin(pin) {
     parallelism: 1,
   });
 }
-
 
 if (bot) {
   const adminString = config.telegramAdminUsernames;
@@ -359,7 +357,8 @@ if (bot) {
             .split(',')
             .map((id) => {
               const cleanId = id.trim().toLowerCase();
-              const match = gearsList.find((g) => g.id === cleanId) || medsList.find((m) => m.id === cleanId);
+              const match =
+                gearsList.find((g) => g.id === cleanId) || medsList.find((m) => m.id === cleanId);
               return match ? match.en : id.trim();
             })
             .join(' + ')

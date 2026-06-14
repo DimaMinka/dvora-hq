@@ -37,7 +37,7 @@ export const secondaryWeaponsList = [
 
 export const opticsList = [
   { id: 'm5', en: 'Meprolight M5', he: 'מפרולייט M5' },
-  { id: 'trijicon', en: 'Trijicon ACOG', he: 'טריג\'יקון' },
+  { id: 'trijicon', en: 'Trijicon ACOG', he: "טריג'יקון" },
   { id: 'custom', en: 'Custom Optic', he: 'מותאם אישית' },
   { id: 'lior', en: 'Lior Night Sight', he: 'ליאור' },
   { id: 'akila', en: 'Akila Night Sight', he: 'אקילה' },

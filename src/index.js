@@ -16,7 +16,9 @@ app.use((req, res, next) => {
 
 // CORS middleware: only allow origins from ALLOWED_ORIGINS env (comma-separated)
 // Falls back to localhost:5173 for local development
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',').map((o) => o.trim());
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim());
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;

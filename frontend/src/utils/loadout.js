@@ -2,7 +2,7 @@ import {
   primaryWeaponsList,
   secondaryWeaponsList,
   opticsList,
-  accessoriesList
+  accessoriesList,
 } from '@shared/loadout-data.js';
 
 export function resolveLabel(id, list, lang) {

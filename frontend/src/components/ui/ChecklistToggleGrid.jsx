@@ -1,10 +1,4 @@
-
-export default function ChecklistToggleGrid({
-  checklist = {},
-  onToggle,
-  items = [],
-  labels = {},
-}) {
+export default function ChecklistToggleGrid({ checklist = {}, onToggle, items = [], labels = {} }) {
   const { pending = 'PENDING', ready = 'READY', issue = 'ISSUE' } = labels;
 
   return (

@@ -59,7 +59,14 @@ router.post('/onboarding', authenticateToken, async (req, res) => {
     await userRef.update(updateData);
 
     // AI Avatar generation
-    const formattedSpecData = formatLoadoutForAIPrompt({ specialization, weaponry, optics, accessories, gear, meds });
+    const formattedSpecData = formatLoadoutForAIPrompt({
+      specialization,
+      weaponry,
+      optics,
+      accessories,
+      gear,
+      meds,
+    });
     const avatarUrl = await generateAndSaveAvatar(userRef, req.user.userId, formattedSpecData);
 
     res.json({

@@ -42,7 +42,9 @@ export default function FighterDashboard({
     e.preventDefault();
     const trimmed = reportText.trim();
     if (trimmed.length < 10) {
-      alert(lang === 'en' ? 'REPORT MUST BE AT LEAST 10 CHARACTERS' : 'הדיווח חייב להכил לפחות 10 תווים');
+      alert(
+        lang === 'en' ? 'REPORT MUST BE AT LEAST 10 CHARACTERS' : 'הדיווח חייב להכил לפחות 10 תווים'
+      );
       return;
     }
     if (isSending) return;
@@ -189,7 +191,9 @@ export default function FighterDashboard({
             placeholder={d.placeholder}
             className="w-full h-14 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 pb-4 resize-none uppercase text-[10px] font-mono outline-none"
           />
-          <div className={`absolute bottom-1 right-2 text-[8px] font-mono select-none ${reportText.trim().length >= 10 ? 'text-bf-cyan' : 'text-slate-600'}`}>
+          <div
+            className={`absolute bottom-1 right-2 text-[8px] font-mono select-none ${reportText.trim().length >= 10 ? 'text-bf-cyan' : 'text-slate-600'}`}
+          >
             {reportText.trim().length}/10 CHARS
           </div>
         </div>

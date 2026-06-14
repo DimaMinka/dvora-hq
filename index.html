@@ -1,575 +1,614 @@
 <!doctype html>
 <html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050b0e" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#e8dcc4" media="(prefers-color-scheme: light)" />
+    <title>DVORA HQ // TACTICAL BATTLE NETWORK</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#050b0e" media="(prefers-color-scheme: dark)" />
-  <meta name="theme-color" content="#e8dcc4" media="(prefers-color-scheme: light)" />
-  <title>DVORA HQ // TACTICAL BATTLE NETWORK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rubik:wght@300;400;700;900&display=swap"
+      rel="stylesheet"
+    />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rubik:wght@300;400;700;900&display=swap"
-    rel="stylesheet" />
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            bf: {
-              dark: 'var(--color-bf-dark)',
-              slate: 'var(--color-bf-slate)',
-              cyan: 'var(--color-bf-cyan)',
-              orange: 'var(--color-bf-orange)',
-              border: 'var(--color-bf-border)',
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bf: {
+                dark: 'var(--color-bf-dark)',
+                slate: 'var(--color-bf-slate)',
+                cyan: 'var(--color-bf-cyan)',
+                orange: 'var(--color-bf-orange)',
+                border: 'var(--color-bf-border)',
+              },
+            },
+            fontFamily: {
+              mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+              heb: ['Rubik', 'sans-serif'],
+              heb_title: ['Rubik Mono One', 'sans-serif'],
             },
           },
-          fontFamily: {
-            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-            heb: ['Rubik', 'sans-serif'],
-            heb_title: ['Rubik Mono One', 'sans-serif'],
-          },
         },
-      },
-    };
-  </script>
-  <style>
-    :root {
-      --color-bf-dark: #050b0e;
-      --color-bf-slate: #0d181e;
-      --color-bf-cyan: #00f0ff;
-      --color-bf-orange: #ff5400;
-      --color-bf-border: #162b35;
-      --color-text-main: #cbd5e1;
-    }
-
-    @media (prefers-color-scheme: light) {
+      };
+    </script>
+    <style>
       :root {
-        --color-bf-dark: #e8dcc4;
-        /* Light sand background */
-        --color-bf-slate: #f4ebdb;
-        /* Lighter sand panel background */
-        --color-bf-cyan: #705335;
-        /* Camo dark brown for accents and headers */
-        --color-bf-orange: #b24900;
-        /* Contrast rust/camber orange */
-        --color-bf-border: #d2c0a0;
-        /* Sand border */
-        --color-text-main: #4a3728;
-        /* Tactical dark brown */
+        --color-bf-dark: #050b0e;
+        --color-bf-slate: #0d181e;
+        --color-bf-cyan: #00f0ff;
+        --color-bf-orange: #ff5400;
+        --color-bf-border: #162b35;
+        --color-text-main: #cbd5e1;
       }
-    }
 
-    /* Интеграция твоего фона с адаптацией под десктоп */
-    .dvora-bg {
-      background-color: var(--color-bf-dark);
-      background-image:
-        linear-gradient(to bottom,
-          rgba(5, 11, 14, 0.85),
-          rgba(5, 11, 14, 0.5) 30%,
-          rgba(5, 11, 14, 0.95)),
-        url('https://i.ibb.co/6R496p0c/IMG-8704.png');
-      background-size: contain;
-      background-position: center top;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --color-bf-dark: #e8dcc4;
+          /* Light sand background */
+          --color-bf-slate: #f4ebdb;
+          /* Lighter sand panel background */
+          --color-bf-cyan: #705335;
+          /* Camo dark brown for accents and headers */
+          --color-bf-orange: #b24900;
+          /* Contrast rust/camber orange */
+          --color-bf-border: #d2c0a0;
+          /* Sand border */
+          --color-text-main: #4a3728;
+          /* Tactical dark brown */
+        }
+      }
 
-    @media (prefers-color-scheme: light) {
+      /* Интеграция твоего фона с адаптацией под десктоп */
       .dvora-bg {
+        background-color: var(--color-bf-dark);
         background-image:
-          linear-gradient(to bottom,
-            rgba(232, 220, 196, 0.85),
-            rgba(232, 220, 196, 0.6) 30%,
-            rgba(232, 220, 196, 0.95)),
-          url('https://i.ibb.co/6R496p0c/IMG-8704.png') !important;
+          linear-gradient(
+            to bottom,
+            rgba(5, 11, 14, 0.85),
+            rgba(5, 11, 14, 0.5) 30%,
+            rgba(5, 11, 14, 0.95)
+          ),
+          url('https://i.ibb.co/6R496p0c/IMG-8704.png');
+        background-size: contain;
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
       }
-    }
 
-    /* Для десктопов делаем cover, чтобы не было пустых полей по бокам, но центрируем по арту */
-    @media (min-width: 1024px) {
-      .dvora-bg {
-        background-size: cover;
-        background-position: center 20%;
+      @media (prefers-color-scheme: light) {
+        .dvora-bg {
+          background-image:
+            linear-gradient(
+              to bottom,
+              rgba(232, 220, 196, 0.85),
+              rgba(232, 220, 196, 0.6) 30%,
+              rgba(232, 220, 196, 0.95)
+            ),
+            url('https://i.ibb.co/6R496p0c/IMG-8704.png') !important;
+        }
       }
-    }
 
-    .hud-grid {
-      background:
-        linear-gradient(rgba(13, 24, 30, 0.2) 50%, rgba(5, 11, 14, 0.4) 50%),
-        linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px);
-      background-size:
-        100% 4px,
-        20px 20px,
-        20px 20px;
-    }
+      /* Для десктопов делаем cover, чтобы не было пустых полей по бокам, но центрируем по арту */
+      @media (min-width: 1024px) {
+        .dvora-bg {
+          background-size: cover;
+          background-position: center 20%;
+        }
+      }
 
-    @media (prefers-color-scheme: light) {
       .hud-grid {
         background:
-          linear-gradient(rgba(232, 220, 196, 0.25) 50%, rgba(232, 220, 196, 0.45) 50%),
-          linear-gradient(90deg, rgba(112, 83, 53, 0.04) 1px, transparent 1px),
-          linear-gradient(rgba(112, 83, 53, 0.04) 1px, transparent 1px) !important;
+          linear-gradient(rgba(13, 24, 30, 0.2) 50%, rgba(5, 11, 14, 0.4) 50%),
+          linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+        background-size:
+          100% 4px,
+          20px 20px,
+          20px 20px;
       }
-    }
 
-    .clip-hud {
-      clip-path: polygon(0 0,
+      @media (prefers-color-scheme: light) {
+        .hud-grid {
+          background:
+            linear-gradient(rgba(232, 220, 196, 0.25) 50%, rgba(232, 220, 196, 0.45) 50%),
+            linear-gradient(90deg, rgba(112, 83, 53, 0.04) 1px, transparent 1px),
+            linear-gradient(rgba(112, 83, 53, 0.04) 1px, transparent 1px) !important;
+        }
+      }
+
+      .clip-hud {
+        clip-path: polygon(
+          0 0,
           calc(100% - 15px) 0,
           100% 15px,
           100% 100%,
           15px 100%,
-          0 calc(100% - 15px));
-    }
+          0 calc(100% - 15px)
+        );
+      }
 
-    .clip-btn {
-      clip-path: polygon(0 0,
+      .clip-btn {
+        clip-path: polygon(
+          0 0,
           calc(100% - 8px) 0,
           100% 8px,
           100% 100%,
           8px 100%,
-          0 calc(100% - 8px));
-    }
+          0 calc(100% - 8px)
+        );
+      }
 
-    html[dir='rtl'] body {
-      font-family: 'Rubik', sans-serif;
-    }
+      html[dir='rtl'] body {
+        font-family: 'Rubik', sans-serif;
+      }
 
-    html[dir='rtl'] .main-title {
-      font-family: 'Rubik Mono One', sans-serif;
-    }
+      html[dir='rtl'] .main-title {
+        font-family: 'Rubik Mono One', sans-serif;
+      }
 
-    /* Эффект матового стекла для HUD панелей поверх крутого фона */
-    .glass-panel {
-      background: rgba(13, 24, 30, 0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    @media (prefers-color-scheme: light) {
+      /* Эффект матового стекла для HUD панелей поверх крутого фона */
       .glass-panel {
-        background: rgba(244, 235, 219, 0.75) !important;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        background: rgba(13, 24, 30, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
       }
 
-      /* Global text overrides for landing page light mode */
-      body {
-        color: var(--color-text-main) !important;
+      @media (prefers-color-scheme: light) {
+        .glass-panel {
+          background: rgba(244, 235, 219, 0.75) !important;
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Global text overrides for landing page light mode */
+        body {
+          color: var(--color-text-main) !important;
+        }
+
+        .text-white {
+          color: #271a10 !important;
+        }
+
+        .text-slate-300 {
+          color: #4a3728 !important;
+        }
+
+        .text-slate-400 {
+          color: #634d3b !important;
+        }
+
+        .text-slate-500 {
+          color: #836e59 !important;
+        }
+
+        .text-slate-600 {
+          color: #9c8a77 !important;
+        }
+
+        .border-bf-border\/60 {
+          border-color: rgba(112, 83, 53, 0.35) !important;
+        }
+
+        /* Adjust button background hover classes */
+        .hover\:text-white:hover {
+          color: #1e1b18 !important;
+        }
+
+        .bg-bf-cyan\/10 {
+          background-color: rgba(112, 83, 53, 0.1) !important;
+        }
       }
+    </style>
+  </head>
 
-      .text-white {
-        color: #271a10 !important;
-      }
+  <body
+    class="min-h-screen bg-bf-dark text-slate-300 font-mono tracking-wide p-4 sm:p-8 relative overflow-x-hidden dvora-bg hud-grid"
+  >
+    <div
+      class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-bf-cyan to-transparent opacity-50"
+    ></div>
 
-      .text-slate-300 {
-        color: #4a3728 !important;
-      }
-
-      .text-slate-400 {
-        color: #634d3b !important;
-      }
-
-      .text-slate-500 {
-        color: #836e59 !important;
-      }
-
-      .text-slate-600 {
-        color: #9c8a77 !important;
-      }
-
-      .border-bf-border\/60 {
-        border-color: rgba(112, 83, 53, 0.35) !important;
-      }
-
-      /* Adjust button background hover classes */
-      .hover\:text-white:hover {
-        color: #1e1b18 !important;
-      }
-
-      .bg-bf-cyan\/10 {
-        background-color: rgba(112, 83, 53, 0.1) !important;
-      }
-    }
-  </style>
-</head>
-
-<body
-  class="min-h-screen bg-bf-dark text-slate-300 font-mono tracking-wide p-4 sm:p-8 relative overflow-x-hidden dvora-bg hud-grid">
-  <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-bf-cyan to-transparent opacity-50">
-  </div>
-
-  <header
-    class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-bf-border/60 pb-6 glass-panel p-4 clip-hud">
-    <div class="w-full sm:w-auto">
-      <div id="meta-status" class="text-xs text-bf-cyan opacity-70 mb-1">
-        // CODENAME: DVORA // NETWORK_STATUS: ONLINE
-      </div>
-      <h1 class="text-3xl font-black text-white tracking-widest sm:text-4xl main-title">
-        DVORA <span class="text-bf-orange animate-pulse">HQ v2.1</span>
-      </h1>
-    </div>
-
-    <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-      <div class="flex p-0.5 bg-bf-dark border border-bf-border clip-btn">
-        <button onclick="changeLanguage('en')" id="lang-en"
-          class="px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn">
-          ENG
-        </button>
-        <button onclick="changeLanguage('he')" id="lang-he"
-          class="px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn">
-          עבר
-        </button>
-      </div>
-
-      <div
-        class="text-right text-xs border border-bf-border p-2 bg-bf-dark/80 clip-btn w-full sm:w-auto flex sm:flex-col justify-between"
-        id="telemetry-box">
-        <div>
-          <span class="text-slate-500">SYS_LOC:</span>
-          <span class="text-bf-cyan font-bold">EU-WEST.GCP</span>
+    <header
+      class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-bf-border/60 pb-6 glass-panel p-4 clip-hud"
+    >
+      <div class="w-full sm:w-auto">
+        <div id="meta-status" class="text-xs text-bf-cyan opacity-70 mb-1">
+          // CODENAME: DVORA // NETWORK_STATUS: ONLINE
         </div>
-        <div>
-          <span class="text-slate-500">SECURITY:</span>
-          <span class="text-bf-orange font-bold">STRICT_AUTH</span>
+        <h1 class="text-3xl font-black text-white tracking-widest sm:text-4xl main-title">
+          DVORA <span class="text-bf-orange animate-pulse">HQ v2.1</span>
+        </h1>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+        <div class="flex p-0.5 bg-bf-dark border border-bf-border clip-btn">
+          <button
+            onclick="changeLanguage('en')"
+            id="lang-en"
+            class="px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn"
+          >
+            ENG
+          </button>
+          <button
+            onclick="changeLanguage('he')"
+            id="lang-he"
+            class="px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn"
+          >
+            עבר
+          </button>
         </div>
-      </div>
-    </div>
-  </header>
 
-  <section class="max-w-6xl mx-auto mb-8 p-6 glass-panel border border-bf-border/50 clip-hud">
-    <div class="flex items-center gap-2 mb-3">
-      <span class="w-2 h-10 bg-bf-orange"></span>
-      <div>
-        <div class="text-[10px] text-bf-orange font-bold font-mono tracking-widest">
-          // MISSION_STATEMENT
-        </div>
-        <h2 id="app-desc-title" class="text-xl font-black text-white uppercase">
-          TACTICAL COMMAND OPERATIONS
-        </h2>
-      </div>
-    </div>
-    <p id="app-desc-text" class="text-sm text-slate-300 max-w-3xl leading-relaxed">
-      Dvora HQ is an ultra-secure, invite-only tactical synchronization dashboard integrated
-      natively into the Telegram ecosystem. Built for modern field operations, it guarantees
-      instant state alignment, decentralized deployment management, and real-time combat status
-      reporting under a strictly enforced perimeter.
-    </p>
-  </section>
-
-  <main class="max-w-6xl mx-auto grid gap-6 md:grid-cols-3">
-    <section class="md:col-span-2 space-y-6">
-      <div class="flex items-center gap-2 border-b border-bf-cyan/30 pb-2">
-        <span class="w-2 h-2 bg-bf-cyan"></span>
-        <h2 id="section-caps-title" class="text-sm font-black text-white uppercase tracking-widest">
-          System Capabilities [Deploy_Log]
-        </h2>
-      </div>
-
-      <div class="grid gap-4 sm:grid-cols-2" id="cards-container"></div>
-    </section>
-
-    <section class="space-y-6">
-      <div class="flex items-center gap-2 border-b border-bf-orange/30 pb-2">
-        <span class="w-2 h-2 bg-bf-orange animate-ping"></span>
-        <h2 id="section-nodes-title" class="text-sm font-black text-white uppercase tracking-widest">
-          Live Mini App HUD [Node_Matrix]
-        </h2>
-      </div>
-
-      <div class="flex flex-col gap-1.5" id="node-toggles"></div>
-
-      <div
-        class="p-4 glass-panel border-2 border-bf-cyan/30 clip-hud relative flex flex-col justify-between min-h-[440px]">
-        <div id="mini-app-content" class="space-y-4 w-full"></div>
-
-        <div class="w-full pt-3 mt-4 border-t border-bf-border space-y-2 z-20">
-          <div id="sim-title" class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">
-            // LOCAL_HUD_SIMULATOR_ACTIONS
+        <div
+          class="text-right text-xs border border-bf-border p-2 bg-bf-dark/80 clip-btn w-full sm:w-auto flex sm:flex-col justify-between"
+          id="telemetry-box"
+        >
+          <div>
+            <span class="text-slate-500">SYS_LOC:</span>
+            <span class="text-bf-cyan font-bold">EU-WEST.GCP</span>
           </div>
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="simulateAlarm(true)" id="sim-alarm-on"
-              class="w-full bg-bf-orange/20 border border-bf-orange text-bf-orange py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-bf-orange/30 transition-all">
-              Alarm On
-            </button>
-            <button onclick="simulateAlarm(false)" id="sim-alarm-off"
-              class="w-full bg-slate-800 border border-slate-700 text-slate-400 py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-slate-700 transition-all">
-              Alarm Off
-            </button>
+          <div>
+            <span class="text-slate-500">SECURITY:</span>
+            <span class="text-bf-orange font-bold">STRICT_AUTH</span>
           </div>
         </div>
       </div>
+    </header>
+
+    <section class="max-w-6xl mx-auto mb-8 p-6 glass-panel border border-bf-border/50 clip-hud">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-2 h-10 bg-bf-orange"></span>
+        <div>
+          <div class="text-[10px] text-bf-orange font-bold font-mono tracking-widest">
+            // MISSION_STATEMENT
+          </div>
+          <h2 id="app-desc-title" class="text-xl font-black text-white uppercase">
+            TACTICAL COMMAND OPERATIONS
+          </h2>
+        </div>
+      </div>
+      <p id="app-desc-text" class="text-sm text-slate-300 max-w-3xl leading-relaxed">
+        Dvora HQ is an ultra-secure, invite-only tactical synchronization dashboard integrated
+        natively into the Telegram ecosystem. Built for modern field operations, it guarantees
+        instant state alignment, decentralized deployment management, and real-time combat status
+        reporting under a strictly enforced perimeter.
+      </p>
     </section>
-  </main>
 
-  <section class="max-w-6xl mx-auto mt-12 mb-16">
-    <div class="flex items-center gap-2 border-b border-bf-border pb-2 mb-6">
-      <span class="w-2 h-2 bg-slate-500"></span>
-      <h2 id="section-tech-title" class="text-sm font-black text-white uppercase tracking-widest">
-        Core Infrastructure Blueprint [GCP_Serverless]
-      </h2>
-    </div>
+    <main class="max-w-6xl mx-auto grid gap-6 md:grid-cols-3">
+      <section class="md:col-span-2 space-y-6">
+        <div class="flex items-center gap-2 border-b border-bf-cyan/30 pb-2">
+          <span class="w-2 h-2 bg-bf-cyan"></span>
+          <h2
+            id="section-caps-title"
+            class="text-sm font-black text-white uppercase tracking-widest"
+          >
+            System Capabilities [Deploy_Log]
+          </h2>
+        </div>
 
-    <div class="border border-bf-border bg-bf-slate/40 glass-panel clip-hud overflow-hidden" id="tech-stack-container">
-    </div>
-  </section>
+        <div class="grid gap-4 sm:grid-cols-2" id="cards-container"></div>
+      </section>
 
-  <footer id="footer-text"
-    class="max-w-6xl mx-auto border-t border-bf-border pt-6 text-center text-[10px] text-slate-600 tracking-widest">
-    CRITICAL DATA STREAM // SECURITY ENFORCED BY DVORA HQ PROTOCOLS // NO OUTBOUND EGRESS DETECTED
-  </footer>
+      <section class="space-y-6">
+        <div class="flex items-center gap-2 border-b border-bf-orange/30 pb-2">
+          <span class="w-2 h-2 bg-bf-orange animate-ping"></span>
+          <h2
+            id="section-nodes-title"
+            class="text-sm font-black text-white uppercase tracking-widest"
+          >
+            Live Mini App HUD [Node_Matrix]
+          </h2>
+        </div>
 
-  <script>
-    let currentLang = 'en';
-    let globalAlarmState = false;
-    let currentRole = 'soldier';
-    let isLocked = true;
-    let currentPin = '';
-    let keyboardMode = 'numeric';
+        <div class="flex flex-col gap-1.5" id="node-toggles"></div>
 
-    let activeSimPanel = null;
-    let simChecklist = { wpn: 0, trsp: 0, com: 0, med: 0 };
-    let simSubStatus = {
-      wpn: { primary: false, sidearm: false },
-      trsp: { keys: false, fuel: false },
-      com: { radio: false, battery: false },
-      med: { tourniquet: false, bandage: false },
-    };
+        <div
+          class="p-4 glass-panel border-2 border-bf-cyan/30 clip-hud relative flex flex-col justify-between min-h-[440px]"
+        >
+          <div id="mini-app-content" class="space-y-4 w-full"></div>
 
-    const i18n = {
-      en: {
-        metaStatus: '// CODENAME: DVORA // NETWORK_STATUS: ONLINE',
-        capsTitle: 'System Capabilities [Deploy_Log]',
-        nodesTitle: 'Live Mini App HUD [Node_Matrix]',
-        techTitle: 'Core Infrastructure Blueprint [GCP_Serverless]',
-        simTitle: '// LOCAL_HUD_SIMULATOR_ACTIONS',
-        appDescTitle: 'TACTICAL COMMAND OPERATIONS HUB',
-        appDescText:
-          'Dvora HQ is an ultra-secure, invite-only tactical synchronization dashboard integrated natively into the Telegram ecosystem. Built for modern rapid field operations, it guarantees instant status alignment, decentralized resource tracking, and real-time squad activation under a strictly audited perimeter.',
-        footer:
-          'CRITICAL DATA STREAM // SECURITY ENFORCED BY DVORA HQ PROTOCOLS // NO OUTBOUND EGRESS DETECTED',
-        sysLoc: 'SYS_LOC:',
-        security: 'SECURITY:',
-        btnSoldier: '> OPERATOR_NODE (LIVE APP)',
-        btnCommander: '> COMMAND_NODE (VIEW)',
-        btnAdmin: '> INTEL_ADMIN (BOT CLI)',
-        alarmStandby: 'STATUS // NETWORK_STANDBY',
-        alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
-        ready: 'READY',
-        issue: 'ISSUE',
-        pending: 'PENDING',
-        subItems: {
-          wpn: { primary: 'Primary Weapon', sidearm: 'Sidearm' },
-          trsp: { keys: 'Vehicle Keys', fuel: 'Fuel Level' },
-          com: { radio: 'Tactical Radio', battery: 'Spare Battery' },
-          med: { tourniquet: 'CAT Tourniquet', bandage: 'Israeli Bandage' },
-        },
-        cards: [
-          {
-            tag: '[01_SECURE_ACCESS]',
-            title: 'Tactical PIN Lock Screen',
-            desc: 'Direct authentication using a unique, encrypted numeric-alpha PIN. Hard token wipe executed precisely at T-120 minutes.',
+          <div class="w-full pt-3 mt-4 border-t border-bf-border space-y-2 z-20">
+            <div
+              id="sim-title"
+              class="text-[9px] text-slate-500 font-bold uppercase tracking-wider"
+            >
+              // LOCAL_HUD_SIMULATOR_ACTIONS
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                onclick="simulateAlarm(true)"
+                id="sim-alarm-on"
+                class="w-full bg-bf-orange/20 border border-bf-orange text-bf-orange py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-bf-orange/30 transition-all"
+              >
+                Alarm On
+              </button>
+              <button
+                onclick="simulateAlarm(false)"
+                id="sim-alarm-off"
+                class="w-full bg-slate-800 border border-slate-700 text-slate-400 py-1.5 text-[10px] uppercase font-bold clip-btn hover:bg-slate-700 transition-all"
+              >
+                Alarm Off
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="max-w-6xl mx-auto mt-12 mb-16">
+      <div class="flex items-center gap-2 border-b border-bf-border pb-2 mb-6">
+        <span class="w-2 h-2 bg-slate-500"></span>
+        <h2 id="section-tech-title" class="text-sm font-black text-white uppercase tracking-widest">
+          Core Infrastructure Blueprint [GCP_Serverless]
+        </h2>
+      </div>
+
+      <div
+        class="border border-bf-border bg-bf-slate/40 glass-panel clip-hud overflow-hidden"
+        id="tech-stack-container"
+      ></div>
+    </section>
+
+    <footer
+      id="footer-text"
+      class="max-w-6xl mx-auto border-t border-bf-border pt-6 text-center text-[10px] text-slate-600 tracking-widest"
+    >
+      CRITICAL DATA STREAM // SECURITY ENFORCED BY DVORA HQ PROTOCOLS // NO OUTBOUND EGRESS DETECTED
+    </footer>
+
+    <script>
+      let currentLang = 'en';
+      let globalAlarmState = false;
+      let currentRole = 'soldier';
+      let isLocked = true;
+      let currentPin = '';
+      let keyboardMode = 'numeric';
+
+      let activeSimPanel = null;
+      let simChecklist = { wpn: 0, trsp: 0, com: 0, med: 0 };
+      let simSubStatus = {
+        wpn: { primary: false, sidearm: false },
+        trsp: { keys: false, fuel: false },
+        com: { radio: false, battery: false },
+        med: { tourniquet: false, bandage: false },
+      };
+
+      const i18n = {
+        en: {
+          metaStatus: '// CODENAME: DVORA // NETWORK_STATUS: ONLINE',
+          capsTitle: 'System Capabilities [Deploy_Log]',
+          nodesTitle: 'Live Mini App HUD [Node_Matrix]',
+          techTitle: 'Core Infrastructure Blueprint [GCP_Serverless]',
+          simTitle: '// LOCAL_HUD_SIMULATOR_ACTIONS',
+          appDescTitle: 'TACTICAL COMMAND OPERATIONS HUB',
+          appDescText:
+            'Dvora HQ is an ultra-secure, invite-only tactical synchronization dashboard integrated natively into the Telegram ecosystem. Built for modern rapid field operations, it guarantees instant status alignment, decentralized resource tracking, and real-time squad activation under a strictly audited perimeter.',
+          footer:
+            'CRITICAL DATA STREAM // SECURITY ENFORCED BY DVORA HQ PROTOCOLS // NO OUTBOUND EGRESS DETECTED',
+          sysLoc: 'SYS_LOC:',
+          security: 'SECURITY:',
+          btnSoldier: '> OPERATOR_NODE (LIVE APP)',
+          btnCommander: '> COMMAND_NODE (VIEW)',
+          btnAdmin: '> INTEL_ADMIN (BOT CLI)',
+          alarmStandby: 'STATUS // NETWORK_STANDBY',
+          alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
+          ready: 'READY',
+          issue: 'ISSUE',
+          pending: 'PENDING',
+          subItems: {
+            wpn: { primary: 'Primary Weapon', sidearm: 'Sidearm' },
+            trsp: { keys: 'Vehicle Keys', fuel: 'Fuel Level' },
+            com: { radio: 'Tactical Radio', battery: 'Spare Battery' },
+            med: { tourniquet: 'CAT Tourniquet', bandage: 'Israeli Bandage' },
           },
-          {
-            tag: '[02_AI_RENDER]',
-            title: 'Loadout Biometrics',
-            desc: 'Onboarding protocols evaluate operator loadout & specialization. Asynchronous GCP queues spin up neural assets to render a permanent custom profile matrix.',
-          },
-          {
-            tag: '[03_STATUS_HUB]',
-            title: 'Readiness Diagnostics',
-            desc: 'Quad-axis checks. Buttons cycle: Pending ➔ Issue (opens checklist panel) ➔ Ready. Auto-collapses checklist when all sub-items are resolved.',
-          },
-          {
-            tag: '[04_COMBAT_ALARM]',
-            title: 'Squad Overrides',
-            desc: 'Commanders deploy precision alarms. Instantly overwrites the client state of target sub-squads with no resource overhead or background polling fatigue.',
-          },
-        ],
-        tech: [
-          {
-            name: '[ENGINE] Cloud Run',
-            desc: 'Isolated environment container. Param `min-instances: 1` targeted to completely vaporize Telegram webhook latency.',
-          },
-          {
-            name: '[DATABASE] Cloud Firestore',
-            desc: 'Serverless NoSQL document store providing sub-millisecond lookups with zero idle costs and automatic horizontal scaling.',
-          },
-          {
-            name: '[CYPHER] Argon2id',
-            desc: 'OWASP cryptographic mandate for offline numeric validation. Zero plaintext vectors across the persistence layer.',
-          },
-          {
-            name: '[QUEUE] Cloud Tasks',
-            desc: 'Asynchronous token ingestion. Isolates expensive generative AI endpoints from core application runtime.',
-          },
-        ],
-        roles: {
-          soldier: {
-            feed: '[NODE_FEED: OPERATOR_HUD]',
-            op: 'OPERATOR: REAPER',
-            squad: 'SQUAD: ALPHA (01)',
-            tasks: [
-              'Pass validation sequence (Unique Encrypted PIN)',
-              'Report real-time combat status toggles [Weapons, Transport, Comms, Meds]',
-              'Inject raw unencrypted asset bottleneck text directly up the chain',
-            ],
-          },
-          commander: {
-            feed: '[NODE_FEED: STRATEGIC_DASHBOARD]',
-            title: 'SQUAD ALPHA OVERVIEW',
-            tasks: [
-              'Oversee full operational green/red matrix status of assigned unit',
-              'Query read-only append-only incident reports filed by field operators',
-              'Execute immediate targeted Squad-Level Alarm state-overrides',
-            ],
-          },
-          admin: {
-            feed: '[NODE_FEED: TELEGRAM_BOT_CLI]',
-            title: 'INTEL COMMAND LINE',
-            tasks: [
-              'Inject pre-approved network whitelist entries (Fighter Identity Vectors)',
-              'Deploy automatically generated unique PIN codes (5-digits + 1-alpha)',
-              'Zero layout footprint within client Mini App interface',
-            ],
-          },
-        },
-      },
-      he: {
-        metaStatus: '// שם קוד: דבורה // סטאטוס רשת: מחובר',
-        capsTitle: 'יכולות מערכת [יומן_פריסה]',
-        nodesTitle: 'תצוגת מיני-אפליקציה [מטריצת_קשר]',
-        techTitle: 'ארכיטקטורת תשתית [ענן_גוגל_שרברלס]',
-        simTitle: '// פעולות סימולטור מקומי',
-        appDescTitle: 'חמ"ל מבצעים טקטי',
-        appDescText:
-          'מערכת Dvora HQ הינה פלטפורמת סנכרון טקטית מאובטחת ביותר, המיועדת למוזמנים בלבד ומיושמת באופן מובנה בתוך המערכת של טלגרם. המערכת נבנתה עבור מבצעים מהירים בשטח, ומבטיחה תיאום מצב מיידי, מעקב משאבים מבוזר והפעלה בזמן אמת של צוותים תחת מעטפת אבטחה קשיחה.',
-        footer: 'זרם נתונים קריטי // אבטחה מנוהלת על ידי פרוטוקול דבורה // לא זוהתה דליפת נתונים',
-        sysLoc: 'מיקום מערכת:',
-        security: 'רמת אבטחה:',
-        btnSoldier: '> מסוף_לוחם (אפליקציה)',
-        btnCommander: '> מסוף_מפקד (תצוגה)',
-        btnAdmin: '> ניהול_מודיעין (בוט CLI)',
-        alarmStandby: 'סטאטוס // רשת_בהמתנה',
-        alarmActive: '!! התרעת פריסה קרבית !!',
-        ready: 'תקיн',
-        issue: 'תקלה',
-        pending: 'טרם נקבע',
-        subItems: {
-          wpn: { primary: 'נשק עיקרי', sidearm: 'אקדח/נשק משני' },
-          trsp: { keys: 'מפתח רכב', fuel: 'מד דלק' },
-          com: { radio: 'מכשיר קשר', battery: 'סוללה רזרבית' },
-          med: { tourniquet: 'חוסם עורקים', bandage: 'תחבושת אישית' },
-        },
-        cards: [
-          {
-            tag: '[01_אבטחת_גישה]',
-            title: 'מסך נעילה טקטי לפי קוד PIN',
-            desc: 'אימות ישיר ומאובטח באמצעות קוד PIN טקטי ייחודי. מחיקת טוקן מוחלטת מתבצעת בדיוק ב-T-120 דקות.',
-          },
-          {
-            tag: '[02_עיבוד_AI]',
-            title: 'ביומטריה של ציוד',
-            desc: 'פרוטוקולי קליטה מעריכים את נשק הלוחם וההתמחות שלו. תורים אסינכרוניים בענן מייצרים אווטאר טקטי קבוע למטריצת הפרופיל.',
-          },
-          {
-            tag: '[03_מרכז_סטאטוס]',
-            title: 'אבחון מוכנות',
-            desc: 'בדיקה ב-4 צירים. הכפתורים מעבירים בין: טרם נקבע ➔ תקלה (פותח רשימת בדיקה) ➔ תקין. הרשימה נסגרת אוטומטית כשכל הפריטים מסומנים כתקינים.',
-          },
-          {
-            tag: '[04_התרעת_קרב]',
-            title: 'עקיפת פיקוד',
-            desc: 'מפקדים מפעילים אזעקות דיוק. דוחף שינוי מצב מיידי למסכי הלוחמים ללא עומס על סוללת המכשיר או דרישת רענון רקע.',
-          },
-        ],
-        tech: [
-          {
-            name: '[מנוע] Cloud Run',
-            desc: 'סביבת קונטיינרים מבודדת. הגדרת מינימום אינסטנס 1 על מנת לנטרל לחלוטין את השהיית הוובהוקס של טלגרם.',
-          },
-          {
-            name: '[בסיס נתונים] Cloud Firestore',
-            desc: 'מסד נתונים Serverless NoSQL מהיר במיוחד, ללא עלות אחזקה קבועה ועם אפס זמני המתנה לעליית שרת.',
-          },
-          {
-            name: '[הצפנה] Argon2id',
-            desc: 'תקן אבטחה מחמיר של OWASP לאימות קודים לא מקוון. אפס וקטורים של טקסט גלוי בשכבת הנתונים.',
-          },
-          {
-            name: '[תורים] Cloud Tasks',
-            desc: 'ניהול משימות אסינכרוני. מבודד קריאות כבדות לשרתי AI מרשת האפליקציה המרכזית.',
-          },
-        ],
-        roles: {
-          soldier: {
-            feed: '[ערוץ_נתונים: מסך_לוחם]',
-            op: 'מפעיל: REAPER',
-            squad: 'צוות: אלפא (01)',
-            tasks: [
-              'מעבר רצף אימות טקטי (קוד PIN ייחודי מוצפן)',
-              'דיווח מוכנות קרבית בזמן אמת [נשק, רכב, קשר, רפואה]',
-              'הזרקת דיווחי תקלות לוגיסטיות בטקסט חופשי ישירות לדרג הפיקוד',
-            ],
-          },
-          commander: {
-            feed: '[ערוץ_נתונים: לוח_פיקוד_אסטרטגי]',
-            title: 'סקירת צוות אלפא',
-            tasks: [
-              'ניטור מטריצת מוכנות (ירוק/אדום) בזמן אמת של كلل היחידה',
-              'צפייה בדוחות תקלות היסטוריים (לקריאה בלבד) שנשלחו מהשטח',
-              'הפעלת התרעת צוות גלובלית ועקיפת מצב מסך מיידית',
-            ],
-          },
-          admin: {
-            feed: '[ערוץ_נתונים: ממשק_בוט_CLI]',
-            title: 'שורת פקודה מודיעינית',
-            tasks: [
-              'הזרקת לוחמים מאושרים מראש לרשימה הלבנה',
-              'הנפקת קודי PIN ייחודיים ומאובטחים (5 ספרות + אות אחת)',
-              'אפס טביעת רגל ויזואלית בתוך ממשק המיני-אפליקציה של הלוחמים',
-            ],
+          cards: [
+            {
+              tag: '[01_SECURE_ACCESS]',
+              title: 'Tactical PIN Lock Screen',
+              desc: 'Direct authentication using a unique, encrypted numeric-alpha PIN. Hard token wipe executed precisely at T-120 minutes.',
+            },
+            {
+              tag: '[02_AI_RENDER]',
+              title: 'Loadout Biometrics',
+              desc: 'Onboarding protocols evaluate operator loadout & specialization. Asynchronous GCP queues spin up neural assets to render a permanent custom profile matrix.',
+            },
+            {
+              tag: '[03_STATUS_HUB]',
+              title: 'Readiness Diagnostics',
+              desc: 'Quad-axis checks. Buttons cycle: Pending ➔ Issue (opens checklist panel) ➔ Ready. Auto-collapses checklist when all sub-items are resolved.',
+            },
+            {
+              tag: '[04_COMBAT_ALARM]',
+              title: 'Squad Overrides',
+              desc: 'Commanders deploy precision alarms. Instantly overwrites the client state of target sub-squads with no resource overhead or background polling fatigue.',
+            },
+          ],
+          tech: [
+            {
+              name: '[ENGINE] Cloud Run',
+              desc: 'Isolated environment container. Param `min-instances: 1` targeted to completely vaporize Telegram webhook latency.',
+            },
+            {
+              name: '[DATABASE] Cloud Firestore',
+              desc: 'Serverless NoSQL document store providing sub-millisecond lookups with zero idle costs and automatic horizontal scaling.',
+            },
+            {
+              name: '[CYPHER] Argon2id',
+              desc: 'OWASP cryptographic mandate for offline numeric validation. Zero plaintext vectors across the persistence layer.',
+            },
+            {
+              name: '[QUEUE] Cloud Tasks',
+              desc: 'Asynchronous token ingestion. Isolates expensive generative AI endpoints from core application runtime.',
+            },
+          ],
+          roles: {
+            soldier: {
+              feed: '[NODE_FEED: OPERATOR_HUD]',
+              op: 'OPERATOR: REAPER',
+              squad: 'SQUAD: ALPHA (01)',
+              tasks: [
+                'Pass validation sequence (Unique Encrypted PIN)',
+                'Report real-time combat status toggles [Weapons, Transport, Comms, Meds]',
+                'Inject raw unencrypted asset bottleneck text directly up the chain',
+              ],
+            },
+            commander: {
+              feed: '[NODE_FEED: STRATEGIC_DASHBOARD]',
+              title: 'SQUAD ALPHA OVERVIEW',
+              tasks: [
+                'Oversee full operational green/red matrix status of assigned unit',
+                'Query read-only append-only incident reports filed by field operators',
+                'Execute immediate targeted Squad-Level Alarm state-overrides',
+              ],
+            },
+            admin: {
+              feed: '[NODE_FEED: TELEGRAM_BOT_CLI]',
+              title: 'INTEL COMMAND LINE',
+              tasks: [
+                'Inject pre-approved network whitelist entries (Fighter Identity Vectors)',
+                'Deploy automatically generated unique PIN codes (5-digits + 1-alpha)',
+                'Zero layout footprint within client Mini App interface',
+              ],
+            },
           },
         },
-      },
-    };
+        he: {
+          metaStatus: '// שם קוד: דבורה // סטאטוס רשת: מחובר',
+          capsTitle: 'יכולות מערכת [יומן_פריסה]',
+          nodesTitle: 'תצוגת מיני-אפליקציה [מטריצת_קשר]',
+          techTitle: 'ארכיטקטורת תשתית [ענן_גוגל_שרברלס]',
+          simTitle: '// פעולות סימולטור מקומי',
+          appDescTitle: 'חמ"ל מבצעים טקטי',
+          appDescText:
+            'מערכת Dvora HQ הינה פלטפורמת סנכרון טקטית מאובטחת ביותר, המיועדת למוזמנים בלבד ומיושמת באופן מובנה בתוך המערכת של טלגרם. המערכת נבנתה עבור מבצעים מהירים בשטח, ומבטיחה תיאום מצב מיידי, מעקב משאבים מבוזר והפעלה בזמן אמת של צוותים תחת מעטפת אבטחה קשיחה.',
+          footer: 'זרם נתונים קריטי // אבטחה מנוהלת על ידי פרוטוקול דבורה // לא זוהתה דליפת נתונים',
+          sysLoc: 'מיקום מערכת:',
+          security: 'רמת אבטחה:',
+          btnSoldier: '> מסוף_לוחם (אפליקציה)',
+          btnCommander: '> מסוף_מפקד (תצוגה)',
+          btnAdmin: '> ניהול_מודיעין (בוט CLI)',
+          alarmStandby: 'סטאטוס // רשת_בהמתנה',
+          alarmActive: '!! התרעת פריסה קרבית !!',
+          ready: 'תקיн',
+          issue: 'תקלה',
+          pending: 'טרם נקבע',
+          subItems: {
+            wpn: { primary: 'נשק עיקרי', sidearm: 'אקדח/נשק משני' },
+            trsp: { keys: 'מפתח רכב', fuel: 'מד דלק' },
+            com: { radio: 'מכשיר קשר', battery: 'סוללה רזרבית' },
+            med: { tourniquet: 'חוסם עורקים', bandage: 'תחבושת אישית' },
+          },
+          cards: [
+            {
+              tag: '[01_אבטחת_גישה]',
+              title: 'מסך נעילה טקטי לפי קוד PIN',
+              desc: 'אימות ישיר ומאובטח באמצעות קוד PIN טקטי ייחודי. מחיקת טוקן מוחלטת מתבצעת בדיוק ב-T-120 דקות.',
+            },
+            {
+              tag: '[02_עיבוד_AI]',
+              title: 'ביומטריה של ציוד',
+              desc: 'פרוטוקולי קליטה מעריכים את נשק הלוחם וההתמחות שלו. תורים אסינכרוניים בענן מייצרים אווטאר טקטי קבוע למטריצת הפרופיל.',
+            },
+            {
+              tag: '[03_מרכז_סטאטוס]',
+              title: 'אבחון מוכנות',
+              desc: 'בדיקה ב-4 צירים. הכפתורים מעבירים בין: טרם נקבע ➔ תקלה (פותח רשימת בדיקה) ➔ תקין. הרשימה נסגרת אוטומטית כשכל הפריטים מסומנים כתקינים.',
+            },
+            {
+              tag: '[04_התרעת_קרב]',
+              title: 'עקיפת פיקוד',
+              desc: 'מפקדים מפעילים אזעקות דיוק. דוחף שינוי מצב מיידי למסכי הלוחמים ללא עומס על סוללת המכשיר או דרישת רענון רקע.',
+            },
+          ],
+          tech: [
+            {
+              name: '[מנוע] Cloud Run',
+              desc: 'סביבת קונטיינרים מבודדת. הגדרת מינימום אינסטנס 1 על מנת לנטרל לחלוטין את השהיית הוובהוקס של טלגרם.',
+            },
+            {
+              name: '[בסיס נתונים] Cloud Firestore',
+              desc: 'מסד נתונים Serverless NoSQL מהיר במיוחד, ללא עלות אחזקה קבועה ועם אפס זמני המתנה לעליית שרת.',
+            },
+            {
+              name: '[הצפנה] Argon2id',
+              desc: 'תקן אבטחה מחמיר של OWASP לאימות קודים לא מקוון. אפס וקטורים של טקסט גלוי בשכבת הנתונים.',
+            },
+            {
+              name: '[תורים] Cloud Tasks',
+              desc: 'ניהול משימות אסינכרוני. מבודד קריאות כבדות לשרתי AI מרשת האפליקציה המרכזית.',
+            },
+          ],
+          roles: {
+            soldier: {
+              feed: '[ערוץ_נתונים: מסך_לוחם]',
+              op: 'מפעיל: REAPER',
+              squad: 'צוות: אלפא (01)',
+              tasks: [
+                'מעבר רצף אימות טקטי (קוד PIN ייחודי מוצפן)',
+                'דיווח מוכנות קרבית בזמן אמת [נשק, רכב, קשר, רפואה]',
+                'הזרקת דיווחי תקלות לוגיסטיות בטקסט חופשי ישירות לדרג הפיקוד',
+              ],
+            },
+            commander: {
+              feed: '[ערוץ_נתונים: לוח_פיקוד_אסטרטגי]',
+              title: 'סקירת צוות אלפא',
+              tasks: [
+                'ניטור מטריצת מוכנות (ירוק/אדום) בזמן אמת של كلل היחידה',
+                'צפייה בדוחות תקלות היסטוריים (לקריאה בלבד) שנשלחו מהשטח',
+                'הפעלת התרעת צוות גלובלית ועקיפת מצב מסך מיידית',
+              ],
+            },
+            admin: {
+              feed: '[ערוץ_נתונים: ממשק_בוט_CLI]',
+              title: 'שורת פקודה מודיעינית',
+              tasks: [
+                'הזרקת לוחמים מאושרים מראש לרשימה הלבנה',
+                'הנפקת קודי PIN ייחודיים ומאובטחים (5 ספרות + אות אחת)',
+                'אפס טביעת רגל ויזואלית בתוך ממשק המיני-אפליקציה של הלוחמים',
+              ],
+            },
+          },
+        },
+      };
 
-    function changeLanguage(lang) {
-      currentLang = lang;
-      document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
-      document.documentElement.lang = lang;
+      function changeLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
 
-      document.getElementById('lang-en').className =
-        lang === 'en'
-          ? 'px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn'
-          : 'px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn';
-      document.getElementById('lang-he').className =
-        lang === 'he'
-          ? 'px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn'
-          : 'px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn';
+        document.getElementById('lang-en').className =
+          lang === 'en'
+            ? 'px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn'
+            : 'px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn';
+        document.getElementById('lang-he').className =
+          lang === 'he'
+            ? 'px-3 py-1 text-xs font-bold bg-bf-cyan text-bf-dark clip-btn'
+            : 'px-3 py-1 text-xs font-bold text-slate-400 hover:text-white clip-btn';
 
-      const dict = i18n[lang];
-      document.getElementById('meta-status').innerText = dict.metaStatus;
-      document.getElementById('section-caps-title').innerText = dict.capsTitle;
-      document.getElementById('section-nodes-title').innerText = dict.nodesTitle;
-      document.getElementById('section-tech-title').innerText = dict.techTitle;
-      document.getElementById('sim-title').innerText = dict.simTitle;
-      document.getElementById('app-desc-title').innerText = dict.appDescTitle;
-      document.getElementById('app-desc-text').innerText = dict.appDescText;
-      document.getElementById('footer-text').innerText = dict.footer;
+        const dict = i18n[lang];
+        document.getElementById('meta-status').innerText = dict.metaStatus;
+        document.getElementById('section-caps-title').innerText = dict.capsTitle;
+        document.getElementById('section-nodes-title').innerText = dict.nodesTitle;
+        document.getElementById('section-tech-title').innerText = dict.techTitle;
+        document.getElementById('sim-title').innerText = dict.simTitle;
+        document.getElementById('app-desc-title').innerText = dict.appDescTitle;
+        document.getElementById('app-desc-text').innerText = dict.appDescText;
+        document.getElementById('footer-text').innerText = dict.footer;
 
-      document.getElementById('telemetry-box').innerHTML = `
+        document.getElementById('telemetry-box').innerHTML = `
                 <div><span class="text-slate-500">${dict.sysLoc}</span> <span class="text-bf-cyan font-bold">EU-WEST.GCP</span></div>
                 <div><span class="text-slate-500">${dict.security}</span> <span class="text-bf-orange font-bold">STRICT_AUTH</span></div>
             `;
 
-      const cardsContainer = document.getElementById('cards-container');
-      cardsContainer.innerHTML = '';
-      dict.cards.forEach((card) => {
-        cardsContainer.innerHTML += `
+        const cardsContainer = document.getElementById('cards-container');
+        cardsContainer.innerHTML = '';
+        dict.cards.forEach((card) => {
+          cardsContainer.innerHTML += `
                     <div class="p-5 bg-bf-slate/75 border border-bf-border/80 clip-hud relative group hover:border-bf-cyan/50 transition-all backdrop-blur-sm">
                         <div class="absolute top-0 ${lang === 'he' ? 'left-0' : 'right-0'} w-8 h-8 border-t-2 ${lang === 'he' ? 'border-l-2' : 'border-r-2'} border-bf-cyan opacity-20 group-hover:opacity-100 transition-opacity"></div>
                         <div class="text-xs text-bf-cyan mb-2 font-bold">${card.tag}</div>
@@ -577,131 +616,131 @@
                         <p class="text-xs text-slate-400 leading-relaxed">${card.desc}</p>
                     </div>
                 `;
-      });
+        });
 
-      const togglesContainer = document.getElementById('node-toggles');
-      togglesContainer.innerHTML = `
+        const togglesContainer = document.getElementById('node-toggles');
+        togglesContainer.innerHTML = `
                 <button onclick="switchRole('soldier')" id="btn-soldier" class="w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border clip-btn">${dict.btnSoldier}</button>
                 <button onclick="switchRole('commander')" id="btn-commander" class="w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border clip-btn">${dict.btnCommander}</button>
                 <button onclick="switchRole('admin')" id="btn-admin" class="w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border clip-btn">${dict.btnAdmin}</button>
             `;
 
-      const techContainer = document.getElementById('tech-stack-container');
-      techContainer.innerHTML = '';
-      dict.tech.forEach((t) => {
-        techContainer.innerHTML += `
+        const techContainer = document.getElementById('tech-stack-container');
+        techContainer.innerHTML = '';
+        dict.tech.forEach((t) => {
+          techContainer.innerHTML += `
                     <div class="p-4 sm:grid sm:grid-cols-3 gap-4 hover:bg-bf-slate/50 transition-all">
                         <div class="font-bold text-bf-cyan uppercase mb-1 sm:mb-0">${t.name}</div>
                         <div class="sm:col-span-2 text-slate-400">${t.desc}</div>
                     </div>
                 `;
-      });
+        });
 
-      switchRole(currentRole);
-    }
-
-    function switchRole(roleKey) {
-      currentRole = roleKey;
-      const container = document.getElementById('mini-app-content');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const dict = i18n[currentLang];
-
-      ['soldier', 'commander', 'admin'].forEach((k) => {
-        const btn = document.getElementById(`btn-${k}`);
-        if (btn)
-          btn.className =
-            'w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border text-slate-400 hover:border-bf-cyan/50 hover:text-white clip-btn';
-      });
-      const activeBtn = document.getElementById(`btn-${roleKey}`);
-      if (activeBtn)
-        activeBtn.className =
-          'w-full text-left p-2.5 text-[11px] font-black uppercase transition-all bg-bf-cyan text-bf-dark border border-bf-cyan clip-btn';
-
-      if (isLocked) {
-        renderLockScreen(container);
-        return;
+        switchRole(currentRole);
       }
 
-      const roleDict = dict.roles[roleKey];
+      function switchRole(roleKey) {
+        currentRole = roleKey;
+        const container = document.getElementById('mini-app-content');
+        if (!container) return;
+        container.innerHTML = '';
 
-      if (roleKey === 'soldier') {
-        renderSoldierDashboard(container);
-      } else if (roleKey === 'commander') {
-        renderCommanderDashboard(container);
-      } else {
-        container.innerHTML = `
+        const dict = i18n[currentLang];
+
+        ['soldier', 'commander', 'admin'].forEach((k) => {
+          const btn = document.getElementById(`btn-${k}`);
+          if (btn)
+            btn.className =
+              'w-full text-left p-2.5 text-[11px] font-bold uppercase transition-all border border-bf-border text-slate-400 hover:border-bf-cyan/50 hover:text-white clip-btn';
+        });
+        const activeBtn = document.getElementById(`btn-${roleKey}`);
+        if (activeBtn)
+          activeBtn.className =
+            'w-full text-left p-2.5 text-[11px] font-black uppercase transition-all bg-bf-cyan text-bf-dark border border-bf-cyan clip-btn';
+
+        if (isLocked) {
+          renderLockScreen(container);
+          return;
+        }
+
+        const roleDict = dict.roles[roleKey];
+
+        if (roleKey === 'soldier') {
+          renderSoldierDashboard(container);
+        } else if (roleKey === 'commander') {
+          renderCommanderDashboard(container);
+        } else {
+          container.innerHTML = `
                     <div class="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">${roleDict.feed}</div>
                     <h3 class="text-sm font-black text-white uppercase tracking-wider">${roleDict.title}</h3>
                     <ul id="role-tasks" class="space-y-3 text-xs"></ul>
                 `;
-        const tasksContainer = document.getElementById('role-tasks');
-        roleDict.tasks.forEach((task) => {
-          tasksContainer.innerHTML += `
+          const tasksContainer = document.getElementById('role-tasks');
+          roleDict.tasks.forEach((task) => {
+            tasksContainer.innerHTML += `
                         <li class="flex items-start gap-2 text-slate-400">
                             <span class="text-bf-cyan font-bold">&gt;&gt;</span><span>${task}</span>
                         </li>
                     `;
-        });
+          });
+        }
       }
-    }
 
-    function renderSoldierDashboard(container) {
-      if (!container) container = document.getElementById('mini-app-content');
-      if (!container) return;
+      function renderSoldierDashboard(container) {
+        if (!container) container = document.getElementById('mini-app-content');
+        if (!container) return;
 
-      const dict = i18n[currentLang];
-      const roleDict = dict.roles.soldier;
+        const dict = i18n[currentLang];
+        const roleDict = dict.roles.soldier;
 
-      const getBtnClass = (statusVal) => {
-        if (statusVal === 2)
-          return 'p-2 bg-bf-dark/90 border border-bf-orange text-left clip-btn transition-all cursor-pointer w-full';
-        if (statusVal === 1)
-          return 'p-2 bg-bf-dark/90 border border-bf-cyan text-left clip-btn transition-all cursor-pointer w-full';
-        return 'p-2 bg-bf-dark/90 border border-bf-border text-left clip-btn transition-all cursor-pointer w-full';
-      };
+        const getBtnClass = (statusVal) => {
+          if (statusVal === 2)
+            return 'p-2 bg-bf-dark/90 border border-bf-orange text-left clip-btn transition-all cursor-pointer w-full';
+          if (statusVal === 1)
+            return 'p-2 bg-bf-dark/90 border border-bf-cyan text-left clip-btn transition-all cursor-pointer w-full';
+          return 'p-2 bg-bf-dark/90 border border-bf-border text-left clip-btn transition-all cursor-pointer w-full';
+        };
 
-      const getStatusText = (statusVal) => {
-        if (statusVal === 2) return `<span class="text-bf-orange">${dict.issue}</span>`;
-        if (statusVal === 1) return `<span class="text-bf-cyan">${dict.ready}</span>`;
-        return `<span class="text-slate-500">${dict.pending}</span>`;
-      };
+        const getStatusText = (statusVal) => {
+          if (statusVal === 2) return `<span class="text-bf-orange">${dict.issue}</span>`;
+          if (statusVal === 1) return `<span class="text-bf-cyan">${dict.ready}</span>`;
+          return `<span class="text-slate-500">${dict.pending}</span>`;
+        };
 
-      const getBtnLabel = (key) => {
-        if (key === 'wpn') return '01_WEAPONS';
-        if (key === 'trsp') return '02_TRANSPORT';
-        if (key === 'com') return '03_COMMS';
-        return '04_MED_KIT';
-      };
+        const getBtnLabel = (key) => {
+          if (key === 'wpn') return '01_WEAPONS';
+          if (key === 'trsp') return '02_TRANSPORT';
+          if (key === 'com') return '03_COMMS';
+          return '04_MED_KIT';
+        };
 
-      let checklistHtml = '';
-      if (activeSimPanel && simChecklist[activeSimPanel] !== 0) {
-        const subMap = simSubStatus[activeSimPanel];
-        if (subMap) {
-          const keys = Object.keys(subMap);
-          let subItemsHtml = '';
-          keys.forEach((k) => {
-            const label = dict.subItems[activeSimPanel][k];
-            const isChecked = subMap[k];
-            subItemsHtml += `
+        let checklistHtml = '';
+        if (activeSimPanel && simChecklist[activeSimPanel] !== 0) {
+          const subMap = simSubStatus[activeSimPanel];
+          if (subMap) {
+            const keys = Object.keys(subMap);
+            let subItemsHtml = '';
+            keys.forEach((k) => {
+              const label = dict.subItems[activeSimPanel][k];
+              const isChecked = subMap[k];
+              subItemsHtml += `
                 <div onclick="toggleSubItem('${activeSimPanel}', '${k}')" class="flex justify-between items-center p-1.5 bg-bf-slate/40 border ${isChecked ? 'border-bf-cyan/40 text-bf-cyan' : 'border-bf-orange/40 text-bf-orange'} clip-btn text-[9px] cursor-pointer">
                   <span>${label}</span>
                   <span class="font-bold">${isChecked ? '✓' : '✗'}</span>
                 </div>
               `;
-          });
+            });
 
-          checklistHtml = `
+            checklistHtml = `
               <div class="mt-2 p-2 bg-bf-slate/60 border border-bf-border clip-btn space-y-1.5 w-full">
                 <div class="text-[8px] text-slate-500 font-bold uppercase">// LOADOUT DETAILS</div>
                 <div class="grid grid-cols-2 gap-1.5">${subItemsHtml}</div>
               </div>
             `;
+          }
         }
-      }
 
-      container.innerHTML = `
+        container.innerHTML = `
           <div class="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">${roleDict.feed}</div>
           <div class="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex items-center gap-3">
               <div class="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
@@ -737,54 +776,54 @@
               <textarea placeholder="${currentLang === 'en' ? 'INJECT BOTTLENECK DATA...' : 'הזרקת דיווח תקלה...'}" class="w-full h-12 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 resize-none uppercase text-[10px] font-mono outline-none"></textarea>
           </div>
         `;
-      simulateAlarm(globalAlarmState);
-    }
+        simulateAlarm(globalAlarmState);
+      }
 
-    let selectedSimIssue = null;
+      let selectedSimIssue = null;
 
-    function renderCommanderDashboard(container) {
-      if (!container) container = document.getElementById('mini-app-content');
-      if (!container) return;
+      function renderCommanderDashboard(container) {
+        if (!container) container = document.getElementById('mini-app-content');
+        if (!container) return;
 
-      const dict = i18n[currentLang];
-      const roleDict = dict.roles.commander;
+        const dict = i18n[currentLang];
+        const roleDict = dict.roles.commander;
 
-      const reaper = {
-        id: 'reaper',
-        tg_username: 'REAPER',
-        weapons_ready: simChecklist.wpn,
-        meds_ready: simChecklist.med,
-        gear_ready: simChecklist.com,
-        transport_ready: simChecklist.trsp,
-        weapon_status: simSubStatus.wpn,
-        meds_status: simSubStatus.med,
-        gear_status: simSubStatus.com,
-      };
+        const reaper = {
+          id: 'reaper',
+          tg_username: 'REAPER',
+          weapons_ready: simChecklist.wpn,
+          meds_ready: simChecklist.med,
+          gear_ready: simChecklist.com,
+          transport_ready: simChecklist.trsp,
+          weapon_status: simSubStatus.wpn,
+          meds_status: simSubStatus.med,
+          gear_status: simSubStatus.com,
+        };
 
-      const phantom = {
-        id: 'phantom',
-        tg_username: 'PHANTOM',
-        weapons_ready: 1,
-        meds_ready: 1,
-        gear_ready: 1,
-        transport_ready: 1,
-        weapon_status: { primary: true, sidearm: true },
-        meds_status: { tourniquet: true, bandage: true },
-        gear_status: { radio: true, battery: true },
-      };
+        const phantom = {
+          id: 'phantom',
+          tg_username: 'PHANTOM',
+          weapons_ready: 1,
+          meds_ready: 1,
+          gear_ready: 1,
+          transport_ready: 1,
+          weapon_status: { primary: true, sidearm: true },
+          meds_status: { tourniquet: true, bandage: true },
+          gear_status: { radio: true, battery: true },
+        };
 
-      const members = [reaper, phantom];
+        const members = [reaper, phantom];
 
-      const getDotClass = (val) => {
-        const status = val ?? 0;
-        if (status === 1) return 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]';
-        if (status === 2) return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
-        return 'bg-slate-700';
-      };
+        const getDotClass = (val) => {
+          const status = val ?? 0;
+          if (status === 1) return 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]';
+          if (status === 2) return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
+          return 'bg-slate-700';
+        };
 
-      let membersHtml = '';
-      members.forEach((m) => {
-        membersHtml += `
+        let membersHtml = '';
+        members.forEach((m) => {
+          membersHtml += `
             <div class="grid grid-cols-5 text-[10px] items-center p-1.5 bg-bf-dark/40 border border-bf-border/40 clip-btn">
               <div class="truncate text-slate-300 font-bold flex items-center gap-1">
                 <div class="w-4 h-4 rounded-full bg-bf-slate border border-bf-cyan/30 flex items-center justify-center shrink-0 text-[8px]">⚡</div>
@@ -810,48 +849,48 @@
               </div>
             </div>
           `;
-      });
+        });
 
-      let drilldownHtml = '';
-      if (selectedSimIssue) {
-        const target = members.find((m) => m.id === selectedSimIssue.memberId);
-        if (target) {
-          const cat = selectedSimIssue.category;
-          const statusVal =
-            cat === 'wpn'
-              ? target.weapons_ready
-              : cat === 'med'
-                ? target.meds_ready
-                : target.gear_ready;
-          const statusMap =
-            cat === 'wpn'
-              ? target.weapon_status
-              : cat === 'med'
-                ? target.meds_status
-                : target.gear_status;
+        let drilldownHtml = '';
+        if (selectedSimIssue) {
+          const target = members.find((m) => m.id === selectedSimIssue.memberId);
+          if (target) {
+            const cat = selectedSimIssue.category;
+            const statusVal =
+              cat === 'wpn'
+                ? target.weapons_ready
+                : cat === 'med'
+                  ? target.meds_ready
+                  : target.gear_ready;
+            const statusMap =
+              cat === 'wpn'
+                ? target.weapon_status
+                : cat === 'med'
+                  ? target.meds_status
+                  : target.gear_status;
 
-          let issuesHtml = '';
-          if (statusVal === 1) {
-            issuesHtml = `<div class="p-1 border border-bf-cyan/30 bg-bf-cyan/10 text-bf-cyan text-center clip-btn text-[8px] font-bold">✓ ALL ASSETS GREEN / OPERATIONAL</div>`;
-          } else {
-            const keys = Object.keys(statusMap);
-            const faultyKeys = keys.filter((k) => statusMap[k] === false);
-            if (faultyKeys.length > 0) {
-              faultyKeys.forEach((k) => {
-                const label = dict.subItems[cat][k];
-                issuesHtml += `
+            let issuesHtml = '';
+            if (statusVal === 1) {
+              issuesHtml = `<div class="p-1 border border-bf-cyan/30 bg-bf-cyan/10 text-bf-cyan text-center clip-btn text-[8px] font-bold">✓ ALL ASSETS GREEN / OPERATIONAL</div>`;
+            } else {
+              const keys = Object.keys(statusMap);
+              const faultyKeys = keys.filter((k) => statusMap[k] === false);
+              if (faultyKeys.length > 0) {
+                faultyKeys.forEach((k) => {
+                  const label = dict.subItems[cat][k];
+                  issuesHtml += `
                     <div class="flex justify-between items-center p-1 bg-bf-orange/5 border border-bf-orange/30 clip-btn text-bf-orange text-[8px] mt-0.5">
                       <span class="text-[7px] text-slate-500">// FAULTY</span>
                       <span class="font-bold">[X] ${label}</span>
                     </div>
                   `;
-              });
-            } else {
-              issuesHtml = `<div class="p-1 border border-bf-orange/30 bg-bf-orange/10 text-bf-orange text-center clip-btn text-[8px] font-bold">⚠ NO SUB-ITEMS FAULTY. OVERALL AXIS MARKED AS ISSUE.</div>`;
+                });
+              } else {
+                issuesHtml = `<div class="p-1 border border-bf-orange/30 bg-bf-orange/10 text-bf-orange text-center clip-btn text-[8px] font-bold">⚠ NO SUB-ITEMS FAULTY. OVERALL AXIS MARKED AS ISSUE.</div>`;
+              }
             }
-          }
 
-          drilldownHtml = `
+            drilldownHtml = `
               <div class="p-2 bg-bf-slate/90 border border-bf-orange/40 text-[9px] font-mono space-y-1.5 clip-btn mt-2">
                 <div class="text-[7px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border pb-1 flex justify-between">
                   <span>// TACTICAL DRILL-DOWN // @${target.tg_username} // ${cat.toUpperCase()}</span>
@@ -859,10 +898,10 @@
                 <div class="space-y-1">${issuesHtml}</div>
               </div>
             `;
+          }
         }
-      }
 
-      container.innerHTML = `
+        container.innerHTML = `
           <div class="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">${roleDict.feed}</div>
           <div class="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex items-center gap-3">
               <div class="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
@@ -889,143 +928,144 @@
           </div>
           ${drilldownHtml}
           
-          <button onclick="toggleSimAlarm()" class="w-full mt-3 py-2.5 font-black text-[10px] uppercase clip-btn transition-all duration-300 cursor-pointer ${globalAlarmState
-          ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400]'
-          : 'bg-bf-orange/20 border border-bf-orange text-bf-orange hover:bg-bf-orange/30'
-        }">
+          <button onclick="toggleSimAlarm()" class="w-full mt-3 py-2.5 font-black text-[10px] uppercase clip-btn transition-all duration-300 cursor-pointer ${
+            globalAlarmState
+              ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400]'
+              : 'bg-bf-orange/20 border border-bf-orange text-bf-orange hover:bg-bf-orange/30'
+          }">
             ${globalAlarmState ? (currentLang === 'en' ? 'STANDBY MODE' : 'חזרה לכוננות') : currentLang === 'en' ? 'FORCE ALARM STATE' : 'הפעל סירנת קרב'}
           </button>
         `;
-    }
-
-    window.showSimIssues = function (memberId, category) {
-      if (
-        selectedSimIssue &&
-        selectedSimIssue.memberId === memberId &&
-        selectedSimIssue.category === category
-      ) {
-        selectedSimIssue = null;
-      } else {
-        selectedSimIssue = { memberId, category };
-      }
-      renderCommanderDashboard();
-    };
-
-    window.toggleSimAlarm = function () {
-      simulateAlarm(!globalAlarmState);
-      renderCommanderDashboard();
-    };
-
-    window.toggleSubItem = function (category, key) {
-      const subMap = simSubStatus[category];
-      if (!subMap) return;
-      subMap[key] = !subMap[key];
-
-      const hasIssue = Object.values(subMap).some((val) => val === false);
-      if (!hasIssue) {
-        simChecklist[category] = 1; // ready
-        activeSimPanel = null; // collapse on all ready
-      } else {
-        simChecklist[category] = 2; // issue
       }
 
-      renderSoldierDashboard();
-    };
-
-    window.toggleSystem = function (id) {
-      const currentVal = simChecklist[id] ?? 0;
-      let nextVal;
-      if (currentVal === 0) {
-        nextVal = 2; // issue
-      } else if (currentVal === 2) {
-        nextVal = 1; // ready
-      } else {
-        nextVal = 0; // pending
-      }
-
-      simChecklist[id] = nextVal;
-
-      const subMap = simSubStatus[id];
-      if (subMap) {
-        const keys = Object.keys(subMap);
-        if (nextVal === 2) {
-          keys.forEach((k) => {
-            subMap[k] = false;
-          });
-          activeSimPanel = id;
-        } else if (nextVal === 1) {
-          keys.forEach((k) => {
-            subMap[k] = true;
-          });
-          activeSimPanel = null;
-        } else if (nextVal === 0) {
-          keys.forEach((k) => {
-            subMap[k] = false;
-          });
-          activeSimPanel = null;
-        }
-      } else {
-        activeSimPanel = null;
-      }
-
-      renderSoldierDashboard();
-    };
-
-    function renderLockScreen(container) {
-      let dots = '';
-      for (let i = 0; i < 6; i++) {
-        if (i < currentPin.length) {
-          dots += `<div class="w-8 h-10 border border-bf-cyan bg-bf-cyan/10 text-bf-cyan flex items-center justify-center font-bold text-sm rounded">${currentPin[i]}</div>`;
+      window.showSimIssues = function (memberId, category) {
+        if (
+          selectedSimIssue &&
+          selectedSimIssue.memberId === memberId &&
+          selectedSimIssue.category === category
+        ) {
+          selectedSimIssue = null;
         } else {
-          dots += `<div class="w-8 h-10 border border-bf-border bg-bf-dark/50 text-slate-600 flex items-center justify-center font-bold text-sm rounded"></div>`;
+          selectedSimIssue = { memberId, category };
         }
-      }
+        renderCommanderDashboard();
+      };
 
-      let keysHtml = '';
-      if (keyboardMode === 'numeric') {
-        const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
-        keys.forEach((k) => {
-          keysHtml += `<button onclick="pressKey('${k}')" class="w-14 h-10 bg-bf-slate/80 border border-bf-border text-white text-sm font-bold clip-btn hover:border-bf-cyan/70 active:bg-bf-cyan active:text-bf-dark transition-all">${k}</button>`;
-        });
-        keysHtml += `<button onclick="pressBackspace()" class="w-14 h-10 bg-bf-slate/80 border border-bf-border text-bf-orange font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all">⌫</button>`;
-        keysHtml += `<button onclick="pressClear()" class="w-14 h-10 bg-bf-slate/80 border border-bf-border text-slate-500 font-bold clip-btn hover:border-slate-400 transition-all">CLR</button>`;
-      } else {
-        const keys = [
-          'A',
-          'B',
-          'C',
-          'D',
-          'E',
-          'F',
-          'G',
-          'H',
-          'I',
-          'J',
-          'K',
-          'L',
-          'M',
-          'N',
-          'O',
-          'P',
-          'Q',
-          'R',
-          'S',
-          'T',
-          'U',
-          'V',
-          'W',
-          'X',
-          'Y',
-          'Z',
-        ];
-        keys.forEach((k) => {
-          keysHtml += `<button onclick="pressKey('${k}')" class="w-8 h-8 bg-bf-slate/80 border border-bf-border text-white text-xs font-bold clip-btn hover:border-bf-cyan/70 active:bg-bf-cyan active:text-bf-dark transition-all">${k}</button>`;
-        });
-        keysHtml += `<button onclick="pressBackspace()" class="col-span-2 w-full h-8 bg-bf-slate/80 border border-bf-border text-bf-orange text-[10px] font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all">⌫</button>`;
-        keysHtml += `<button onclick="pressClear()" class="col-span-2 w-full h-8 bg-bf-slate/80 border border-bf-border text-slate-500 text-[10px] font-bold clip-btn hover:border-slate-400 transition-all">CLR</button>`;
-      }
+      window.toggleSimAlarm = function () {
+        simulateAlarm(!globalAlarmState);
+        renderCommanderDashboard();
+      };
 
-      container.innerHTML = `
+      window.toggleSubItem = function (category, key) {
+        const subMap = simSubStatus[category];
+        if (!subMap) return;
+        subMap[key] = !subMap[key];
+
+        const hasIssue = Object.values(subMap).some((val) => val === false);
+        if (!hasIssue) {
+          simChecklist[category] = 1; // ready
+          activeSimPanel = null; // collapse on all ready
+        } else {
+          simChecklist[category] = 2; // issue
+        }
+
+        renderSoldierDashboard();
+      };
+
+      window.toggleSystem = function (id) {
+        const currentVal = simChecklist[id] ?? 0;
+        let nextVal;
+        if (currentVal === 0) {
+          nextVal = 2; // issue
+        } else if (currentVal === 2) {
+          nextVal = 1; // ready
+        } else {
+          nextVal = 0; // pending
+        }
+
+        simChecklist[id] = nextVal;
+
+        const subMap = simSubStatus[id];
+        if (subMap) {
+          const keys = Object.keys(subMap);
+          if (nextVal === 2) {
+            keys.forEach((k) => {
+              subMap[k] = false;
+            });
+            activeSimPanel = id;
+          } else if (nextVal === 1) {
+            keys.forEach((k) => {
+              subMap[k] = true;
+            });
+            activeSimPanel = null;
+          } else if (nextVal === 0) {
+            keys.forEach((k) => {
+              subMap[k] = false;
+            });
+            activeSimPanel = null;
+          }
+        } else {
+          activeSimPanel = null;
+        }
+
+        renderSoldierDashboard();
+      };
+
+      function renderLockScreen(container) {
+        let dots = '';
+        for (let i = 0; i < 6; i++) {
+          if (i < currentPin.length) {
+            dots += `<div class="w-8 h-10 border border-bf-cyan bg-bf-cyan/10 text-bf-cyan flex items-center justify-center font-bold text-sm rounded">${currentPin[i]}</div>`;
+          } else {
+            dots += `<div class="w-8 h-10 border border-bf-border bg-bf-dark/50 text-slate-600 flex items-center justify-center font-bold text-sm rounded"></div>`;
+          }
+        }
+
+        let keysHtml = '';
+        if (keyboardMode === 'numeric') {
+          const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+          keys.forEach((k) => {
+            keysHtml += `<button onclick="pressKey('${k}')" class="w-14 h-10 bg-bf-slate/80 border border-bf-border text-white text-sm font-bold clip-btn hover:border-bf-cyan/70 active:bg-bf-cyan active:text-bf-dark transition-all">${k}</button>`;
+          });
+          keysHtml += `<button onclick="pressBackspace()" class="w-14 h-10 bg-bf-slate/80 border border-bf-border text-bf-orange font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all">⌫</button>`;
+          keysHtml += `<button onclick="pressClear()" class="w-14 h-10 bg-bf-slate/80 border border-bf-border text-slate-500 font-bold clip-btn hover:border-slate-400 transition-all">CLR</button>`;
+        } else {
+          const keys = [
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+            'I',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'Q',
+            'R',
+            'S',
+            'T',
+            'U',
+            'V',
+            'W',
+            'X',
+            'Y',
+            'Z',
+          ];
+          keys.forEach((k) => {
+            keysHtml += `<button onclick="pressKey('${k}')" class="w-8 h-8 bg-bf-slate/80 border border-bf-border text-white text-xs font-bold clip-btn hover:border-bf-cyan/70 active:bg-bf-cyan active:text-bf-dark transition-all">${k}</button>`;
+          });
+          keysHtml += `<button onclick="pressBackspace()" class="col-span-2 w-full h-8 bg-bf-slate/80 border border-bf-border text-bf-orange text-[10px] font-bold clip-btn hover:border-bf-orange/70 active:bg-bf-orange active:text-bf-dark transition-all">⌫</button>`;
+          keysHtml += `<button onclick="pressClear()" class="col-span-2 w-full h-8 bg-bf-slate/80 border border-bf-border text-slate-500 text-[10px] font-bold clip-btn hover:border-slate-400 transition-all">CLR</button>`;
+        }
+
+        container.innerHTML = `
           <div class="flex flex-col items-center justify-center p-2 w-full space-y-3">
             <div class="text-[8px] text-bf-cyan font-bold tracking-widest uppercase animate-pulse">// SECURITY_GATEWAY</div>
             <h4 class="text-xs font-black text-white tracking-wider uppercase">ENTER ACCESS PIN</h4>
@@ -1040,101 +1080,100 @@
             </div>
           </div>
         `;
-    }
-
-    window.pressKey = function (char) {
-      if (currentPin.length < 6) {
-        currentPin += char;
-        if (currentPin.length === 5) {
-          keyboardMode = 'alpha';
-        }
-        switchRole(currentRole);
-        if (currentPin.length === 6) {
-          submitPin(currentPin);
-        }
       }
-    };
 
-    window.pressBackspace = function () {
-      currentPin = currentPin.slice(0, -1);
-      if (currentPin.length < 5) {
-        keyboardMode = 'numeric';
-      }
-      switchRole(currentRole);
-    };
-
-    window.pressClear = function () {
-      currentPin = '';
-      keyboardMode = 'numeric';
-      switchRole(currentRole);
-    };
-
-    window.toggleKeyboardMode = function () {
-      keyboardMode = keyboardMode === 'numeric' ? 'alpha' : 'numeric';
-      switchRole(currentRole);
-    };
-
-    window.lockSystem = function () {
-      isLocked = true;
-      currentPin = '';
-      switchRole(currentRole);
-    };
-
-    function submitPin(pin) {
-      const digits = pin.slice(0, 5);
-      const letter = pin.charAt(5);
-      const isDigitsOk = /^\d{5}$/.test(digits);
-      const isLetterOk = /^[A-Z]$/i.test(letter);
-
-      if (isDigitsOk && isLetterOk) {
-        isLocked = false;
-        switchRole(currentRole);
-      } else {
-        const statusDiv = document.getElementById('lock-status-msg');
-        if (statusDiv) {
-          statusDiv.innerText = 'INVALID STRUCTURE (5 DIGITS + 1 LETTER)';
-          statusDiv.className =
-            'text-[8px] text-bf-orange font-bold uppercase tracking-wider animate-pulse min-h-[12px]';
-        }
-        setTimeout(() => {
-          currentPin = '';
-          keyboardMode = 'numeric';
+      window.pressKey = function (char) {
+        if (currentPin.length < 6) {
+          currentPin += char;
+          if (currentPin.length === 5) {
+            keyboardMode = 'alpha';
+          }
           switchRole(currentRole);
-        }, 1500);
+          if (currentPin.length === 6) {
+            submitPin(currentPin);
+          }
+        }
+      };
+
+      window.pressBackspace = function () {
+        currentPin = currentPin.slice(0, -1);
+        if (currentPin.length < 5) {
+          keyboardMode = 'numeric';
+        }
+        switchRole(currentRole);
+      };
+
+      window.pressClear = function () {
+        currentPin = '';
+        keyboardMode = 'numeric';
+        switchRole(currentRole);
+      };
+
+      window.toggleKeyboardMode = function () {
+        keyboardMode = keyboardMode === 'numeric' ? 'alpha' : 'numeric';
+        switchRole(currentRole);
+      };
+
+      window.lockSystem = function () {
+        isLocked = true;
+        currentPin = '';
+        switchRole(currentRole);
+      };
+
+      function submitPin(pin) {
+        const digits = pin.slice(0, 5);
+        const letter = pin.charAt(5);
+        const isDigitsOk = /^\d{5}$/.test(digits);
+        const isLetterOk = /^[A-Z]$/i.test(letter);
+
+        if (isDigitsOk && isLetterOk) {
+          isLocked = false;
+          switchRole(currentRole);
+        } else {
+          const statusDiv = document.getElementById('lock-status-msg');
+          if (statusDiv) {
+            statusDiv.innerText = 'INVALID STRUCTURE (5 DIGITS + 1 LETTER)';
+            statusDiv.className =
+              'text-[8px] text-bf-orange font-bold uppercase tracking-wider animate-pulse min-h-[12px]';
+          }
+          setTimeout(() => {
+            currentPin = '';
+            keyboardMode = 'numeric';
+            switchRole(currentRole);
+          }, 1500);
+        }
       }
-    }
 
-    function simulateAlarm(status) {
-      globalAlarmState = status;
-      const banner = document.getElementById('alarm-banner');
+      function simulateAlarm(status) {
+        globalAlarmState = status;
+        const banner = document.getElementById('alarm-banner');
 
-      if (!status) {
-        simChecklist = { wpn: 0, trsp: 0, com: 0, med: 0 };
-        simSubStatus = {
-          wpn: { primary: false, sidearm: false },
-          trsp: { keys: false, fuel: false },
-          com: { radio: false, battery: false },
-          med: { tourniquet: false, bandage: false },
-        };
-        activeSimPanel = null;
+        if (!status) {
+          simChecklist = { wpn: 0, trsp: 0, com: 0, med: 0 };
+          simSubStatus = {
+            wpn: { primary: false, sidearm: false },
+            trsp: { keys: false, fuel: false },
+            com: { radio: false, battery: false },
+            med: { tourniquet: false, bandage: false },
+          };
+          activeSimPanel = null;
+        }
+
+        if (!banner) return;
+
+        const dict = i18n[currentLang];
+        if (status) {
+          banner.innerText = dict.alarmActive;
+          banner.className =
+            'p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 bg-bf-orange/20 border-bf-orange text-bf-orange animate-pulse w-full';
+        } else {
+          banner.innerText = dict.alarmStandby;
+          banner.className =
+            'p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 bg-bf-cyan/10 border-bf-cyan/30 text-bf-cyan w-full';
+        }
       }
 
-      if (!banner) return;
-
-      const dict = i18n[currentLang];
-      if (status) {
-        banner.innerText = dict.alarmActive;
-        banner.className =
-          'p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 bg-bf-orange/20 border-bf-orange text-bf-orange animate-pulse w-full';
-      } else {
-        banner.innerText = dict.alarmStandby;
-        banner.className =
-          'p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 bg-bf-cyan/10 border-bf-cyan/30 text-bf-cyan w-full';
-      }
-    }
-
-    changeLanguage('en');
-  </script>
-</body>
-
+      changeLanguage('en');
+    </script>
+  </body>
 </html>
