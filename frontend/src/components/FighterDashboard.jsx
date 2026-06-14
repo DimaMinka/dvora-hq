@@ -86,16 +86,16 @@ export default function FighterDashboard({
   alarmActive = false,
   onSendReport,
   user,
+  weaponStatus = {},
+  medicalStatus = {},
+  gearStatus = {},
 }) {
   const [reportText, setReportText] = React.useState('');
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const [isSending, setIsSending] = React.useState(false);
   const [showWeaponPanel, setShowWeaponPanel] = React.useState(false);
-  const [weaponStatus, setWeaponStatus] = React.useState({});
   const [showMedicalPanel, setShowMedicalPanel] = React.useState(false);
-  const [medicalStatus, setMedicalStatus] = React.useState({});
   const [showGearPanel, setShowGearPanel] = React.useState(false);
-  const [gearStatus, setGearStatus] = React.useState({});
 
   const getGearItems = React.useCallback(() => {
     const items = [];
@@ -122,12 +122,11 @@ export default function FighterDashboard({
       ...gearStatus,
       [itemId]: nextStatus,
     };
-    setGearStatus(newGearStatus);
 
     const allItems = getGearItems();
     const hasIssue = allItems.some((item) => newGearStatus[item.id] === false);
     if (onToggleChecklist) {
-      onToggleChecklist('gear', hasIssue ? 2 : 1);
+      onToggleChecklist('gear', hasIssue ? 2 : 1, newGearStatus);
     }
   };
 
@@ -156,12 +155,11 @@ export default function FighterDashboard({
       ...medicalStatus,
       [itemId]: nextStatus,
     };
-    setMedicalStatus(newMedicalStatus);
 
     const allItems = getMedicalItems();
     const hasIssue = allItems.some((item) => newMedicalStatus[item.id] === false);
     if (onToggleChecklist) {
-      onToggleChecklist('med', hasIssue ? 2 : 1);
+      onToggleChecklist('med', hasIssue ? 2 : 1, newMedicalStatus);
     }
   };
 
@@ -230,12 +228,11 @@ export default function FighterDashboard({
       ...weaponStatus,
       [itemId]: nextStatus,
     };
-    setWeaponStatus(newWeaponStatus);
 
     const allItems = getWeaponItems();
     const hasIssue = allItems.some((item) => newWeaponStatus[item.id] === false);
     if (onToggleChecklist) {
-      onToggleChecklist('wpn', hasIssue ? 2 : 1);
+      onToggleChecklist('wpn', hasIssue ? 2 : 1, newWeaponStatus);
     }
   };
 
@@ -390,19 +387,12 @@ export default function FighterDashboard({
       <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
-            {user?.avatar_url ? (
-              <img
-                src={user.avatar_url}
-                alt="Tactical Avatar"
-                className="w-full h-full object-cover cursor-zoom-in"
-                onClick={() => setLightboxOpen(true)}
-              />
-            ) : (
-              <>
-                <div className="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
-                <span className="text-bf-cyan text-base font-black">⚡</span>
-              </>
-            )}
+            <img
+              src={user?.avatar_url || '/avatar-placeholder.png'}
+              alt="Tactical Avatar"
+              className="w-full h-full object-cover cursor-zoom-in"
+              onClick={() => setLightboxOpen(true)}
+            />
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-white font-black text-xs uppercase tracking-wider truncate">
@@ -627,14 +617,14 @@ export default function FighterDashboard({
       </form>
 
       {/* Lightbox Modal */}
-      {lightboxOpen && user?.avatar_url && (
+      {lightboxOpen && (
         <div
           className="fixed inset-0 bg-bf-dark/95 z-50 flex flex-col items-center justify-center p-4 animate-fade-in"
           onClick={() => setLightboxOpen(false)}
         >
           <div className="relative max-w-full max-h-[85vh] border border-bf-cyan/30 clip-hud overflow-hidden bg-bf-slate/90 flex flex-col">
             <img
-              src={user.avatar_url}
+              src={user?.avatar_url || '/avatar-placeholder.png'}
               alt="Tactical Avatar Fullscreen"
               className="max-w-[95vw] max-h-[75vh] object-contain"
             />

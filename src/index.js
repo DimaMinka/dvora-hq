@@ -460,7 +460,17 @@ Pose: Tactically standing on a rocky hill looking forward. Background: Distant d
 
 // 6. Update Readiness (Fighter)
 app.post('/api/user/readiness', authenticateToken, async (req, res) => {
-  const { weapons_ready, transport_ready, comms_ready, meds_ready, gear_ready, note } = req.body;
+  const {
+    weapons_ready,
+    transport_ready,
+    comms_ready,
+    meds_ready,
+    gear_ready,
+    note,
+    weapon_status,
+    meds_status,
+    gear_status,
+  } = req.body;
 
   try {
     const db = getDb();
@@ -474,6 +484,9 @@ app.post('/api/user/readiness', authenticateToken, async (req, res) => {
         meds_ready: Number(meds_ready),
         gear_ready: Number(gear_ready || 0),
         note: note || '',
+        weapon_status: weapon_status || null,
+        meds_status: meds_status || null,
+        gear_status: gear_status || null,
         updated_at: new Date().toISOString(),
       });
 
@@ -512,11 +525,20 @@ app.get('/api/squad/status', authenticateToken, async (req, res) => {
         squad_id: userData.squad_id,
         avatar_url: userData.avatar_url || null,
         tg_username: userData.tg_username || null,
+        specialization: userData.specialization || null,
+        weaponry: userData.weaponry || null,
+        gear: userData.gear || null,
+        optics: userData.optics || null,
+        accessories: userData.accessories || null,
+        meds: userData.meds || null,
         weapons_ready: readiness.weapons_ready || 0,
         transport_ready: readiness.transport_ready || 0,
         comms_ready: readiness.comms_ready || 0,
         meds_ready: readiness.meds_ready || 0,
         gear_ready: readiness.gear_ready || 0,
+        weapon_status: readiness.weapon_status || null,
+        meds_status: readiness.meds_status || null,
+        gear_status: readiness.gear_status || null,
         note: readiness.note || null,
         updated_at: readiness.updated_at || null,
       });

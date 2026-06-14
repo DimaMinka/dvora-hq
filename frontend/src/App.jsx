@@ -190,6 +190,7 @@ function App() {
   const [role, setRole] = useState('soldier');
   const [user, setUser] = useState(null);
   const [squadMembers, setSquadMembers] = useState([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
   const [alarmActive, setAlarmActive] = useState(false);
   const [checklist, setChecklist] = useState({
     wpn: 0,
@@ -197,6 +198,9 @@ function App() {
     gear: 0,
     med: 0,
   });
+  const [weaponStatus, setWeaponStatus] = useState({});
+  const [medicalStatus, setMedicalStatus] = useState({});
+  const [gearStatus, setGearStatus] = useState({});
 
   const dict = i18n[lang];
   const isRtl = lang === 'he';
@@ -247,6 +251,9 @@ function App() {
           gear: Number(data.user.readiness.gear_ready || 0),
           trsp: Number(data.user.readiness.transport_ready || 0),
         });
+        setWeaponStatus(data.user.readiness.weapon_status || {});
+        setMedicalStatus(data.user.readiness.meds_status || {});
+        setGearStatus(data.user.readiness.gear_status || {});
       }
       setAlarmActive(Boolean(data.user.alarm_active));
       setIsLocked(false);
@@ -285,7 +292,7 @@ function App() {
     setAlarmActive(false);
   };
 
-  const toggleChecklist = async (key, forcedValue) => {
+  const toggleChecklist = async (key, forcedValue, updatedSubStatus) => {
     const currentVal = checklist[key] ?? 0;
     const nextVal = forcedValue !== undefined ? forcedValue : (currentVal + 1) % 3;
 
@@ -294,6 +301,23 @@ function App() {
       [key]: nextVal,
     };
     setChecklist(newChecklist);
+
+    let nextWpnStatus = weaponStatus;
+    let nextMedStatus = medicalStatus;
+    let nextGearStatus = gearStatus;
+
+    if (updatedSubStatus) {
+      if (key === 'wpn') {
+        nextWpnStatus = updatedSubStatus;
+        setWeaponStatus(updatedSubStatus);
+      } else if (key === 'med') {
+        nextMedStatus = updatedSubStatus;
+        setMedicalStatus(updatedSubStatus);
+      } else if (key === 'gear') {
+        nextGearStatus = updatedSubStatus;
+        setGearStatus(updatedSubStatus);
+      }
+    }
 
     const token = localStorage.getItem('dvora_token');
     if (!token) return;
@@ -309,6 +333,9 @@ function App() {
         transport_ready: newChecklist.trsp,
         meds_ready: newChecklist.med,
         gear_ready: newChecklist.gear || 0,
+        weapon_status: nextWpnStatus,
+        meds_status: nextMedStatus,
+        gear_status: nextGearStatus,
       }),
     }).catch((err) => console.error('[API] Failed to update readiness:', err.message));
   };
@@ -328,6 +355,9 @@ function App() {
         transport_ready: checklist.trsp,
         meds_ready: checklist.med,
         gear_ready: checklist.gear || 0,
+        weapon_status: weaponStatus,
+        meds_status: medicalStatus,
+        gear_status: gearStatus,
         note: text,
       }),
     })
@@ -405,6 +435,9 @@ function App() {
             gear: Number(profile.readiness.gear_ready || 0),
             trsp: Number(profile.readiness.transport_ready || 0),
           });
+          setWeaponStatus(profile.readiness.weapon_status || {});
+          setMedicalStatus(profile.readiness.meds_status || {});
+          setGearStatus(profile.readiness.gear_status || {});
         }
         setAlarmActive(Boolean(profile.alarm_active));
         setIsLocked(false);
@@ -424,12 +457,18 @@ function App() {
 
     // Load immediately if commander
     if (user.role === 'commander') {
+      setLoadingMembers(true);
       fetch('/api/squad/status', {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
-        .then((data) => setSquadMembers(data))
-        .catch(() => {});
+        .then((data) => {
+          setSquadMembers(data);
+          setLoadingMembers(false);
+        })
+        .catch(() => {
+          setLoadingMembers(false);
+        });
     }
 
     const interval = setInterval(() => {
@@ -524,6 +563,9 @@ function App() {
                       alarmActive={alarmActive}
                       onSendReport={handleSendReport}
                       user={user}
+                      weaponStatus={weaponStatus}
+                      medicalStatus={medicalStatus}
+                      gearStatus={gearStatus}
                     />
                   )}
 
@@ -536,6 +578,10 @@ function App() {
                       user={user}
                       checklist={checklist}
                       onToggleChecklist={toggleChecklist}
+                      weaponStatus={weaponStatus}
+                      medicalStatus={medicalStatus}
+                      gearStatus={gearStatus}
+                      isLoading={loadingMembers}
                     />
                   )}
                 </>

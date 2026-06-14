@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 
 const specializationsList = [
   { id: 'commander', en: 'Commander', he: 'מפקד' },
@@ -88,15 +88,17 @@ export default function CommanderDashboard({
   user,
   checklist = { wpn: 0, trsp: 0, com: 0, med: 0 },
   onToggleChecklist,
+  weaponStatus = {},
+  medicalStatus = {},
+  gearStatus = {},
+  isLoading = false,
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [showWeaponPanel, setShowWeaponPanel] = useState(false);
-  const [weaponStatus, setWeaponStatus] = useState({});
   const [showMedicalPanel, setShowMedicalPanel] = useState(false);
-  const [medicalStatus, setMedicalStatus] = useState({});
   const [showGearPanel, setShowGearPanel] = useState(false);
-  const [gearStatus, setGearStatus] = useState({});
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
   const getGearItems = useCallback(() => {
     const items = [];
@@ -123,12 +125,11 @@ export default function CommanderDashboard({
       ...gearStatus,
       [itemId]: nextStatus,
     };
-    setGearStatus(newGearStatus);
 
     const allItems = getGearItems();
     const hasIssue = allItems.some((item) => newGearStatus[item.id] === false);
     if (onToggleChecklist) {
-      onToggleChecklist('gear', hasIssue ? 2 : 1);
+      onToggleChecklist('gear', hasIssue ? 2 : 1, newGearStatus);
     }
   };
 
@@ -157,12 +158,11 @@ export default function CommanderDashboard({
       ...medicalStatus,
       [itemId]: nextStatus,
     };
-    setMedicalStatus(newMedicalStatus);
 
     const allItems = getMedicalItems();
     const hasIssue = allItems.some((item) => newMedicalStatus[item.id] === false);
     if (onToggleChecklist) {
-      onToggleChecklist('med', hasIssue ? 2 : 1);
+      onToggleChecklist('med', hasIssue ? 2 : 1, newMedicalStatus);
     }
   };
 
@@ -231,12 +231,11 @@ export default function CommanderDashboard({
       ...weaponStatus,
       [itemId]: nextStatus,
     };
-    setWeaponStatus(newWeaponStatus);
 
     const allItems = getWeaponItems();
     const hasIssue = allItems.some((item) => newWeaponStatus[item.id] === false);
     if (onToggleChecklist) {
-      onToggleChecklist('wpn', hasIssue ? 2 : 1);
+      onToggleChecklist('wpn', hasIssue ? 2 : 1, newWeaponStatus);
     }
   };
 
@@ -278,6 +277,11 @@ export default function CommanderDashboard({
       ready: 'READY',
       issue: 'ISSUE',
       pending: 'PENDING',
+      selectedIssuesTitle: 'TACTICAL DRILL-DOWN // REPORT',
+      allOperational: 'ALL ASSETS FOR THIS AXIS ARE GREEN / OPERATIONAL',
+      notReadyStatus: 'NO SUB-ITEMS MARKED FAULTY. OVERALL AXIS MARKED AS ISSUE.',
+      faultyItems: 'FAULTY / MISSING ASSETS:',
+      btnDismiss: 'DISMISS REPORT',
     },
     he: {
       title: '// לוח_פיקוד_אסטרטגי // מפקד',
@@ -301,10 +305,147 @@ export default function CommanderDashboard({
       ready: 'תקין',
       issue: 'תקלה',
       pending: 'טרם נקבע',
+      selectedIssuesTitle: 'פירוט תקלות טקטי // דיווח חוסרים',
+      allOperational: 'כלל הציוד והמשאבים של הלוחם תקינים לחלוטין',
+      notReadyStatus: 'לא סומנו תתי-פריטים כתקולים. סטטוס כללי מסומן כתקלה.',
+      faultyItems: 'ציוד תקול / חסר:',
+      btnDismiss: 'סגור פירוט',
     },
   };
 
   const d = textDict[lang] || textDict.en;
+
+  const handleShowIssues = (member, category) => {
+    if (category === 'trsp') {
+      setSelectedIssue(null);
+      return;
+    }
+
+    const categoryUpper = category.toUpperCase();
+    if (selectedIssue && selectedIssue.memberId === member.id && selectedIssue.category === categoryUpper) {
+      setSelectedIssue(null);
+      return;
+    }
+
+    const name = member.tg_username ? `@${member.tg_username}` : member.phone_number;
+    const items = [];
+
+    if (category === 'wpn') {
+      const statusMap = member.weapon_status || {};
+      const parts = member.weaponry ? member.weaponry.split(';') : [];
+      const primaryId = parts[0];
+      if (primaryId) {
+        const clean = primaryId.trim();
+        const id = `wpn-${clean}`;
+        if (statusMap[id] === false) {
+          const match = primaryWeaponsList.find((w) => w.id === clean.toLowerCase());
+          items.push({
+            label: match ? (lang === 'he' ? match.he : match.en) : clean,
+            type: 'PRIMARY WEAPON',
+          });
+        }
+      }
+
+      const secondaryIds = parts[1] ? parts[1].split(',') : [];
+      secondaryIds.forEach((idStr) => {
+        const clean = idStr.trim();
+        if (clean) {
+          const id = `wpn-${clean}`;
+          if (statusMap[id] === false) {
+            const match = secondaryWeaponsList.find((w) => w.id === clean.toLowerCase());
+            items.push({
+              label: match ? (lang === 'he' ? match.he : match.en) : clean,
+              type: 'SECONDARY WEAPON',
+            });
+          }
+        }
+      });
+
+      if (member.optics) {
+        member.optics.split(',').forEach((idStr) => {
+          const clean = idStr.trim();
+          if (clean) {
+            const id = `opt-${clean}`;
+            if (statusMap[id] === false) {
+              const match = opticsList.find((o) => o.id === clean.toLowerCase());
+              items.push({
+                label: match ? (lang === 'he' ? match.he : match.en) : clean,
+                type: 'OPTIC',
+              });
+            }
+          }
+        });
+      }
+
+      if (member.accessories) {
+        member.accessories.split(',').forEach((idStr) => {
+          const clean = idStr.trim();
+          if (clean) {
+            const id = `acc-${clean}`;
+            if (statusMap[id] === false) {
+              const match = accessoriesList.find((a) => a.id === clean.toLowerCase());
+              items.push({
+                label: match ? (lang === 'he' ? match.he : match.en) : clean,
+                type: 'ACCESSORY',
+              });
+            }
+          }
+        });
+      }
+    } else if (category === 'med') {
+      const statusMap = member.meds_status || {};
+      if (member.meds) {
+        member.meds.split(',').forEach((idStr) => {
+          const clean = idStr.trim();
+          if (clean) {
+            const id = `med-${clean}`;
+            if (statusMap[id] === false) {
+              const match = medsList.find((m) => m.id === clean.toLowerCase());
+              items.push({
+                label: match ? (lang === 'he' ? match.he : match.en) : clean,
+                type: 'MEDICAL',
+              });
+            }
+          }
+        });
+      }
+    } else if (category === 'gear') {
+      const statusMap = member.gear_status || {};
+      if (member.gear) {
+        member.gear.split(',').forEach((idStr) => {
+          const clean = idStr.trim();
+          if (clean) {
+            const id = `gear-${clean}`;
+            if (statusMap[id] === false) {
+              const match = gearsList.find((g) => g.id === clean.toLowerCase());
+              items.push({
+                label: match ? (lang === 'he' ? match.he : match.en) : clean,
+                type: 'GEAR',
+              });
+            }
+          }
+        });
+      }
+    }
+
+    const currentVal = category === 'wpn' ? member.weapons_ready
+      : category === 'med' ? member.meds_ready
+      : member.gear_ready;
+
+    setSelectedIssue({
+      memberId: member.id,
+      memberName: name,
+      category: categoryUpper,
+      items,
+      status: currentVal || 0,
+    });
+  };
+
+  const sortedMembers = [...squadMembers].sort((a, b) => {
+    const nameA = (a.tg_username || a.phone_number || '').toLowerCase();
+    const nameB = (b.tg_username || b.phone_number || '').toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
 
   const logs = squadMembers
     .filter((m) => m.note)
@@ -331,19 +472,12 @@ export default function CommanderDashboard({
       <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
-            {user?.avatar_url ? (
-              <img
-                src={user.avatar_url}
-                alt="Tactical Avatar"
-                className="w-full h-full object-cover cursor-zoom-in"
-                onClick={() => setLightboxOpen(true)}
-              />
-            ) : (
-              <>
-                <div className="absolute inset-0 bg-gradient-to-t from-bf-cyan/20 to-transparent z-10 animate-pulse"></div>
-                <span className="text-bf-cyan text-base font-black">⚡</span>
-              </>
-            )}
+            <img
+              src={user?.avatar_url || '/avatar-placeholder.png'}
+              alt="Tactical Avatar"
+              className="w-full h-full object-cover cursor-zoom-in"
+              onClick={() => setLightboxOpen(true)}
+            />
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-white font-black text-xs uppercase tracking-wider truncate">
@@ -548,49 +682,121 @@ export default function CommanderDashboard({
           <div className="text-center">{d.trsp}</div>
         </div>
 
-        {squadMembers.map((m) => (
-          <div
-            key={m.id}
-            className="grid grid-cols-5 text-[10px] items-center p-1.5 bg-bf-dark/40 border border-bf-border/40 clip-btn"
-          >
-            <div className="truncate text-slate-300 font-bold flex items-center gap-1">
-              {m.avatar_url && (
-                <img
-                  src={m.avatar_url}
-                  alt=""
-                  className="w-4 h-4 rounded-full object-cover border border-bf-cyan/30 shrink-0"
-                />
-              )}
-              <span className="truncate">
-                {m.tg_username ? '@' + m.tg_username : m.phone_number}
-              </span>
+        {isLoading && squadMembers.length === 0 ? (
+          <>
+            <div className="text-[10px] text-bf-cyan/60 animate-pulse tracking-widest text-center py-4 border border-dashed border-bf-cyan/20 bg-bf-cyan/5 clip-btn my-2 font-mono">
+              // CONNECTING TO SQUAD NODES // SCANNING STATUS...
             </div>
-            {(() => {
-              const getDotClass = (val) => {
-                const status = val ?? 0;
-                if (status === 1) return 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]';
-                if (status === 2) return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
-                return 'bg-slate-700';
-              };
-              return (
-                <>
-                  <div className="flex justify-center">
-                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.weapons_ready)}`} />
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="grid grid-cols-5 items-center p-1.5 bg-bf-dark/20 border border-bf-border/20 clip-btn opacity-60 animate-pulse">
+                <div className="flex items-center gap-1.5 col-span-1">
+                  <div className="w-4 h-4 rounded-full bg-slate-800 shrink-0"></div>
+                  <div className="h-2 w-12 bg-slate-800 rounded"></div>
+                </div>
+                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
+                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
+                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
+                <div className="flex justify-center"><div className="w-2 h-2 rounded-full bg-slate-800"></div></div>
+              </div>
+            ))}
+          </>
+        ) : (
+          sortedMembers.map((m) => {
+            const isSelected = selectedIssue && selectedIssue.memberId === m.id;
+            return (
+              <React.Fragment key={m.id}>
+                <div
+                  className="grid grid-cols-5 text-[10px] items-center p-1.5 bg-bf-dark/40 border border-bf-border/40 clip-btn"
+                >
+                  <div className="truncate text-slate-300 font-bold flex items-center gap-1">
+                    <img
+                      src={m.avatar_url || '/avatar-placeholder.png'}
+                      alt=""
+                      className="w-4 h-4 rounded-full object-cover border border-bf-cyan/30 shrink-0"
+                    />
+                    <span className="truncate">
+                      {m.tg_username ? '@' + m.tg_username : m.phone_number}
+                    </span>
                   </div>
-                  <div className="flex justify-center">
-                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.meds_ready)}`} />
+                  {(() => {
+                    const getDotClass = (val) => {
+                      const status = val ?? 0;
+                      if (status === 1) return 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]';
+                      if (status === 2) return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
+                      return 'bg-slate-700';
+                    };
+                    return (
+                      <>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleShowIssues(m, 'wpn')}
+                            className="flex justify-center items-center w-full py-1 hover:bg-bf-slate/30 rounded cursor-pointer transition-all duration-150 active:scale-90"
+                            title="Inspect Weapons"
+                          >
+                            <span className={`w-2 h-2 rounded-full ${getDotClass(m.weapons_ready)}`} />
+                          </button>
+                        </div>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleShowIssues(m, 'med')}
+                            className="flex justify-center items-center w-full py-1 hover:bg-bf-slate/30 rounded cursor-pointer transition-all duration-150 active:scale-90"
+                            title="Inspect Medical"
+                          >
+                            <span className={`w-2 h-2 rounded-full ${getDotClass(m.meds_ready)}`} />
+                          </button>
+                        </div>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleShowIssues(m, 'gear')}
+                            className="flex justify-center items-center w-full py-1 hover:bg-bf-slate/30 rounded cursor-pointer transition-all duration-150 active:scale-90"
+                            title="Inspect Gear"
+                          >
+                            <span className={`w-2 h-2 rounded-full ${getDotClass(m.gear_ready)}`} />
+                          </button>
+                        </div>
+                        <div className="flex justify-center py-1">
+                          <span className={`w-2 h-2 rounded-full ${getDotClass(m.transport_ready)}`} />
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+
+                {isSelected && (
+                  <div className="p-2 bg-bf-slate/90 border-x border-b border-bf-orange/40 text-[9px] font-mono space-y-1.5 animate-fade-in relative -mt-1 mx-0.5 z-10 clip-btn shadow-[0_4px_12px_rgba(255,84,0,0.1)]">
+                    <div className="text-[7px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-1 flex justify-between">
+                      <span>// {d.selectedIssuesTitle} // {selectedIssue.category}</span>
+                    </div>
+
+                    <div className="space-y-1 font-mono text-[8px]">
+                      {selectedIssue.status === 1 ? (
+                        <div className="p-1 border border-bf-cyan/30 bg-bf-cyan/10 text-bf-cyan clip-btn text-center select-none uppercase tracking-wider font-bold">
+                          ✓ {d.allOperational}
+                        </div>
+                      ) : selectedIssue.items.length > 0 ? (
+                        <div className="space-y-0.5">
+                          {selectedIssue.items.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="flex justify-between items-center p-1 bg-bf-orange/5 border border-bf-orange/30 clip-btn text-bf-orange shadow-[inset_0_0_8px_rgba(255,84,0,0.05)]"
+                            >
+                              <span className="text-[7px] text-slate-500">// {item.type}</span>
+                              <span className="font-bold uppercase tracking-wider">[X] {item.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-1 border border-bf-orange/30 bg-bf-orange/10 text-bf-orange clip-btn text-center select-none uppercase tracking-wider font-bold animate-pulse">
+                          ⚠ {d.notReadyStatus}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex justify-center">
-                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.gear_ready)}`} />
-                  </div>
-                  <div className="flex justify-center">
-                    <span className={`w-2 h-2 rounded-full ${getDotClass(m.transport_ready)}`} />
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-        ))}
+                )}
+              </React.Fragment>
+            );
+          })
+        )}
       </div>
 
       {/* Alarm override control */}
@@ -639,13 +845,13 @@ export default function CommanderDashboard({
       )}
 
       {/* Lightbox for avatar zoom */}
-      {lightboxOpen && user?.avatar_url && (
+      {lightboxOpen && (
         <div
           className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4 animate-fade-in"
           onClick={() => setLightboxOpen(false)}
         >
           <img
-            src={user.avatar_url}
+            src={user?.avatar_url || '/avatar-placeholder.png'}
             alt="Tactical Avatar Zoomed"
             className="max-w-full max-h-full object-contain border border-bf-cyan/30 clip-hud shadow-2xl"
           />
