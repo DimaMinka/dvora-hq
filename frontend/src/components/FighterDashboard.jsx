@@ -4,6 +4,7 @@ import { useLoadoutItems } from '../hooks/useLoadoutItems.js';
 import OperatorCard from './ui/OperatorCard.jsx';
 import ChecklistToggleGrid from './ui/ChecklistToggleGrid.jsx';
 import ChecklistPanel from './ui/ChecklistPanel.jsx';
+import RotationSchedule from './RotationSchedule.jsx';
 import { formatCommaLabel } from '../utils/loadout.js';
 import { specializationsList } from '@shared/loadout-data.js';
 
@@ -181,6 +182,9 @@ export default function FighterDashboard({
           onToggleItem={(id) => handleToggleItem('gear', id)}
         />
       )}
+
+      {/* Rotation Schedule Widget */}
+      <RotationSchedule lang={lang} user={user} />
 
       {/* Report Form */}
       <form onSubmit={handleSend} className="space-y-2">

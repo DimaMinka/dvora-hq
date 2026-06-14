@@ -115,4 +115,49 @@ router.post('/alarm', authenticateToken, async (req, res) => {
   }
 });
 
+// 9. Get Squad Members list (available to all authenticated operators)
+router.get('/:squadId/members', authenticateToken, async (req, res) => {
+  const { squadId } = req.params;
+
+  try {
+    const db = getDb();
+    const usersSnapshot = await db
+      .collection('users')
+      .where('squad_id', '==', squadId.toUpperCase())
+      .get();
+
+    const rows = [];
+    for (const userDoc of usersSnapshot.docs) {
+      const userData = userDoc.data();
+      const readinessDoc = await db.collection('readiness_status').doc(userDoc.id).get();
+      const readiness = readinessDoc.exists ? readinessDoc.data() : {};
+      
+      rows.push({
+        id: userDoc.id,
+        role: userData.role,
+        squad_id: userData.squad_id,
+        avatar_url: userData.avatar_url || null,
+        tg_username: userData.tg_username || null,
+        specialization: userData.specialization || null,
+        weaponry: userData.weaponry || null,
+        gear: userData.gear || null,
+        optics: userData.optics || null,
+        accessories: userData.accessories || null,
+        meds: userData.meds || null,
+        weapons_ready: readiness.weapons_ready || 0,
+        transport_ready: readiness.transport_ready || 0,
+        comms_ready: readiness.comms_ready || 0,
+        meds_ready: readiness.meds_ready || 0,
+        gear_ready: readiness.gear_ready || 0,
+        updated_at: readiness.updated_at || null,
+      });
+    }
+
+    res.json(rows);
+  } catch (err) {
+    console.error('[API] Get squad members error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

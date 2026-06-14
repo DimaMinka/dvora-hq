@@ -4,6 +4,7 @@ import { useLoadoutItems } from '../hooks/useLoadoutItems.js';
 import OperatorCard from './ui/OperatorCard.jsx';
 import ChecklistToggleGrid from './ui/ChecklistToggleGrid.jsx';
 import ChecklistPanel from './ui/ChecklistPanel.jsx';
+import RotationSchedule from './RotationSchedule.jsx';
 import { formatCommaLabel, parseWeaponry, parseCommaList } from '../utils/loadout.js';
 import { specializationsList, gearsList, medsList } from '@shared/loadout-data.js';
 
@@ -469,6 +470,9 @@ export default function CommanderDashboard({
           })
         )}
       </div>
+
+      {/* Rotation Schedule Widget */}
+      <RotationSchedule lang={lang} user={user} />
 
       {/* Alarm override control */}
       <button
