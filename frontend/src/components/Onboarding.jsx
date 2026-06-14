@@ -9,6 +9,60 @@ import {
   medsList
 } from '@shared/loadout-data.js';
 
+function SelectionSection({
+  label,
+  list,
+  selectedItems,
+  onToggle,
+  isExpanded,
+  onToggleExpand,
+  lang,
+  d,
+  isSingleSelect = false,
+}) {
+  const displayedItems = isExpanded
+    ? list
+    : list.filter((item, index) =>
+        index < 2 || (isSingleSelect ? selectedItems === item.id : selectedItems.includes(item.id))
+      );
+
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
+        // {label}
+      </label>
+      <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
+        {displayedItems.map((item) => {
+          const isSelected = isSingleSelect ? selectedItems === item.id : selectedItems.includes(item.id);
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onToggle(item.id)}
+              className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${
+                isSelected
+                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
+                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
+              }`}
+            >
+              {lang === 'he' ? item.he : item.en.toUpperCase()}
+            </button>
+          );
+        })}
+      </div>
+      <button
+        type="button"
+        onClick={onToggleExpand}
+        className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${
+          isExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
+        }`}
+      >
+        {isExpanded ? d.less : d.more}
+      </button>
+    </div>
+  );
+}
+
 export default function Onboarding({ lang = 'en', onComplete }) {
   const [selectedSpecs, setSelectedSpecs] = useState([]);
   const [primaryWeapon, setPrimaryWeapon] = useState('m4');
@@ -19,15 +73,22 @@ export default function Onboarding({ lang = 'en', onComplete }) {
   const [selectedGears, setSelectedGears] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Toggle states (limit to 2 buttons initially)
-  const [specExpanded, setSpecExpanded] = useState(false);
-  const [wpnExpanded, setWpnExpanded] = useState(false);
-  const [optExpanded, setOptExpanded] = useState(false);
-  const [secExpanded, setSecExpanded] = useState(false);
-  const [accExpanded, setAccExpanded] = useState(false);
-  const [medsExpanded, setMedsExpanded] = useState(false);
-  const [gearExpanded, setGearExpanded] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({
+    spec: false,
+    wpn: false,
+    opt: false,
+    sec: false,
+    acc: false,
+    med: false,
+    gear: false,
+  });
 
+  const toggleExpand = (section) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
 
   const textDict = {
     en: {
@@ -48,7 +109,7 @@ export default function Onboarding({ lang = 'en', onComplete }) {
       less: '// SHOW LESS',
     },
     he: {
-      title: '// אתחול // כניסה_ראשונה',
+      title: '// אתחול // כниסה_ראשונה',
       subtitle: 'הגדרת פרופיל טקטי',
       lblSpec: '01_בחר_התמחות_מבצעית (בחירה מרובה)',
       lblWpn: '02_בחר_נשק_ראשי',
@@ -68,64 +129,8 @@ export default function Onboarding({ lang = 'en', onComplete }) {
 
   const d = textDict[lang] || textDict.en;
 
-  const toggleSpecialization = (id) => {
-    setSelectedSpecs((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((x) => x !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
-  const toggleSecondaryWeapon = (id) => {
-    setSelectedSecondaries((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((x) => x !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
-  const toggleOptic = (id) => {
-    setSelectedOptics((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((x) => x !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
-  const toggleAccessory = (id) => {
-    setSelectedAccs((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((x) => x !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
-  const toggleMed = (id) => {
-    setSelectedMeds((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((x) => x !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
-  const toggleGear = (id) => {
-    setSelectedGears((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((x) => x !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
+  const toggleMultiSelect = (setter, id) => {
+    setter((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   const handleSubmit = async (e) => {
@@ -136,9 +141,10 @@ export default function Onboarding({ lang = 'en', onComplete }) {
     }
     setLoading(true);
 
-    const weaponryString = selectedSecondaries.length > 0
-      ? `${primaryWeapon};${selectedSecondaries.join(',')}`
-      : primaryWeapon;
+    const weaponryString =
+      selectedSecondaries.length > 0
+        ? `${primaryWeapon};${selectedSecondaries.join(',')}`
+        : primaryWeapon;
 
     try {
       await onComplete({
@@ -156,35 +162,6 @@ export default function Onboarding({ lang = 'en', onComplete }) {
     }
   };
 
-  // Automated layout filters (showing first 2 elements by default, keeping chosen selections visible)
-  const displayedSpecs = specExpanded
-    ? specializationsList
-    : specializationsList.filter((s, index) => index < 2 || selectedSpecs.includes(s.id));
-
-  const displayedPrimary = wpnExpanded
-    ? primaryWeaponsList
-    : primaryWeaponsList.filter((w, index) => index < 2 || primaryWeapon === w.id);
-
-  const displayedOptics = optExpanded
-    ? opticsList
-    : opticsList.filter((o, index) => index < 2 || selectedOptics.includes(o.id));
-
-  const displayedSecondaries = secExpanded
-    ? secondaryWeaponsList
-    : secondaryWeaponsList.filter((w, index) => index < 2 || selectedSecondaries.includes(w.id));
-
-  const displayedAccs = accExpanded
-    ? accessoriesList
-    : accessoriesList.filter((a, index) => index < 2 || selectedAccs.includes(a.id));
-
-  const displayedMeds = medsExpanded
-    ? medsList
-    : medsList.filter((m, index) => index < 2 || selectedMeds.includes(m.id));
-
-  const displayedGears = gearExpanded
-    ? gearsList
-    : gearsList.filter((g, index) => index < 2 || selectedGears.includes(g.id));
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -194,248 +171,102 @@ export default function Onboarding({ lang = 'en', onComplete }) {
       <h2 className="text-sm font-black text-white tracking-widest uppercase">{d.subtitle}</h2>
 
       {/* 01_Specialization Selection */}
-      <div className="space-y-1.5">
-        <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
-          // {d.lblSpec}
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
-          {displayedSpecs.map((spec) => {
-            const isSelected = selectedSpecs.includes(spec.id);
-            return (
-              <button
-                key={spec.id}
-                type="button"
-                onClick={() => toggleSpecialization(spec.id)}
-                className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${isSelected
-                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
-                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
-                  }`}
-              >
-                {lang === 'he' ? spec.he : spec.en.toUpperCase()}
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          onClick={() => setSpecExpanded(!specExpanded)}
-          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${specExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-            }`}
-        >
-          {specExpanded ? d.less : d.more}
-        </button>
-      </div>
+      <SelectionSection
+        label={d.lblSpec}
+        list={specializationsList}
+        selectedItems={selectedSpecs}
+        onToggle={(id) => toggleMultiSelect(setSelectedSpecs, id)}
+        isExpanded={expandedSections.spec}
+        onToggleExpand={() => toggleExpand('spec')}
+        lang={lang}
+        d={d}
+      />
 
       {/* 02_Primary Weapon Selection */}
-      <div className="space-y-1.5">
-        <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
-          // {d.lblWpn}
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
-          {displayedPrimary.map((wpn) => {
-            const isSelected = primaryWeapon === wpn.id;
-            return (
-              <button
-                key={wpn.id}
-                type="button"
-                onClick={() => setPrimaryWeapon(wpn.id)}
-                className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${isSelected
-                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
-                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
-                  }`}
-              >
-                {lang === 'he' ? wpn.he : wpn.en.toUpperCase()}
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          onClick={() => setWpnExpanded(!wpnExpanded)}
-          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${wpnExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-            }`}
-        >
-          {wpnExpanded ? d.less : d.more}
-        </button>
-      </div>
+      <SelectionSection
+        label={d.lblWpn}
+        list={primaryWeaponsList}
+        selectedItems={primaryWeapon}
+        onToggle={setPrimaryWeapon}
+        isExpanded={expandedSections.wpn}
+        onToggleExpand={() => toggleExpand('wpn')}
+        lang={lang}
+        d={d}
+        isSingleSelect={true}
+      />
 
       {/* 03_Primary Optics Selection */}
-      <div className="space-y-1.5">
-        <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
-          // {d.lblOptics}
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
-          {displayedOptics.map((opt) => {
-            const isSelected = selectedOptics.includes(opt.id);
-            return (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => toggleOptic(opt.id)}
-                className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${isSelected
-                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
-                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
-                  }`}
-              >
-                {lang === 'he' ? opt.he : opt.en.toUpperCase()}
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          onClick={() => setOptExpanded(!optExpanded)}
-          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${optExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-            }`}
-        >
-          {optExpanded ? d.less : d.more}
-        </button>
-      </div>
+      <SelectionSection
+        label={d.lblOptics}
+        list={opticsList}
+        selectedItems={selectedOptics}
+        onToggle={(id) => toggleMultiSelect(setSelectedOptics, id)}
+        isExpanded={expandedSections.opt}
+        onToggleExpand={() => toggleExpand('opt')}
+        lang={lang}
+        d={d}
+      />
 
       {/* 04_Secondary Weapon Selection */}
-      <div className="space-y-1.5">
-        <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
-          // {d.lblSecWpn}
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
-          {displayedSecondaries.map((wpn) => {
-            const isSelected = selectedSecondaries.includes(wpn.id);
-            return (
-              <button
-                key={wpn.id}
-                type="button"
-                onClick={() => toggleSecondaryWeapon(wpn.id)}
-                className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${isSelected
-                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
-                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
-                  }`}
-              >
-                {lang === 'he' ? wpn.he : wpn.en.toUpperCase()}
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          onClick={() => setSecExpanded(!secExpanded)}
-          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${secExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-            }`}
-        >
-          {secExpanded ? d.less : d.more}
-        </button>
-      </div>
+      <SelectionSection
+        label={d.lblSecWpn}
+        list={secondaryWeaponsList}
+        selectedItems={selectedSecondaries}
+        onToggle={(id) => toggleMultiSelect(setSelectedSecondaries, id)}
+        isExpanded={expandedSections.sec}
+        onToggleExpand={() => toggleExpand('sec')}
+        lang={lang}
+        d={d}
+      />
 
       {/* 05_Tactical Accessories Selection */}
-      <div className="space-y-1.5">
-        <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
-          // {d.lblAccs}
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
-          {displayedAccs.map((acc) => {
-            const isSelected = selectedAccs.includes(acc.id);
-            return (
-              <button
-                key={acc.id}
-                type="button"
-                onClick={() => toggleAccessory(acc.id)}
-                className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${isSelected
-                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
-                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
-                  }`}
-              >
-                {lang === 'he' ? acc.he : acc.en.toUpperCase()}
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          onClick={() => setAccExpanded(!accExpanded)}
-          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${accExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-            }`}
-        >
-          {accExpanded ? d.less : d.more}
-        </button>
-      </div>
+      <SelectionSection
+        label={d.lblAccs}
+        list={accessoriesList}
+        selectedItems={selectedAccs}
+        onToggle={(id) => toggleMultiSelect(setSelectedAccs, id)}
+        isExpanded={expandedSections.acc}
+        onToggleExpand={() => toggleExpand('acc')}
+        lang={lang}
+        d={d}
+      />
 
       {/* 06_Medical Equipment Selection */}
-      <div className="space-y-1.5">
-        <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
-          // {d.lblMeds}
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
-          {displayedMeds.map((med) => {
-            const isSelected = selectedMeds.includes(med.id);
-            return (
-              <button
-                key={med.id}
-                type="button"
-                onClick={() => toggleMed(med.id)}
-                className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${isSelected
-                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
-                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
-                  }`}
-              >
-                {lang === 'he' ? med.he : med.en.toUpperCase()}
-              </button>
-            );
-          })}
-        </div>
+      <SelectionSection
+        label={d.lblMeds}
+        list={medsList}
+        selectedItems={selectedMeds}
+        onToggle={(id) => toggleMultiSelect(setSelectedMeds, id)}
+        isExpanded={expandedSections.med}
+        onToggleExpand={() => toggleExpand('med')}
+        lang={lang}
+        d={d}
+      />
+
+      {/* 07_Gear Loadout Selection */}
+      <SelectionSection
+        label={d.lblGear}
+        list={gearsList}
+        selectedItems={selectedGears}
+        onToggle={(id) => toggleMultiSelect(setSelectedGears, id)}
+        isExpanded={expandedSections.gear}
+        onToggleExpand={() => toggleExpand('gear')}
+        lang={lang}
+        d={d}
+      />
+
+      <div className="border-t border-bf-border/60 pt-3 space-y-2">
         <button
-          type="button"
-          onClick={() => setMedsExpanded(!medsExpanded)}
-          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${medsExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-            }`}
+          type="submit"
+          disabled={loading || selectedSpecs.length === 0}
+          className="w-full py-2.5 bg-bf-cyan/15 border border-bf-cyan/40 hover:bg-bf-cyan/30 hover:border-bf-cyan text-bf-cyan font-black text-xs uppercase clip-btn transition-all duration-200 cursor-pointer disabled:bg-bf-slate/40 disabled:border-bf-border disabled:text-slate-500 disabled:cursor-not-allowed shadow-[0_0_12px_rgba(0,240,255,0.05)]"
         >
-          {medsExpanded ? d.less : d.more}
+          {loading ? d.btnGenerating : d.btnSubmit}
         </button>
-      </div>
-
-      {/* 07_Gear Selection */}
-      <div className="space-y-1.5">
-        <label className="block text-[8px] text-slate-500 uppercase tracking-widest font-bold">
-          // {d.lblGear}
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 border border-bf-border/30 p-1.5 bg-bf-dark/40 clip-btn">
-          {displayedGears.map((g) => {
-            const isSelected = selectedGears.includes(g.id);
-            return (
-              <button
-                key={g.id}
-                type="button"
-                onClick={() => toggleGear(g.id)}
-                className={`p-2 bg-bf-dark/90 border ${lang === 'he' ? 'text-right' : 'text-left'} clip-btn text-[10px] font-bold transition-all duration-150 ${isSelected
-                  ? 'border-bf-cyan text-bf-cyan shadow-[0_0_8px_rgba(0,240,255,0.2)]'
-                  : 'border-bf-border/60 text-slate-400 hover:border-slate-500'
-                  }`}
-              >
-                {lang === 'he' ? g.he : g.en.toUpperCase()}
-              </button>
-            );
-          })}
+        <div className="text-[8px] font-mono text-slate-500 text-center uppercase tracking-wider">
+          {d.warning}
         </div>
-        <button
-          type="button"
-          onClick={() => setGearExpanded(!gearExpanded)}
-          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${gearExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-            }`}
-        >
-          {gearExpanded ? d.less : d.more}
-        </button>
       </div>
-
-      <div className="text-[8px] text-bf-orange/80 uppercase tracking-wider font-bold animate-pulse">
-        * {d.warning}
-      </div>
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-3 bg-bf-cyan/15 border border-bf-cyan text-bf-cyan font-bold text-xs uppercase clip-btn hover:bg-bf-cyan/25 transition-all duration-200 cursor-pointer disabled:opacity-50"
-      >
-        {loading ? d.btnGenerating : d.btnSubmit}
-      </button>
     </form>
   );
 }
