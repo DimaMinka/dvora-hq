@@ -2,6 +2,16 @@ import { Bot } from 'grammy';
 import argon2 from 'argon2';
 import { config } from './config.js';
 import { getDb } from './db.js';
+import {
+  specializationsList,
+  primaryWeaponsList,
+  secondaryWeaponsList,
+  opticsList,
+  accessoriesList,
+  gearsList,
+  medsList
+} from '../shared/loadout-data.js';
+
 
 if (!config.botToken || config.botToken === 'your_bot_token') {
   console.log('[Bot] TELEGRAM_BOT_TOKEN not configured. Bot execution disabled.');
@@ -97,6 +107,9 @@ if (bot) {
       const db = getDb();
       await db
         .collection('users')
+        // TODO: [Security] Migrate to UUID as document ID, move PIN to dedicated field.
+        // Current pattern leaks PIN structure via Firestore document enumeration.
+        // Migration script required before changing this.
         .doc(pin)
         .set({
           pin_code: pin,
@@ -148,6 +161,9 @@ if (bot) {
       const db = getDb();
       await db
         .collection('users')
+        // TODO: [Security] Migrate to UUID as document ID, move PIN to dedicated field.
+        // Current pattern leaks PIN structure via Firestore document enumeration.
+        // Migration script required before changing this.
         .doc(pin)
         .set({
           pin_code: pin,
@@ -286,21 +302,6 @@ if (bot) {
         `• *Access PIN:* \`${u.pin_code}\`\n`;
 
       if (u.specialization) {
-        const specializationsList = [
-          { id: 'commander', en: 'Commander' },
-          { id: 'marksman', en: 'Marksman' },
-          { id: 'negev', en: 'Negev Gunner' },
-          { id: 'medic', en: 'Medic' },
-          { id: 'hummer', en: 'Hummer Driver' },
-          { id: 'flyer', en: 'Flyer 72 Driver' },
-          { id: 'savana', en: 'Savana Driver' },
-          { id: 'fighter', en: 'Fighter' },
-          { id: 'shotgun', en: 'Shotgunner' },
-          { id: 'avata', en: 'Avata Pilot' },
-          { id: 'evo', en: 'EVO Pilot' },
-          { id: 'fpv', en: 'FPV Pilot' },
-          { id: 'comms', en: 'Comms Operator' },
-        ];
         const formattedSpec = u.specialization
           .split(',')
           .map((s) => {
@@ -309,26 +310,6 @@ if (bot) {
           })
           .join(' + ')
           .toUpperCase();
-
-        const primaryWeaponsList = [
-          { id: 'm4', en: 'M4 Carbine' },
-          { id: 'm4_smash', en: 'M4 SMASH (Pegayon)' },
-          { id: 'm16', en: 'M16 Carbine' },
-          { id: 'negev', en: 'Negev LMG' },
-          { id: 'negev_7', en: 'Negev 7 LMG' },
-        ];
-        const secondaryWeaponsList = [
-          { id: 'glock', en: 'Glock 19 Pistol' },
-          { id: 'glock_17', en: 'Glock 17 Pistol' },
-          { id: 'sig', en: 'Sig Sauer' },
-          { id: 'iwi_masada', en: 'IWI Masada' },
-          { id: 'jericho', en: 'Jericho' },
-          { id: 'pistol', en: 'Pistol' },
-          { id: 'knife', en: 'Tactical Knife' },
-          { id: 'shotgun_s', en: 'Remington Shotgun' },
-          { id: 'law', en: 'M72 LAW Rocket' },
-          { id: 'm203', en: 'M203 Grenade Launcher' },
-        ];
 
         const parts = u.weaponry ? u.weaponry.split(';') : ['N/A'];
         const primaryId = parts[0];
@@ -347,26 +328,6 @@ if (bot) {
         }
         const formattedWeaponry = weaponryLabel.toUpperCase();
 
-        const opticsList = [
-          { id: 'm5', en: 'Meprolight M5' },
-          { id: 'trijicon', en: 'Trijicon ACOG' },
-          { id: 'custom', en: 'Custom Optic' },
-          { id: 'lior', en: 'Lior Night Sight' },
-          { id: 'akila', en: 'Akila Night Sight' },
-          { id: 'thermo_custom', en: 'Custom Thermal' },
-          { id: 'thermo_idf', en: 'IDF Thermal' },
-        ];
-        const accessoriesList = [
-          { id: 'laser_peq', en: 'PEQ Laser' },
-          { id: 'rifle_light', en: 'Rifle Light' },
-          { id: 'pistol_light', en: 'Pistol Light' },
-          { id: 'shot_shell', en: 'Shot-Shell Ammo' },
-          { id: 'frag_1', en: '1x Frag Grenade' },
-          { id: 'frag_2', en: '2x Frag Grenades' },
-          { id: 'smoke_blue', en: 'Blue Smoke Grenade' },
-          { id: 'smoke_grey', en: 'Grey Smoke Grenade' },
-        ];
-
         let formattedOptics = 'NONE';
         if (u.optics) {
           formattedOptics = u.optics
@@ -378,23 +339,6 @@ if (bot) {
             .join(' + ')
             .toUpperCase();
         }
-
-        const gearsList = [
-          { id: 'vest', en: 'Combat Vest' },
-          { id: 'helmet', en: 'Tactical Helmet' },
-          { id: 'personal_bandage', en: 'Personal Bandage' },
-          { id: 'cat_tourniquet', en: 'CAT Tourniquet' },
-          { id: 'military_phone', en: 'Red Military Phone' },
-          { id: 'tactical_soft_stretcher', en: 'Tactical Soft Stretcher' },
-          { id: 'comms_710', en: 'Radio 710' },
-          { id: 'combat_headset', en: 'Combat Headset' },
-          { id: 'tactical_glasses', en: 'Tactical Glasses' },
-          { id: 'knee_pads', en: 'Knee Pads' },
-          { id: 'tactical_gloves', en: 'Tactical Gloves' },
-          { id: 'shacham', en: 'Shacham NVD' },
-          { id: 'adi', en: 'Adi NVD' },
-          { id: 'nyx', en: 'Nyx Thermal' },
-        ];
 
         let formattedAccessories = 'NONE';
         if (u.accessories) {
@@ -408,18 +352,13 @@ if (bot) {
             .toUpperCase();
         }
 
-        const medsList = [
-          { id: 'personal_bandage', en: 'Personal Bandage' },
-          { id: 'cat_tourniquet', en: 'CAT Tourniquet' },
-          { id: 'tactical_soft_stretcher', en: 'Tactical Soft Stretcher' },
-        ];
-
         let formattedGear = 'NONE';
         if (u.gear) {
           formattedGear = u.gear
             .split(',')
             .map((id) => {
-              const match = gearsList.find((g) => g.id === id.trim().toLowerCase());
+              const cleanId = id.trim().toLowerCase();
+              const match = gearsList.find((g) => g.id === cleanId) || medsList.find((m) => m.id === cleanId);
               return match ? match.en : id.trim();
             })
             .join(' + ')

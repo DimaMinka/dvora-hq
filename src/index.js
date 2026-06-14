@@ -5,6 +5,16 @@ import { GoogleGenAI } from '@google/genai';
 import { config } from './config.js';
 import { setupDatabase, getDb } from './db.js';
 import { startBot } from './bot.js';
+import {
+  specializationsList,
+  primaryWeaponsList,
+  secondaryWeaponsList,
+  opticsList,
+  accessoriesList,
+  gearsList,
+  medsList
+} from '../shared/loadout-data.js';
+
 
 const app = express();
 
@@ -100,6 +110,9 @@ app.post('/api/auth/register', async (req, res) => {
     const db = getDb();
     await db
       .collection('users')
+      // TODO: [Security] Migrate to UUID as document ID, move PIN to document field
+      // Current pattern leaks PIN structure via Firestore document enumeration.
+      // Migration script required before changing this.
       .doc(pin)
       .set({
         phone_number: phone_number || null,
@@ -127,6 +140,9 @@ app.post('/api/auth/login', async (req, res) => {
 
   try {
     const db = getDb();
+    // TODO: [Security] Migrate to UUID as document ID, move PIN to dedicated field.
+    // Current pattern leaks PIN structure via Firestore document enumeration.
+    // Migration script required before changing this.
     const userDoc = await db.collection('users').doc(pin).get();
 
     if (!userDoc.exists) {
@@ -260,21 +276,42 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
     if (ai) {
       try {
         console.log(`[API] Generating AI avatar for user ${req.user.userId}...`);
-        const specializationsList = [
-          { id: 'commander', en: 'Commander' },
-          { id: 'marksman', en: 'Marksman' },
-          { id: 'negev', en: 'Negev Gunner' },
-          { id: 'medic', en: 'Medic' },
-          { id: 'hummer', en: 'Hummer Driver' },
-          { id: 'flyer', en: 'Flyer 72 Driver' },
-          { id: 'savana', en: 'Savana Driver' },
-          { id: 'fighter', en: 'Fighter' },
-          { id: 'shotgun', en: 'Shotgunner' },
-          { id: 'avata', en: 'Avata Pilot' },
-          { id: 'evo', en: 'EVO Pilot' },
-          { id: 'fpv', en: 'FPV Pilot' },
-          { id: 'comms', en: 'Comms Operator' },
-        ];
+        const aiDescriptions = {
+          // Optics
+          m5: 'Meprolight M5 red dot sight',
+          trijicon: 'Trijicon ACOG magnified optic',
+          custom: 'custom optic sight',
+          lior: 'Lior night vision sight',
+          akila: 'Akila night vision sight',
+          thermo_custom: 'custom thermal scope',
+          thermo_idf: 'IDF standard thermal scope',
+          // Accessories
+          laser_peq: 'PEQ laser sight',
+          rifle_light: 'weapon-mounted tactical flashlight',
+          pistol_light: 'pistol-mounted tactical flashlight',
+          shot_shell: 'Shot-Shell split ammunition carrier',
+          frag_1: 'a fragmentation grenade',
+          frag_2: 'two fragmentation grenades',
+          smoke_blue: 'a blue smoke grenade',
+          smoke_grey: 'a grey smoke grenade',
+          // Gear
+          vest: 'tactical combat vest/plate carrier',
+          helmet: 'tactical high-cut helmet',
+          military_phone: 'red military field telephone',
+          comms_710: 'PRC-710 tactical radio antenna',
+          combat_headset: 'combat communication headset',
+          tactical_glasses: 'tactical goggles',
+          knee_pads: 'protective combat knee pads',
+          tactical_gloves: 'tactical combat gloves',
+          shacham: 'Shacham night vision device',
+          adi: 'Adi night vision device',
+          nyx: 'Nyx thermal camera',
+          // Meds
+          personal_bandage: 'personal medical bandage pouch',
+          cat_tourniquet: 'CAT tourniquet',
+          tactical_soft_stretcher: 'tactical fabric soft stretcher',
+        };
+
         const formattedSpec = specialization
           .split(',')
           .map((s) => {
@@ -282,26 +319,6 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
             return match ? match.en : s.trim();
           })
           .join(', ');
-
-        const primaryWeaponsList = [
-          { id: 'm4', en: 'M4 Carbine' },
-          { id: 'm4_smash', en: 'M4 SMASH (Pegayon)' },
-          { id: 'm16', en: 'M16 Carbine' },
-          { id: 'negev', en: 'Negev LMG' },
-          { id: 'negev_7', en: 'Negev 7 LMG' },
-        ];
-        const secondaryWeaponsList = [
-          { id: 'glock', en: 'Glock 19 Pistol' },
-          { id: 'glock_17', en: 'Glock 17 Pistol' },
-          { id: 'sig', en: 'Sig Sauer' },
-          { id: 'iwi_masada', en: 'IWI Masada' },
-          { id: 'jericho', en: 'Jericho' },
-          { id: 'pistol', en: 'Pistol' },
-          { id: 'knife', en: 'Tactical Knife' },
-          { id: 'shotgun_s', en: 'Remington Shotgun' },
-          { id: 'law', en: 'M72 LAW Rocket Launcher' },
-          { id: 'm203', en: 'M203 Grenade Launcher' },
-        ];
 
         const parts = weaponry ? weaponry.split(';') : ['m4'];
         const primaryId = parts[0];
@@ -319,52 +336,13 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
           weaponryLabel = `${primaryLabel} and secondary weapons: ${secondaryLabels.join(', ')}`;
         }
 
-        const opticsList = [
-          { id: 'm5', en: 'Meprolight M5 red dot sight' },
-          { id: 'trijicon', en: 'Trijicon ACOG magnified optic' },
-          { id: 'custom', en: 'custom optic sight' },
-          { id: 'lior', en: 'Lior night vision sight' },
-          { id: 'akila', en: 'Akila night vision sight' },
-          { id: 'thermo_custom', en: 'custom thermal scope' },
-          { id: 'thermo_idf', en: 'IDF standard thermal scope' },
-        ];
-
-        const accessoriesList = [
-          { id: 'laser_peq', en: 'PEQ laser sight' },
-          { id: 'rifle_light', en: 'weapon-mounted tactical flashlight' },
-          { id: 'pistol_light', en: 'pistol-mounted tactical flashlight' },
-          { id: 'shot_shell', en: 'Shot-Shell split ammunition carrier' },
-          { id: 'frag_1', en: 'a fragmentation grenade' },
-          { id: 'frag_2', en: 'two fragmentation grenades' },
-          { id: 'smoke_blue', en: 'a blue smoke grenade' },
-          { id: 'smoke_grey', en: 'a grey smoke grenade' },
-        ];
-
-        const gearsList = [
-          { id: 'vest', en: 'tactical combat vest/plate carrier' },
-          { id: 'helmet', en: 'tactical high-cut helmet' },
-          { id: 'military_phone', en: 'red military field telephone' },
-          { id: 'comms_710', en: 'PRC-710 tactical radio antenna' },
-          { id: 'combat_headset', en: 'combat communication headset' },
-          { id: 'tactical_glasses', en: 'tactical goggles' },
-          { id: 'knee_pads', en: 'protective combat knee pads' },
-          { id: 'tactical_gloves', en: 'tactical combat gloves' },
-          { id: 'shacham', en: 'Shacham night vision device' },
-          { id: 'adi', en: 'Adi night vision device' },
-          { id: 'nyx', en: 'Nyx thermal camera' },
-        ];
-
-        const medsList = [
-          { id: 'personal_bandage', en: 'personal medical bandage pouch' },
-          { id: 'cat_tourniquet', en: 'CAT tourniquet' },
-          { id: 'tactical_soft_stretcher', en: 'tactical fabric soft stretcher' },
-        ];
-
         const formattedOptics = optics
           ? optics
               .split(',')
               .map((id) => {
-                const match = opticsList.find((o) => o.id === id.trim().toLowerCase());
+                const cleanId = id.trim().toLowerCase();
+                if (aiDescriptions[cleanId]) return aiDescriptions[cleanId];
+                const match = opticsList.find((o) => o.id === cleanId);
                 return match ? match.en : id.trim();
               })
               .join(', ')
@@ -374,7 +352,9 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
           ? accessories
               .split(',')
               .map((id) => {
-                const match = accessoriesList.find((a) => a.id === id.trim().toLowerCase());
+                const cleanId = id.trim().toLowerCase();
+                if (aiDescriptions[cleanId]) return aiDescriptions[cleanId];
+                const match = accessoriesList.find((a) => a.id === cleanId);
                 return match ? match.en : id.trim();
               })
               .join(', ')
@@ -384,7 +364,9 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
           ? gear
               .split(',')
               .map((id) => {
-                const match = gearsList.find((g) => g.id === id.trim().toLowerCase());
+                const cleanId = id.trim().toLowerCase();
+                if (aiDescriptions[cleanId]) return aiDescriptions[cleanId];
+                const match = gearsList.find((g) => g.id === cleanId);
                 return match ? match.en : id.trim();
               })
               .join(', ')
@@ -394,7 +376,9 @@ app.post('/api/user/onboarding', authenticateToken, async (req, res) => {
           ? meds
               .split(',')
               .map((id) => {
-                const match = medsList.find((m) => m.id === id.trim().toLowerCase());
+                const cleanId = id.trim().toLowerCase();
+                if (aiDescriptions[cleanId]) return aiDescriptions[cleanId];
+                const match = medsList.find((m) => m.id === cleanId);
                 return match ? match.en : id.trim();
               })
               .join(', ')
