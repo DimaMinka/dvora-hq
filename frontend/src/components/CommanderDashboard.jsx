@@ -453,7 +453,7 @@ export default function CommanderDashboard({
           </div>
           <button
             onClick={() => setDrawerOpen(false)}
-            className="w-full mt-3 py-1.5 bg-slate-800 border border-slate-700 text-slate-400 text-[9px] font-black uppercase clip-btn hover:bg-slate-700 transition-all cursor-pointer"
+            className="w-full mt-3 py-1.5 bg-bf-cyan border border-bf-cyan text-bf-dark text-[9px] font-black uppercase clip-btn hover:bg-bf-cyan/80 transition-all cursor-pointer"
           >
             {d.closeLogs}
           </button>
