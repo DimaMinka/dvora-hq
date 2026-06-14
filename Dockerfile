@@ -25,6 +25,7 @@ RUN npm ci --only=production
 
 # Copy built application source
 COPY --from=builder /app/src ./src
+COPY --from=builder /app/shared ./shared
 
 # Expose backend port
 EXPOSE 8080
