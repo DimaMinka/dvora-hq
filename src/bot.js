@@ -27,6 +27,15 @@ function generateTacticalPin() {
   return `${digits}${letter}`;
 }
 
+async function hashPin(pin) {
+  return argon2.hash(pin, {
+    memoryCost: 65536,
+    timeCost: 3,
+    parallelism: 1,
+  });
+}
+
+
 if (bot) {
   const adminString = config.telegramAdminUsernames;
   const adminUsernames = adminString
@@ -98,11 +107,7 @@ if (bot) {
 
     try {
       const pin = generateTacticalPin();
-      const pinHash = await argon2.hash(pin, {
-        memoryCost: 65536,
-        timeCost: 3,
-        parallelism: 1,
-      });
+      const pinHash = await hashPin(pin);
 
       const db = getDb();
       await db
@@ -152,11 +157,7 @@ if (bot) {
 
     try {
       const pin = generateTacticalPin();
-      const pinHash = await argon2.hash(pin, {
-        memoryCost: 65536,
-        timeCost: 3,
-        parallelism: 1,
-      });
+      const pinHash = await hashPin(pin);
 
       const db = getDb();
       await db
