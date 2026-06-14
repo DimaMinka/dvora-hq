@@ -413,19 +413,23 @@ export default function FighterDashboard({
             <div className="text-[10px] text-slate-400 truncate">
               {user ? `SQUAD: ${user.squad_id}` : d.opSquad}
             </div>
-            {user?.specialization && (
-              <div className="text-[10px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
-                <span className="shrink-0">ROLE:</span>
-                <div className="overflow-hidden whitespace-nowrap flex-1 flex font-bold text-bf-cyan">
-                  <span className="animate-marquee pr-6 shrink-0">
-                    {getSpecializationLabel(user.specialization)}
-                  </span>
-                  <span className="animate-marquee pr-6 shrink-0" aria-hidden="true">
-                    {getSpecializationLabel(user.specialization)}
-                  </span>
+            {user?.specialization && (() => {
+              const label = getSpecializationLabel(user.specialization);
+              const isLong = label.length > 16;
+              return (
+                <div className="text-[10px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
+                  <span className="shrink-0">ROLE:</span>
+                  {isLong ? (
+                    <div className="overflow-hidden whitespace-nowrap flex-1 flex font-bold text-bf-cyan">
+                      <span className="animate-marquee pr-6 shrink-0">{label}</span>
+                      <span className="animate-marquee pr-6 shrink-0" aria-hidden="true">{label}</span>
+                    </div>
+                  ) : (
+                    <span className="font-bold text-bf-cyan truncate">{label}</span>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
 
