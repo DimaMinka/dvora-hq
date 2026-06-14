@@ -83,6 +83,31 @@ router.post('/alarm', authenticateToken, async (req, res) => {
       updated_at: new Date().toISOString(),
     });
 
+    if (!alarm_active) {
+      const usersSnapshot = await db
+        .collection('users')
+        .where('squad_id', '==', req.user.squadId)
+        .get();
+
+      const batch = db.batch();
+      for (const userDoc of usersSnapshot.docs) {
+        const readinessRef = db.collection('readiness_status').doc(userDoc.id);
+        batch.set(readinessRef, {
+          weapons_ready: 0,
+          transport_ready: 0,
+          comms_ready: 0,
+          meds_ready: 0,
+          gear_ready: 0,
+          weapon_status: {},
+          meds_status: {},
+          gear_status: {},
+          note: '',
+          updated_at: new Date().toISOString(),
+        });
+      }
+      await batch.commit();
+    }
+
     res.json({ success: true, alarm_active, message: `Squad alarm set to ${alarm_active}` });
   } catch (err) {
     console.error('[API] Squad alarm error:', err.message);

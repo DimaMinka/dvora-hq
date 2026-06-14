@@ -3,6 +3,8 @@ import LockScreen from './components/LockScreen.jsx';
 import FighterDashboard from './components/FighterDashboard.jsx';
 import CommanderDashboard from './components/CommanderDashboard.jsx';
 import Onboarding from './components/Onboarding.jsx';
+import { parseWeaponry, parseCommaList } from './utils/loadout.js';
+import { gearsList, medsList } from '@shared/loadout-data.js';
 
 const i18n = {
   en: {
@@ -184,6 +186,20 @@ const i18n = {
   },
 };
 
+const getCategoryItems = (key, user, lang) => {
+  if (!user) return [];
+  if (key === 'wpn') {
+    return parseWeaponry(user, lang);
+  } else if (key === 'med') {
+    if (!user.meds) return [];
+    return parseCommaList(user.meds, medsList, 'med', 'MEDICAL', lang);
+  } else if (key === 'gear') {
+    if (!user.gear) return [];
+    return parseCommaList(user.gear, gearsList, 'gear', 'GEAR', lang);
+  }
+  return [];
+};
+
 function App() {
   const [lang, setLang] = useState('en');
   const [isLocked, setIsLocked] = useState(true);
@@ -297,7 +313,19 @@ function App() {
 
   const toggleChecklist = async (key, forcedValue, updatedSubStatus) => {
     const currentVal = checklist[key] ?? 0;
-    const nextVal = forcedValue !== undefined ? forcedValue : (currentVal + 1) % 3;
+    
+    let nextVal;
+    if (forcedValue !== undefined) {
+      nextVal = forcedValue;
+    } else {
+      if (currentVal === 0) {
+        nextVal = 2; // issue
+      } else if (currentVal === 2) {
+        nextVal = 1; // ready
+      } else {
+        nextVal = 0; // pending
+      }
+    }
 
     const newChecklist = {
       ...checklist,
@@ -319,6 +347,54 @@ function App() {
       } else if (key === 'gear') {
         nextGearStatus = updatedSubStatus;
         setGearStatus(updatedSubStatus);
+      }
+    } else if (forcedValue === undefined) {
+      if (nextVal === 2) {
+        // Initialize all items as not ready (false)
+        const items = getCategoryItems(key, user, lang);
+        const initialStatus = {};
+        items.forEach((item) => {
+          initialStatus[item.id] = false;
+        });
+        if (key === 'wpn') {
+          nextWpnStatus = initialStatus;
+          setWeaponStatus(initialStatus);
+        } else if (key === 'med') {
+          nextMedStatus = initialStatus;
+          setMedicalStatus(initialStatus);
+        } else if (key === 'gear') {
+          nextGearStatus = initialStatus;
+          setGearStatus(initialStatus);
+        }
+      } else if (nextVal === 1) {
+        // Initialize all items as ready (true)
+        const items = getCategoryItems(key, user, lang);
+        const initialStatus = {};
+        items.forEach((item) => {
+          initialStatus[item.id] = true;
+        });
+        if (key === 'wpn') {
+          nextWpnStatus = initialStatus;
+          setWeaponStatus(initialStatus);
+        } else if (key === 'med') {
+          nextMedStatus = initialStatus;
+          setMedicalStatus(initialStatus);
+        } else if (key === 'gear') {
+          nextGearStatus = initialStatus;
+          setGearStatus(initialStatus);
+        }
+      } else if (nextVal === 0) {
+        // Clear status
+        if (key === 'wpn') {
+          nextWpnStatus = {};
+          setWeaponStatus({});
+        } else if (key === 'med') {
+          nextMedStatus = {};
+          setMedicalStatus({});
+        } else if (key === 'gear') {
+          nextGearStatus = {};
+          setGearStatus({});
+        }
       }
     }
 
@@ -371,6 +447,13 @@ function App() {
   const handleToggleAlarm = async () => {
     const nextAlarmState = !alarmActive;
     setAlarmActive(nextAlarmState);
+
+    if (!nextAlarmState) {
+      setChecklist({ wpn: 0, med: 0, gear: 0, trsp: 0 });
+      setWeaponStatus({});
+      setMedicalStatus({});
+      setGearStatus({});
+    }
 
     const token = localStorage.getItem('dvora_token');
     if (!token) return;
@@ -463,13 +546,29 @@ function App() {
 
     const interval = setInterval(() => {
       if (user.role === 'fighter') {
-        // Fighters query profile to check if squad alarm is activated
+        // Fighters query profile to check if squad alarm is activated and sync readiness
         fetch('/api/user/profile', {
           headers: { Authorization: `Bearer ${token}` },
         })
           .then((res) => res.json())
           .then((profile) => {
             setAlarmActive(profile.alarm_active);
+            if (profile.readiness) {
+              setChecklist({
+                wpn: Number(profile.readiness.weapons_ready),
+                med: Number(profile.readiness.meds_ready),
+                gear: Number(profile.readiness.gear_ready || 0),
+                trsp: Number(profile.readiness.transport_ready || 0),
+              });
+              setWeaponStatus(profile.readiness.weapon_status || {});
+              setMedicalStatus(profile.readiness.meds_status || {});
+              setGearStatus(profile.readiness.gear_status || {});
+            } else {
+              setChecklist({ wpn: 0, med: 0, gear: 0, trsp: 0 });
+              setWeaponStatus({});
+              setMedicalStatus({});
+              setGearStatus({});
+            }
           })
           .catch(() => {});
       } else if (user.role === 'commander') {

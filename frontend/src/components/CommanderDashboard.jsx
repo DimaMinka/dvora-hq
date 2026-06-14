@@ -33,13 +33,20 @@ export default function CommanderDashboard({
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
 
-  const { activePanel, openPanel } = useChecklistPanel();
+  const { activePanel, openPanel, closePanel } = useChecklistPanel();
 
   const { weaponItems, medItems, gearItems, handleToggleItem } = useLoadoutItems(
     user,
     lang,
     { weaponStatus, medicalStatus, gearStatus },
-    onToggleChecklist
+    (category, statusVal, nextStatusMap) => {
+      if (statusVal === 1) {
+        closePanel();
+      }
+      if (onToggleChecklist) {
+        onToggleChecklist(category, statusVal, nextStatusMap);
+      }
+    }
   );
 
   const textDict = {
