@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useChecklistPanel } from '../hooks/useChecklistPanel.js';
 import { useLoadoutItems } from '../hooks/useLoadoutItems.js';
+import { useRotations } from '../hooks/useRotations.js';
 import OperatorCard from './ui/OperatorCard.jsx';
 import ChecklistToggleGrid from './ui/ChecklistToggleGrid.jsx';
 import ChecklistPanel from './ui/ChecklistPanel.jsx';
@@ -28,6 +29,27 @@ export default function CommanderDashboard({
   const [activeTab, setActiveTab] = useState('rotation');
 
   const { activePanel, openPanel, closePanel } = useChecklistPanel();
+
+  const { currentRotation } = useRotations();
+
+  const userStatus = useMemo(() => {
+    if (!user || !user.squad_id || !currentRotation) return 'none';
+    const userSquad = user.squad_id.toUpperCase();
+    const alertSquad = currentRotation.squads?.alert?.toUpperCase();
+    const standbySquad = currentRotation.squads?.standby?.toUpperCase();
+    const restSquad = currentRotation.squads?.rest?.toUpperCase();
+
+    if (userSquad === alertSquad) return 'alert';
+    if (userSquad === standbySquad) return 'standby';
+    if (userSquad === restSquad) return 'rest';
+    return 'none';
+  }, [user, currentRotation]);
+
+  const daysLeft = useMemo(() => {
+    const today = new Date();
+    const day = today.getDay(); // 0 (Sun) to 6 (Sat)
+    return day === 0 ? 0 : 7 - day;
+  }, []);
 
   const { weaponItems, medItems, gearItems, handleToggleItem } = useLoadoutItems(
     user,
@@ -195,6 +217,20 @@ export default function CommanderDashboard({
     <div className="space-y-4 w-full animate-fade-in relative">
       <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
 
+      {/* Operator Info */}
+      <OperatorCard
+        user={user}
+        onAvatarClick={() => setLightboxOpen(true)}
+        placeholderName={d.opName}
+        placeholderSquad={d.opSquad}
+        specializationLabel={specializationLabel}
+        currentRotation={currentRotation}
+        userStatus={userStatus}
+        daysLeft={daysLeft}
+        showRotation={activeTab === 'rotation'}
+        lang={lang}
+      />
+
       {/* Sub-navigation tabs */}
       <div className="flex p-0.5 bg-bf-dark border border-bf-border clip-btn w-full">
         <button
@@ -221,21 +257,13 @@ export default function CommanderDashboard({
       {activeTab === 'rotation' && (
         <div className="space-y-4 animate-fade-in">
           {/* Rotation Schedule Widget */}
-          <RotationSchedule lang={lang} user={user} />
+          <RotationSchedule lang={lang} />
         </div>
       )}
 
       {/* TAB 2: SQUAD STATUS */}
       {activeTab === 'readiness' && (
         <div className="space-y-4 animate-fade-in">
-          {/* Commander's Own Operator Info */}
-          <OperatorCard
-        user={user}
-        onAvatarClick={() => setLightboxOpen(true)}
-        placeholderName={d.opName}
-        placeholderSquad={d.opSquad}
-        specializationLabel={specializationLabel}
-      />
 
       {/* Commander's Own Checklist Toggles */}
       <ChecklistToggleGrid

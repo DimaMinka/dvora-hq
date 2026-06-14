@@ -81,10 +81,10 @@ function getMonday(date) {
   return monday;
 }
 
-export default function RotationSchedule({ lang = 'en', user }) {
+export default function RotationSchedule({ lang = 'en' }) {
   const d = i18n[lang] || i18n.en;
 
-  const { rotations, currentRotation, loading, error } = useRotations();
+  const { rotations, loading, error } = useRotations();
   const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' or 'calendar'
   const [weekOffset, setWeekOffset] = useState(0); // -1, 0, 1, 2 etc.
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
@@ -108,68 +108,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // Compute number of days remaining in the rotation week (ends on Sunday night)
-  const daysLeft = useMemo(() => {
-    const today = new Date();
-    const day = today.getDay(); // 0 (Sun) to 6 (Sat)
-    return day === 0 ? 0 : 7 - day;
-  }, []);
-
-  // User's active status label based on current weekly rotation
-  const userStatus = useMemo(() => {
-    if (!user || !user.squad_id || !currentRotation) return 'none';
-    const userSquad = user.squad_id.toUpperCase();
-    const alertSquad = currentRotation.squads?.alert?.toUpperCase();
-    const standbySquad = currentRotation.squads?.standby?.toUpperCase();
-    const restSquad = currentRotation.squads?.rest?.toUpperCase();
-
-    if (userSquad === alertSquad) return 'alert';
-    if (userSquad === standbySquad) return 'standby';
-    if (userSquad === restSquad) return 'rest';
-    return 'none';
-  }, [user, currentRotation]);
-
-  // Retrieve userStatus styling config
-  const statusConfig = useMemo(() => {
-    if (!user || !user.squad_id) return { bg: 'bg-bf-border/40', text: 'text-slate-400', label: d.operatorStatus.none, border: 'border-bf-border/60' };
-    const squadColor = getSquadColor(user.squad_id, isLightMode);
-
-    if (userStatus === 'alert') {
-      return {
-        bg: 'bg-bf-orange/10',
-        text: 'text-bf-orange',
-        border: 'border-bf-orange/40',
-        label: `${user.squad_id} // ${d.operatorStatus.alert}`,
-        color: squadColor.color,
-      };
-    }
-    if (userStatus === 'standby') {
-      return {
-        bg: 'bg-bf-cyan/10',
-        text: 'text-bf-cyan',
-        border: 'border-bf-cyan/40',
-        label: `${user.squad_id} // ${d.operatorStatus.standby}`,
-        color: squadColor.color,
-      };
-    }
-    if (userStatus === 'rest') {
-      const restColor = isLightMode ? '#1b8a5a' : '#2ed573';
-      return {
-        bg: 'bg-[#2ed573]/10',
-        text: isLightMode ? 'text-[#1b8a5a]' : 'text-[#2ed573]',
-        border: isLightMode ? 'border-[#1b8a5a]/40' : 'border-[#2ed573]/40',
-        label: `${user.squad_id} // ${d.operatorStatus.rest}`,
-        color: restColor,
-      };
-    }
-    return {
-      bg: 'bg-bf-border/40',
-      text: 'text-slate-400',
-      border: 'border-bf-border/60',
-      label: `${user.squad_id} // ${d.operatorStatus.none}`,
-      color: isLightMode ? '#836e59' : '#cbd5e1',
-    };
-  }, [userStatus, user, isLightMode, d]);
+  // Rotation details moved to parent dashboards' OperatorCard
 
   // Generate 7 days of the selected week in Timeline
   const timelineDays = useMemo(() => {
@@ -310,46 +249,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
       {/* Title Header */}
       <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
 
-      {/* Operator Rotation Status Card */}
-      <div className={`p-4 glass-panel border clip-hud flex flex-col justify-between transition-all duration-300 ${statusConfig.bg} ${statusConfig.border}`}>
-        <div className="flex justify-between items-start">
-          <div className="font-mono text-[9px] text-slate-500 uppercase tracking-wider">
-            // OPERATOR_ROTATION_NODE
-          </div>
-          {currentRotation && (
-            <div className="font-mono text-[9px] text-bf-cyan/70 uppercase">
-              {d.daysLeft(daysLeft)}
-            </div>
-          )}
-        </div>
-        
-        <div className="mt-2 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className={`text-[13px] font-black tracking-wider ${statusConfig.text}`}>
-              {statusConfig.label}
-            </span>
-            {currentRotation ? (
-              <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-                ALERT: <span className="text-white">{currentRotation.squads.alert}</span> | 
-                STANDBY: <span className="text-slate-300">{currentRotation.squads.standby}</span> | 
-                REST: <span className="text-slate-400">{currentRotation.squads.rest}</span>
-              </span>
-            ) : (
-              <span className="text-[10px] text-slate-500 font-mono mt-0.5">
-                {d.noRotation}
-              </span>
-            )}
-          </div>
-          <div 
-            className="w-3.5 h-3.5 rounded-full border shadow-sm" 
-            style={{ 
-              backgroundColor: statusConfig.color || '#836e59', 
-              borderColor: statusConfig.color || '#836e59',
-              boxShadow: statusConfig.color ? `0 0 10px ${statusConfig.color}` : 'none'
-            }}
-          />
-        </div>
-      </div>
+
 
       {/* Tabs and Week Selector Segment */}
       <div className="flex justify-between items-center bg-bf-dark border border-bf-border p-1 clip-btn h-10 relative">
