@@ -457,7 +457,9 @@ function App() {
 
     // Load immediately if commander
     if (user.role === 'commander') {
-      setLoadingMembers(true);
+      Promise.resolve().then(() => {
+        setLoadingMembers(true);
+      });
       fetch('/api/squad/status', {
         headers: { Authorization: `Bearer ${token}` },
       })
