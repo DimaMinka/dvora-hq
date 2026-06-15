@@ -21,3 +21,11 @@ export const MISSION_STEPS = {
   SELECT_DAY: 'select_day',
   TIME_INPUT: 'time_input',
 };
+
+export const MISSION_COMPLETE_STEPS = {
+  SELECT_ROTATION: 'complete_select_rotation',
+  SELECT_DAY: 'complete_select_day',
+  MEDIA_INPUT: 'complete_media_input',
+  PROCESSING: 'complete_processing',
+};
+
