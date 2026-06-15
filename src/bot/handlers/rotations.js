@@ -15,15 +15,37 @@ export async function handleAddRotationCallback(ctx, state, data) {
   const db = getDb();
   const squads = await getSquads(db);
 
-  if (state.step === 'alert') {
+  if (state.step === 'duration') {
+    if (data.startsWith('duration:')) {
+      const days = parseInt(data.split(':')[1], 10) || 7;
+      state.data.duration_days = days;
+
+      const start = parseISODate(state.data.actual_start_date);
+      const end = new Date(start);
+      end.setDate(start.getDate() + days - 1);
+      state.data.actual_end_date = formatDateISO(end);
+
+      state.step = 'alert';
+      setConversationState(ctx.chat.id, state);
+
+      const periodStr = `${state.data.actual_start_date} to ${state.data.actual_end_date} (${days} days)`;
+
+      return ctx.editMessageText(`📅 Period: *${periodStr}*\n\n` + `Select *ALERT* (Duty) squad:`, {
+        parse_mode: 'Markdown',
+        reply_markup: buildSquadKeyboard(squads),
+      });
+    }
+  } else if (state.step === 'alert') {
     if (data.startsWith('squad:')) {
       const squad = data.split(':')[1];
       state.data.alert = squad;
       state.step = 'standby';
       setConversationState(ctx.chat.id, state);
 
+      const periodStr = `${state.data.actual_start_date} to ${state.data.actual_end_date} (${state.data.duration_days} days)`;
+
       return ctx.editMessageText(
-        `📅 Period: *${state.data.formattedRange}*\n` +
+        `📅 Period: *${periodStr}*\n` +
           `🔴 Alert: *${state.data.alert}*\n\n` +
           `Select *STANDBY* squad:`,
         {
@@ -37,12 +59,14 @@ export async function handleAddRotationCallback(ctx, state, data) {
       const squad = data.split(':')[1];
       state.data.standby = squad;
 
+      const periodStr = `${state.data.actual_start_date} to ${state.data.actual_end_date} (${state.data.duration_days} days)`;
+
       if (squads.length >= 3) {
         state.step = 'rest';
         setConversationState(ctx.chat.id, state);
 
         return ctx.editMessageText(
-          `📅 Period: *${state.data.formattedRange}*\n` +
+          `📅 Period: *${periodStr}*\n` +
             `🔴 Alert: *${state.data.alert}*\n` +
             `🔵 Standby: *${state.data.standby}*\n\n` +
             `Select *REST* squad (optional):`,
@@ -61,7 +85,7 @@ export async function handleAddRotationCallback(ctx, state, data) {
 
         return ctx.editMessageText(
           `📅 *Create rotation?*\n\n` +
-            `• *Period:* ${state.data.formattedRange}\n` +
+            `• *Period:* ${periodStr}\n` +
             `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
             `• 🔵 *Standby:* \`${state.data.standby}\`\n\n` +
             `Confirm creation:`,
@@ -89,9 +113,11 @@ export async function handleAddRotationCallback(ctx, state, data) {
       state.step = 'confirm';
       setConversationState(ctx.chat.id, state);
 
+      const periodStr = `${state.data.actual_start_date} to ${state.data.actual_end_date} (${state.data.duration_days} days)`;
+
       let confirmMsg =
         `📅 *Create rotation?*\n\n` +
-        `• *Period:* ${state.data.formattedRange}\n` +
+        `• *Period:* ${periodStr}\n` +
         `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
         `• 🔵 *Standby:* \`${state.data.standby}\``;
 
@@ -115,14 +141,16 @@ export async function handleAddRotationCallback(ctx, state, data) {
     }
   } else if (state.step === 'confirm') {
     if (data === 'confirm_add_rotation') {
-      const docRef = db.collection('rotations').doc(state.data.start_date);
+      const docRef = db.collection('rotations').doc(state.data.actual_start_date);
       const doc = await docRef.get();
+
+      const periodStr = `${state.data.actual_start_date} to ${state.data.actual_end_date} (${state.data.duration_days} days)`;
 
       if (doc.exists) {
         state.step = 'overwrite';
         setConversationState(ctx.chat.id, state);
         return ctx.editMessageText(
-          `⚠️ *WARNING*: Schedule for the period *${state.data.formattedRange}* already exists.\nOverwrite?`,
+          `⚠️ *WARNING*: Schedule for the period *${periodStr}* already exists.\nOverwrite?`,
           {
             parse_mode: 'Markdown',
             reply_markup: {
@@ -150,11 +178,13 @@ async function saveRotation(ctx, state) {
   const db = getDb();
   await db
     .collection('rotations')
-    .doc(state.data.start_date)
+    .doc(state.data.actual_start_date)
     .set({
       start_date: state.data.start_date,
       end_date: state.data.end_date,
       actual_start_date: state.data.actual_start_date || state.data.start_date,
+      actual_end_date: state.data.actual_end_date || state.data.end_date,
+      duration_days: state.data.duration_days || 7,
       squads: {
         alert: state.data.alert,
         standby: state.data.standby,
@@ -165,9 +195,11 @@ async function saveRotation(ctx, state) {
       updated_at: new Date().toISOString(),
     });
 
+  const periodStr = `${state.data.actual_start_date} to ${state.data.actual_end_date} (${state.data.duration_days} days)`;
+
   let successMsg =
     `✅ *ROTATION SUCCESSFULLY CREATED*\n\n` +
-    `• *Period:* ${state.data.formattedRange}\n` +
+    `• *Period:* ${periodStr}\n` +
     `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
     `• 🔵 *Standby:* \`${state.data.standby}\``;
 
@@ -193,9 +225,12 @@ export async function handleRemoveRotationCallback(ctx, state, data) {
       }
 
       const r = doc.data();
-      const monday = parseISODate(r.start_date);
-      const sunday = parseISODate(r.end_date);
-      state.data.formattedRange = formatWeekRangeEN(monday, sunday);
+      const periodStr =
+        r.actual_start_date && r.actual_end_date
+          ? `${r.actual_start_date} to ${r.actual_end_date}`
+          : formatWeekRangeEN(parseISODate(r.start_date), parseISODate(r.end_date));
+
+      state.data.formattedRange = periodStr;
       state.data.alert = r.squads.alert;
       state.data.standby = r.squads.standby;
       state.data.rest = r.squads.rest;
@@ -255,11 +290,12 @@ export async function handleAddRotationText(ctx, state) {
 
     const { monday, sunday } = getWeekRange(date);
     const today = new Date();
-    const { monday: currentMonday } = getWeekRange(today);
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
 
-    if (monday < currentMonday) {
+    if (date < oneYearAgo) {
       return ctx.reply(
-        '⚠️ *PAST PERIOD*. Cannot create rotations for past weeks. Please enter another date:',
+        '⚠️ *TOO FAR IN PAST*. Cannot create rotations more than 1 year in the past. Please enter another date:',
         {
           parse_mode: 'Markdown',
           reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
@@ -270,7 +306,6 @@ export async function handleAddRotationText(ctx, state) {
     state.data.start_date = formatDateISO(monday);
     state.data.end_date = formatDateISO(sunday);
     state.data.actual_start_date = formatDateISO(date);
-    state.data.formattedRange = formatWeekRangeEN(monday, sunday);
 
     const db = getDb();
     const squads = await getSquads(db);
@@ -282,16 +317,61 @@ export async function handleAddRotationText(ctx, state) {
       );
     }
 
-    state.step = 'alert';
+    state.step = 'duration';
     setConversationState(ctx.chat.id, state);
 
     return ctx.reply(
-      `📅 Period: *${state.data.formattedRange}*\n\n` + `Select *ALERT* (Duty) squad:`,
+      `📅 Start Date: *${state.data.actual_start_date}*\n\n` +
+        `How many days is this shift? Select below or enter a custom number of days:`,
       {
         parse_mode: 'Markdown',
-        reply_markup: buildSquadKeyboard(squads),
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '1 day', callback_data: 'duration:1' },
+              { text: '3 days', callback_data: 'duration:3' },
+              { text: '7 days', callback_data: 'duration:7' },
+            ],
+            [{ text: '❌ Cancel', callback_data: 'cancel' }],
+          ],
+        },
       }
     );
+  } else if (state.step === 'duration') {
+    const days = parseInt(text, 10);
+    if (isNaN(days) || days <= 0) {
+      return ctx.reply('⚠️ *INVALID DURATION*. Please enter a positive number of days (e.g., 7):', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '1 day', callback_data: 'duration:1' },
+              { text: '3 days', callback_data: 'duration:3' },
+              { text: '7 days', callback_data: 'duration:7' },
+            ],
+            [{ text: '❌ Cancel', callback_data: 'cancel' }],
+          ],
+        },
+      });
+    }
+
+    state.data.duration_days = days;
+    const start = parseISODate(state.data.actual_start_date);
+    const end = new Date(start);
+    end.setDate(start.getDate() + days - 1);
+    state.data.actual_end_date = formatDateISO(end);
+
+    const db = getDb();
+    const squads = await getSquads(db);
+
+    state.step = 'alert';
+    setConversationState(ctx.chat.id, state);
+
+    const periodStr = `${state.data.actual_start_date} to ${state.data.actual_end_date} (${days} days)`;
+
+    return ctx.reply(`📅 Period: *${periodStr}*\n\n` + `Select *ALERT* (Duty) squad:`, {
+      parse_mode: 'Markdown',
+      reply_markup: buildSquadKeyboard(squads),
+    });
   }
 }
 
@@ -317,8 +397,7 @@ export async function commandAddRotation(ctx) {
 
   return ctx.reply(
     '📅 *NEW ROTATION*\n\n' +
-      'Enter rotation start date in DD.MM.YYYY format (e.g., `15.06.2026`).\n' +
-      'The period will be automatically aligned to the Sunday of that week.',
+      'Enter rotation start date in DD.MM.YYYY format (e.g., `15.06.2026`):',
     {
       parse_mode: 'Markdown',
       reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
@@ -350,10 +429,12 @@ export async function commandRemoveRotation(ctx) {
     const buttons = [];
     snapshot.forEach((doc) => {
       const r = doc.data();
-      const monday = parseISODate(r.start_date);
-      const sunday = parseISODate(r.end_date);
+      const periodStr =
+        r.actual_start_date && r.actual_end_date
+          ? `${r.actual_start_date} to ${r.actual_end_date}`
+          : formatWeekRangeEN(parseISODate(r.start_date), parseISODate(r.end_date));
       const label =
-        `📅 ${formatWeekRangeEN(monday, sunday)}: ${r.squads.alert}/${r.squads.standby}` +
+        `📅 ${periodStr}: ${r.squads.alert}/${r.squads.standby}` +
         (r.squads.rest ? `/${r.squads.rest}` : '');
       buttons.push([{ text: label, callback_data: `rotation:${doc.id}` }]);
     });
@@ -398,10 +479,12 @@ export async function commandListRotations(ctx) {
     let response = `📅 *ROTATION SCHEDULE (next 4 weeks)*\n\n`;
     snapshot.forEach((doc) => {
       const r = doc.data();
-      const monday = parseISODate(r.start_date);
-      const sunday = parseISODate(r.end_date);
+      const periodStr =
+        r.actual_start_date && r.actual_end_date
+          ? `${r.actual_start_date} to ${r.actual_end_date} (${r.duration_days || 7} days)`
+          : formatWeekRangeEN(parseISODate(r.start_date), parseISODate(r.end_date));
       response +=
-        `• *${formatWeekRangeEN(monday, sunday)}*:\n` +
+        `• *${periodStr}*:\n` +
         `  🔴 Alert: *${r.squads.alert}*\n` +
         `  🔵 Standby: *${r.squads.standby}*\n`;
       if (r.squads.rest) {

@@ -59,8 +59,8 @@ export function useRotations() {
     const token = localStorage.getItem('dvora_token');
     if (!token) return;
 
-    const loadData = async () => {
-      setLoading(true);
+    const loadData = async (showLoading = false) => {
+      if (showLoading) setLoading(true);
       try {
         const currentRes = await fetch('/api/rotations/current', {
           headers: { Authorization: `Bearer ${token}` },
@@ -103,10 +103,15 @@ export function useRotations() {
       }
     };
 
-    loadData();
+    loadData(true);
+
+    const interval = setInterval(() => {
+      loadData(false);
+    }, 10000);
 
     return () => {
       isMounted = false;
+      clearInterval(interval);
     };
   }, []);
 

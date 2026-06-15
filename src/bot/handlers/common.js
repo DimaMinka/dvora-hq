@@ -36,7 +36,7 @@ export async function handleStartHelp(ctx) {
         { command: 'add_rotation', description: '📅 Schedule a weekly rotation' },
         { command: 'remove_rotation', description: '📅 Remove a scheduled rotation' },
         { command: 'list_rotations', description: '📅 View rotation schedule' },
-        { command: 'set_meeting', description: '⏱ Set a mission time' },
+        { command: 'set_mission', description: '⏱ Set a mission time' },
       ],
       {
         scope: { type: 'chat', chat_id: ctx.chat.id },
@@ -57,7 +57,7 @@ export async function handleStartHelp(ctx) {
     `• \`/add_rotation\` — Schedule a weekly rotation\n` +
     `• \`/remove_rotation\` — Remove a scheduled rotation\n` +
     `• \`/list_rotations\` — View rotation schedule for the next 4 weeks\n` +
-    `• \`/set_meeting\` — Set a mission time for a specific day\n\n` +
+    `• \`/set_mission\` — Set a mission time for a specific day\n\n` +
     `_Security protocols active. Management via inline keyboard buttons._`;
   return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
 }

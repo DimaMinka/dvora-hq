@@ -23,10 +23,10 @@ import {
   handleAddRotationText,
 } from './handlers/rotations.js';
 import {
-  commandSetMeeting,
-  handleSetMeetingCallback,
-  handleSetMeetingText,
-} from './handlers/meetings.js';
+  commandSetMission,
+  handleSetMissionCallback,
+  handleSetMissionText,
+} from './handlers/missions.js';
 
 if (bot) {
   // Common Commands
@@ -45,8 +45,8 @@ if (bot) {
   bot.command('remove_rotation', commandRemoveRotation);
   bot.command('list_rotations', commandListRotations);
 
-  // Meeting Commands
-  bot.command('set_meeting', commandSetMeeting);
+  // Mission Commands
+  bot.command('set_mission', commandSetMission);
 
   // Handle callback queries
   bot.on('callback_query:data', async (ctx) => {
@@ -100,8 +100,8 @@ if (bot) {
         await handleRemoveRotationCallback(ctx, state, data);
       } else if (state.flow === 'remove_squad') {
         await handleRemoveSquadCallback(ctx, state, data);
-      } else if (state.flow === 'set_meeting') {
-        await handleSetMeetingCallback(ctx, state, data);
+      } else if (state.flow === 'set_mission') {
+        await handleSetMissionCallback(ctx, state, data);
       }
     } catch (err) {
       console.error('[Bot Callback Error]:', err.message);
@@ -131,8 +131,8 @@ if (bot) {
         await handleAddUserText(ctx, state);
       } else if (state.flow === 'add_rotation') {
         await handleAddRotationText(ctx, state);
-      } else if (state.flow === 'set_meeting') {
-        await handleSetMeetingText(ctx, state);
+      } else if (state.flow === 'set_mission') {
+        await handleSetMissionText(ctx, state);
       } else {
         return next();
       }

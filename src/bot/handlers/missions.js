@@ -4,13 +4,13 @@ import {
   isAdmin,
   parseISODate,
   formatWeekRangeEN,
-  getDaysOfWeekForStartDate,
   formatShortDate,
   getWeekRange,
   formatDateISO,
+  getDaysOfRotationRange,
 } from '../helpers.js';
 
-export async function handleSetMeetingCallback(ctx, state, data) {
+export async function handleSetMissionCallback(ctx, state, data) {
   const db = getDb();
 
   if (state.step === 'select_rotation') {
@@ -27,7 +27,10 @@ export async function handleSetMeetingCallback(ctx, state, data) {
       state.data.start_date = r.start_date;
       state.data.end_date = r.end_date;
 
-      const days = getDaysOfWeekForStartDate(r.start_date);
+      const days = getDaysOfRotationRange(
+        r.actual_start_date || r.start_date,
+        r.actual_end_date || r.end_date
+      );
       const buttons = [];
       for (let i = 0; i < days.length; i += 2) {
         const row = [];
@@ -42,12 +45,13 @@ export async function handleSetMeetingCallback(ctx, state, data) {
       state.step = 'select_day';
       setConversationState(ctx.chat.id, state);
 
-      const monday = parseISODate(r.start_date);
-      const sunday = parseISODate(r.end_date);
+      const periodStr =
+        r.actual_start_date && r.actual_end_date
+          ? `${r.actual_start_date} to ${r.actual_end_date}`
+          : formatWeekRangeEN(parseISODate(r.start_date), parseISODate(r.end_date));
 
       return ctx.editMessageText(
-        `📅 Rotation: *${formatWeekRangeEN(monday, sunday)}*\n\n` +
-          `Select day to configure mission time:`,
+        `📅 Rotation: *${periodStr}*\n\n` + `Select day to configure mission time:`,
         {
           parse_mode: 'Markdown',
           reply_markup: { inline_keyboard: buttons },
@@ -79,7 +83,7 @@ export async function handleSetMeetingCallback(ctx, state, data) {
   }
 }
 
-export async function handleSetMeetingText(ctx, state) {
+export async function handleSetMissionText(ctx, state) {
   const text = ctx.message.text ? ctx.message.text.trim() : '';
   if (!text) return;
 
@@ -137,7 +141,7 @@ export async function handleSetMeetingText(ctx, state) {
   }
 }
 
-export async function commandSetMeeting(ctx) {
+export async function commandSetMission(ctx) {
   if (!isAdmin(ctx)) {
     return ctx.reply('❌ *ACCESS DENIED*: Unauthorized operator signature.', {
       parse_mode: 'Markdown',
@@ -161,15 +165,17 @@ export async function commandSetMeeting(ctx) {
     const buttons = [];
     snapshot.forEach((doc) => {
       const r = doc.data();
-      const monday = parseISODate(r.start_date);
-      const sunday = parseISODate(r.end_date);
-      const label = `📅 ${formatWeekRangeEN(monday, sunday)}`;
+      const periodStr =
+        r.actual_start_date && r.actual_end_date
+          ? `${r.actual_start_date} to ${r.actual_end_date}`
+          : formatWeekRangeEN(parseISODate(r.start_date), parseISODate(r.end_date));
+      const label = `📅 ${periodStr} (${r.squads.alert})`;
       buttons.push([{ text: label, callback_data: `select_rotation:${doc.id}` }]);
     });
     buttons.push([{ text: '❌ Cancel', callback_data: 'cancel' }]);
 
     setConversationState(ctx.chat.id, {
-      flow: 'set_meeting',
+      flow: 'set_mission',
       step: 'select_rotation',
       data: {},
     });
@@ -178,7 +184,7 @@ export async function commandSetMeeting(ctx) {
       reply_markup: { inline_keyboard: buttons },
     });
   } catch (err) {
-    console.error('[Bot] Set meeting initialization error:', err.message);
+    console.error('[Bot] Set mission initialization error:', err.message);
     return ctx.reply(`❌ *DATABASE FAILURE*: \`${err.message}\``, { parse_mode: 'Markdown' });
   }
 }

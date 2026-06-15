@@ -186,14 +186,12 @@ export default function RotationSchedule({ lang = 'en' }) {
   // Look up active rotation for a specific day string
   const getRotationForDay = useCallback(
     (dayStr) => {
-      const date = new Date(dayStr);
-      const sunday = getSunday(date);
-      const sundayStr = formatDateISO(sunday);
-      const rot = rotations.find((r) => r.start_date === sundayStr);
-      if (rot && rot.actual_start_date && dayStr < rot.actual_start_date) {
-        return null;
-      }
-      return rot;
+      const rot = rotations.find((r) => {
+        const start = r.actual_start_date || r.start_date;
+        const end = r.actual_end_date || r.end_date;
+        return dayStr >= start && dayStr <= end;
+      });
+      return rot || null;
     },
     [rotations]
   );

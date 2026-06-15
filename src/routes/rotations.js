@@ -33,12 +33,12 @@ router.get('/', authenticateToken, async (req, res) => {
   // Default parameters: today - 7 days to today + 30 days
   if (!from) {
     const defaultFrom = new Date();
-    defaultFrom.setDate(defaultFrom.getDate() - 7);
+    defaultFrom.setDate(defaultFrom.getDate() - 365);
     from = formatDateISO(defaultFrom);
   }
   if (!to) {
     const defaultTo = new Date();
-    defaultTo.setDate(defaultTo.getDate() + 30);
+    defaultTo.setDate(defaultTo.getDate() + 90);
     to = formatDateISO(defaultTo);
   }
 
@@ -70,15 +70,36 @@ router.get('/current', authenticateToken, async (req, res) => {
   try {
     const db = getDb();
     const today = new Date();
-    const sunday = getSunday(today);
-    const docId = formatDateISO(sunday);
+    const todayStr = formatDateISO(today);
 
-    const doc = await db.collection('rotations').doc(docId).get();
-    if (doc.exists) {
-      res.json(doc.data());
-    } else {
-      res.json(null);
+    const snapshot = await db
+      .collection('rotations')
+      .where('start_date', '<=', todayStr)
+      .orderBy('start_date', 'desc')
+      .limit(3)
+      .get();
+
+    let currentRotation = null;
+    snapshot.forEach((doc) => {
+      if (currentRotation) return;
+      const r = doc.data();
+      const start = r.actual_start_date || r.start_date;
+      const end = r.actual_end_date || r.end_date;
+      if (todayStr >= start && todayStr <= end) {
+        currentRotation = r;
+      }
+    });
+
+    if (!currentRotation) {
+      const sunday = getSunday(today);
+      const docId = formatDateISO(sunday);
+      const doc = await db.collection('rotations').doc(docId).get();
+      if (doc.exists) {
+        currentRotation = doc.data();
+      }
     }
+
+    res.json(currentRotation || null);
   } catch (err) {
     console.error('[API] Get current rotation error:', err.message);
     res.status(500).json({ error: 'Internal server error' });

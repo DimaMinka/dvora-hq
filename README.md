@@ -104,8 +104,8 @@ dvora-hq/
 | `/add_to_squad`            | Admin | Assign a fighter to a squad                                      |
 | `/add_rotation`            | Admin | Schedule a weekly rotation (Sunday–Saturday cycle)               |
 | `/list_rotations`          | Admin | View all scheduled rotations                                     |
-| `/delete_rotation`         | Admin | Remove a rotation                                                |
-| `/set_meeting`             | Admin | Set a mission time (HH:MM) for a specific date within a rotation |
+| `/remove_rotation`         | Admin | Remove a rotation                                                |
+| `/set_mission`             | Admin | Set a mission time (HH:MM) for a specific date within a rotation |
 | `/alarm_on` / `/alarm_off` | Admin | Toggle global combat alert state for a squad                     |
 
 ### Fighter Mini App
@@ -131,7 +131,7 @@ dvora-hq/
 - Three squad slots per rotation: `alert` (on duty), `standby`, and optional `rest`
 - **Timeline view** — 7-day list with past days dimmed, today highlighted, squad colors, and mission time display
 - **Calendar view** — monthly grid with clickable days showing squad overlay + member list
-- Mission times set per-date via `/set_meeting` bot command, stored in `meeting_times` field on the rotation document
+- Mission times set per-date via `/set_mission` bot command, stored in `meeting_times` field on the rotation document
 
 ---
 

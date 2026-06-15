@@ -78,6 +78,8 @@ export function parseDate(str) {
   const month = parseInt(parts[1], 10) - 1;
   const year = parseInt(parts[2], 10);
   if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+  const currentYear = new Date().getFullYear();
+  if (year < currentYear - 1 || year > currentYear + 1) return null;
 
   const date = new Date(year, month, day);
   if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day)
@@ -171,6 +173,23 @@ export function getDaysOfWeekForStartDate(startDateStr) {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const label = `${daysShort[d.getDay()]} ${dd}.${mm}`;
     list.push({ dateStr, label });
+  }
+  return list;
+}
+
+export function getDaysOfRotationRange(startDateStr, endDateStr) {
+  const start = parseISODate(startDateStr);
+  const end = parseISODate(endDateStr);
+  const list = [];
+  const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const current = new Date(start);
+  while (current <= end) {
+    const dateStr = formatDateISO(current);
+    const dd = String(current.getDate()).padStart(2, '0');
+    const mm = String(current.getMonth() + 1).padStart(2, '0');
+    const label = `${daysShort[current.getDay()]} ${dd}.${mm}`;
+    list.push({ dateStr, label });
+    current.setDate(current.getDate() + 1);
   }
   return list;
 }
