@@ -81,7 +81,7 @@ async function getSquads(db) {
 }
 
 // Helper: Build inline keyboard with squads
-function buildSquadKeyboard(squads, { addNew = false, disabledList = [] } = {}) {
+function buildSquadKeyboard(squads, { addNew = false, disabledList = [], skipBtn = false } = {}) {
   const rows = [];
   const squadButtons = squads.map((squad) => {
     const isDisabled = disabledList.includes(squad);
@@ -97,6 +97,9 @@ function buildSquadKeyboard(squads, { addNew = false, disabledList = [] } = {}) 
   const controlRow = [];
   if (addNew) {
     controlRow.push({ text: '➕ New Squad', callback_data: 'squad:__new__' });
+  }
+  if (skipBtn) {
+    controlRow.push({ text: '⏩ Skip', callback_data: 'skip_rest' });
   }
   controlRow.push({ text: '❌ Cancel', callback_data: 'cancel' });
   rows.push(controlRow);
@@ -354,27 +357,81 @@ async function handleAddRotationCallback(ctx, state, data) {
     if (data.startsWith('squad:')) {
       const squad = data.split(':')[1];
       state.data.standby = squad;
+
+      if (squads.length >= 3) {
+        state.step = 'rest';
+        setConversationState(ctx.chat.id, state);
+
+        return ctx.editMessageText(
+          `📅 Period: *${state.data.formattedRange}*\n` +
+            `🔴 Alert: *${state.data.alert}*\n` +
+            `🔵 Standby: *${state.data.standby}*\n\n` +
+            `Select *REST* squad (optional):`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: buildSquadKeyboard(squads, {
+              disabledList: [state.data.alert, state.data.standby],
+              skipBtn: true,
+            }),
+          }
+        );
+      } else {
+        state.data.rest = null;
+        state.step = 'confirm';
+        setConversationState(ctx.chat.id, state);
+
+        return ctx.editMessageText(
+          `📅 *Create rotation?*\n\n` +
+            `• *Period:* ${state.data.formattedRange}\n` +
+            `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
+            `• 🔵 *Standby:* \`${state.data.standby}\`\n\n` +
+            `Confirm creation:`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: '✅ Create', callback_data: 'confirm_add_rotation' },
+                  { text: '❌ Cancel', callback_data: 'cancel' },
+                ],
+              ],
+            },
+          }
+        );
+      }
+    }
+  } else if (state.step === 'rest') {
+    if (data.startsWith('squad:') || data === 'skip_rest') {
+      if (data === 'skip_rest') {
+        state.data.rest = null;
+      } else {
+        state.data.rest = data.split(':')[1];
+      }
       state.step = 'confirm';
       setConversationState(ctx.chat.id, state);
 
-      return ctx.editMessageText(
-        `📅 *Create rotation?*\n\n` +
-          `• *Period:* ${state.data.formattedRange}\n` +
-          `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
-          `• 🔵 *Standby:* \`${state.data.standby}\`\n\n` +
-          `Confirm creation:`,
-        {
-          parse_mode: 'Markdown',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: '✅ Create', callback_data: 'confirm_add_rotation' },
-                { text: '❌ Cancel', callback_data: 'cancel' },
-              ],
+      let confirmMsg = `📅 *Create rotation?*\n\n` +
+        `• *Period:* ${state.data.formattedRange}\n` +
+        `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
+        `• 🔵 *Standby:* \`${state.data.standby}\``;
+
+      if (state.data.rest) {
+        confirmMsg += `\n• ⬜ *Rest:* \`${state.data.rest}\``;
+      }
+
+      confirmMsg += `\n\nConfirm creation:`;
+
+      return ctx.editMessageText(confirmMsg, {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '✅ Create', callback_data: 'confirm_add_rotation' },
+              { text: '❌ Cancel', callback_data: 'cancel' },
             ],
-          },
-        }
-      );
+          ],
+        },
+      });
     }
   } else if (state.step === 'confirm') {
     if (data === 'confirm_add_rotation') {
