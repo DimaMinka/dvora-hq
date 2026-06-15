@@ -130,27 +130,20 @@ export default function OperatorCard({
             )}
           </div>
         </div>
-
-        {/* Dynamic Rotation Status Badge */}
-        {showRotation && statusConfig && (
-          <div className="flex flex-col items-end shrink-0 text-right">
-            <div className={`px-2 py-0.5 rounded-sm border text-[8px] font-black tracking-wider uppercase ${statusConfig.bg} ${statusConfig.border} ${statusConfig.text}`}>
-              {statusConfig.label}
-            </div>
-            {statusConfig.daysText && (
-              <span className="text-[7px] text-slate-500 font-mono mt-0.5 uppercase tracking-widest">
-                // {statusConfig.daysText}
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Expanded Rotation details */}
       {showRotation && currentRotation && (
         <div className="border-t border-bf-border/30 pt-2 mt-1 flex flex-col gap-1 font-mono text-[9px]">
           <div className="flex justify-between items-center text-slate-400">
-            <span>// CURRENT WEEK SQUAD DEPLOYMENT</span>
+            <div className="flex items-center gap-2">
+              <span>// CURRENT WEEK SQUAD DEPLOYMENT</span>
+              {statusConfig?.daysText && (
+                <span className="text-[7px] text-slate-500 font-bold uppercase tracking-widest">
+                  // {statusConfig.daysText}
+                </span>
+              )}
+            </div>
             <div 
               className="w-1.5 h-1.5 rounded-full"
               style={{ 
