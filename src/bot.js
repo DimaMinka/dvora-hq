@@ -214,7 +214,8 @@ async function handleRemoveUserCallback(ctx, state, data) {
       state.data.squad_id = squad;
 
       const db = getDb();
-      const snapshot = await db.collection('users').where('squad_id', '==', squad).get();
+      const squadsToQuery = Array.from(new Set([squad, squad.toLowerCase(), squad.toUpperCase()]));
+      const snapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
       if (snapshot.empty) {
         return ctx.editMessageText(`⚠️ Squad *${squad}* has no fighters.`, {
           parse_mode: 'Markdown',
@@ -301,7 +302,8 @@ async function handleListUsersCallback(ctx, state, data) {
       if (squad === '__all__') {
         snapshot = await db.collection('users').get();
       } else {
-        snapshot = await db.collection('users').where('squad_id', '==', squad).get();
+        const squadsToQuery = Array.from(new Set([squad, squad.toLowerCase(), squad.toUpperCase()]));
+        snapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
       }
 
       if (snapshot.empty) {
