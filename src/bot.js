@@ -210,7 +210,7 @@ async function handleAddUserCallback(ctx, state, data) {
       state.step = 'username';
       setConversationState(ctx.chat.id, state);
       return ctx.editMessageText(
-        `Squad selected: *${squad}*\n\nEnter the @username of the new user:`,
+        `Squad selected: \`${squad}\`\n\nEnter the @username of the new user:`,
         {
           parse_mode: 'Markdown',
           reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
@@ -260,7 +260,7 @@ async function handleRemoveUserCallback(ctx, state, data) {
       const squadsToQuery = Array.from(new Set([squad, squad.toLowerCase(), squad.toUpperCase()]));
       const snapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
       if (snapshot.empty) {
-        return ctx.editMessageText(`⚠️ Squad *${squad}* has no fighters.`, {
+        return ctx.editMessageText(`⚠️ Squad \`${squad}\` has no fighters.`, {
           parse_mode: 'Markdown',
           reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
         });
@@ -281,7 +281,7 @@ async function handleRemoveUserCallback(ctx, state, data) {
 
       state.step = 'user';
       setConversationState(ctx.chat.id, state);
-      return ctx.editMessageText(`Squad: *${squad}*\nSelect fighter to remove:`, {
+      return ctx.editMessageText(`Squad: \`${squad}\`\nSelect fighter to remove:`, {
         parse_mode: 'Markdown',
         reply_markup: { inline_keyboard: rows },
       });
@@ -305,7 +305,7 @@ async function handleRemoveUserCallback(ctx, state, data) {
       setConversationState(ctx.chat.id, state);
 
       return ctx.editMessageText(
-        `⚠️ *Delete @${u.tg_username} from ${u.squad_id}?*\n` + `PIN: \`${pin}\` will be revoked.`,
+        `⚠️ *Delete \`@${u.tg_username}\` from squad \`${u.squad_id}\`?*\n` + `PIN: \`${pin}\` will be revoked.`,
         {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -326,7 +326,7 @@ async function handleRemoveUserCallback(ctx, state, data) {
       await db.collection('users').doc(pin).delete();
 
       await ctx.editMessageText(
-        `✅ *USER EVICTED*: User @${state.data.tg_username} deleted. PIN \`${pin}\` revoked.`,
+        `✅ *USER EVICTED*: User \`@${state.data.tg_username}\` deleted. PIN \`${pin}\` revoked.`,
         { parse_mode: 'Markdown' }
       );
       setConversationState(ctx.chat.id, null);
@@ -759,7 +759,7 @@ async function handleAddUserText(ctx, state) {
     state.data.squad_id = squadId;
     state.step = 'username';
     setConversationState(ctx.chat.id, state);
-    return ctx.reply(`New squad selected: *${squadId}*\n\nEnter the @username of the new user:`, {
+    return ctx.reply(`New squad selected: \`${squadId}\`\n\nEnter the @username of the new user:`, {
       parse_mode: 'Markdown',
       reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
     });
