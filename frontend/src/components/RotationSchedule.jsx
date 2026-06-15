@@ -555,7 +555,79 @@ export default function RotationSchedule({ lang = 'en', user }) {
                     <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
                       // {alertSquad} OPERATOR DIRECTORY
                     </div>
-                    {loadingMembers ? (
+                    {substitutionModal && substitutionModal.dateStr === day.dateStr ? (
+                      /* Timeline Inline Substitution selection panel */
+                      <div className="space-y-3 font-mono text-[10px] bg-bf-dark/30 p-2 border border-bf-border/30 clip-btn">
+                        <div className="flex items-center justify-between border-b border-bf-border/20 pb-1 mb-2">
+                          <span className="text-[9px] text-bf-orange font-bold uppercase">
+                            {lang === 'en' ? 'Select Substitute for:' : 'בחר מחליף עבור:'} @{substitutionModal.originalOperator.tg_username || substitutionModal.originalOperator.phone_number}
+                          </span>
+                          <button
+                            onClick={() => setSubstitutionModal(null)}
+                            className="text-slate-400 hover:text-white text-[9px] uppercase font-bold"
+                          >
+                            {d.subCancel}
+                          </button>
+                        </div>
+
+                        {substitutionModal.currentSubId && (
+                          <button
+                            onClick={() => handleExecuteSubstitute(null, substitutionModal.originalOperator, substitutionModal.dateStr, substitutionModal.rotationId)}
+                            className="w-full py-1.5 bg-bf-orange/10 border border-bf-orange/40 hover:bg-bf-orange/20 text-bf-orange font-bold text-[9px] uppercase tracking-wider clip-btn transition-all cursor-pointer text-center"
+                          >
+                            {d.subReset}
+                          </button>
+                        )}
+
+                        {loadingAllOperators ? (
+                          <div className="text-center py-4 text-bf-cyan/60 animate-pulse text-[9px]">
+                            // SCANNING SQUAD DATABASES...
+                          </div>
+                        ) : allOperators ? (
+                          Object.entries(allOperators).map(([squadName, ops]) => {
+                            const printableOps = ops.filter(op => op.id !== substitutionModal.originalOperator.id);
+                            if (printableOps.length === 0) return null;
+
+                            const squadColor = getSquadColor(squadName, isLightMode);
+
+                            return (
+                              <div key={squadName} className="space-y-1">
+                                <div className="text-[8px] font-black tracking-widest pb-0.5" style={{ color: squadColor.color }}>
+                                  // SQUAD {squadName}
+                                </div>
+                                <div className="grid grid-cols-2 gap-1.5">
+                                  {printableOps.map((op) => {
+                                    const isCurrentSelection = substitutionModal.currentSubId === op.id;
+                                    return (
+                                      <div
+                                        key={op.id}
+                                        onClick={() => handleExecuteSubstitute(op.id, substitutionModal.originalOperator, substitutionModal.dateStr, substitutionModal.rotationId)}
+                                        className={`flex items-center gap-1.5 p-1 bg-bf-slate/40 border clip-btn text-[9px] cursor-pointer hover:border-bf-cyan transition-all ${isCurrentSelection ? 'border-bf-cyan bg-bf-cyan/5' : 'border-bf-border/30'}`}
+                                      >
+                                        <div className="w-4 h-4 rounded-full overflow-hidden border border-bf-border/50 flex items-center justify-center bg-bf-dark text-[7px] font-black text-bf-cyan shrink-0">
+                                          {op.avatar_url ? (
+                                            <img src={op.avatar_url} alt="" className="w-full h-full object-cover" />
+                                          ) : (
+                                            op.tg_username?.slice(0, 2).toUpperCase() || 'OP'
+                                          )}
+                                        </div>
+                                        <div className="flex flex-col min-w-0 flex-1">
+                                          <span className="text-white font-bold truncate">@{op.tg_username}</span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="text-center py-4 text-slate-600 text-[9px]">
+                            // NO OPERATORS FOUND
+                          </div>
+                        )}
+                      </div>
+                    ) : loadingMembers ? (
                       <div className="grid grid-cols-2 gap-1.5 animate-pulse">
                         {[1, 2, 3, 4].map((i) => (
                           <div
