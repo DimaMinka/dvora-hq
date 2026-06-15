@@ -933,7 +933,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                   ? selectedCalendarDay.rotation.meeting_times[selectedCalendarDay.dateStr]
                   : null;
               return (
-                <div className="absolute inset-0 bg-bf-dark/95 z-20 p-3 flex flex-col animate-fade-in">
+                <div className="absolute inset-0 bg-bf-dark z-20 p-3 flex flex-col animate-fade-in">
                   <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
                     <div className="flex flex-col">
                       <span className="text-[11px] font-black text-white uppercase">
