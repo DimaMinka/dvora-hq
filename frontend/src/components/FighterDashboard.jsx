@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useChecklistPanel } from '../hooks/useChecklistPanel.js';
 import { useLoadoutItems } from '../hooks/useLoadoutItems.js';
 import { useRotations } from '../hooks/useRotations.js';
@@ -23,7 +23,14 @@ export default function FighterDashboard({
   const [reportText, setReportText] = useState('');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [activeTab, setActiveTab] = useState('rotation');
+  const [activeTab, setActiveTab] = useState(() => alarmActive ? 'readiness' : 'rotation');
+
+  useEffect(() => {
+    if (alarmActive) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveTab('readiness');
+    }
+  }, [alarmActive]);
 
   const { activePanel, openPanel, closePanel } = useChecklistPanel();
 
