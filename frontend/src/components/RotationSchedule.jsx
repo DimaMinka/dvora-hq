@@ -314,7 +314,7 @@ export default function RotationSchedule({ lang = 'en' }) {
             const todayStr = formatDateISO(new Date());
             const isToday = todayStr === day.dateStr;
             const isPast = day.dateStr < todayStr;
-            const meetingTime = (rot && rot.meeting_times && rot.meeting_times[day.dateStr]) || (day.dateStr === '2026-06-16' ? '17:00' : null);
+            const meetingTime = rot && rot.meeting_times ? rot.meeting_times[day.dateStr] : null;
 
             return (
               <div
@@ -519,7 +519,7 @@ export default function RotationSchedule({ lang = 'en' }) {
 
           {/* Dynamic Members Overlay Modal inside Calendar Card */}
           {selectedCalendarDay && activeOverlaySquad && (() => {
-            const overlayMeetingTime = (selectedCalendarDay.rotation && selectedCalendarDay.rotation.meeting_times && selectedCalendarDay.rotation.meeting_times[selectedCalendarDay.dateStr]) || (selectedCalendarDay.dateStr === '2026-06-16' ? '17:00' : null);
+            const overlayMeetingTime = selectedCalendarDay.rotation && selectedCalendarDay.rotation.meeting_times ? selectedCalendarDay.rotation.meeting_times[selectedCalendarDay.dateStr] : null;
             return (
               <div className="absolute inset-0 bg-bf-dark/95 z-20 p-3 flex flex-col animate-fade-in">
                 <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
