@@ -1,7 +1,7 @@
 import { bot } from './botInstance.js';
 import { conversationState, setConversationState } from './state.js';
 import { isAdmin } from './helpers.js';
-import { handleStartHelp, handleMyProfile } from './handlers/common.js';
+import { handleStartHelp, handleMyProfile } from './handlers/common/index.js';
 import {
   commandAddFighter,
   commandAddCommander,
@@ -13,7 +13,7 @@ import {
   handleRemoveSquadCallback,
   handleListUsersCallback,
   handleAddUserText,
-} from './handlers/users.js';
+} from './handlers/users/index.js';
 import {
   commandAddRotation,
   commandRemoveRotation,
@@ -21,12 +21,12 @@ import {
   handleAddRotationCallback,
   handleRemoveRotationCallback,
   handleAddRotationText,
-} from './handlers/rotations.js';
+} from './handlers/rotations/index.js';
 import {
   commandSetMission,
   handleSetMissionCallback,
   handleSetMissionText,
-} from './handlers/missions.js';
+} from './handlers/missions/index.js';
 
 if (bot) {
   // Common Commands
