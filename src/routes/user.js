@@ -71,21 +71,20 @@ router.post('/onboarding', authenticateToken, async (req, res) => {
     });
     const avatarUrl = await generateAndSaveAvatar(userRef, req.user.userId, formattedSpecData);
 
+    // Fetch complete updated user profile to return
+    const userDoc = await userRef.get();
+    const fullUserData = userDoc.data();
+
+    // Fetch squad alarm status
+    const alarmDoc = await db.collection('commander_reports').doc(fullUserData.squad_id).get();
+    fullUserData.alarm_active = alarmDoc.exists ? Boolean(alarmDoc.data().alarm_active) : false;
+    fullUserData.id = fullUserData.pin_code;
+    fullUserData.readiness = null;
+
     res.json({
       success: true,
       message: 'Onboarding completed successfully',
-      user: {
-        id: req.user.userId,
-        specialization,
-        weaponry,
-        gear,
-        optics: optics || null,
-        accessories: accessories || null,
-        meds: meds || null,
-        gender: gender || null,
-        avatar_url: avatarUrl || null,
-        readiness: null,
-      },
+      user: fullUserData,
     });
   } catch (err) {
     console.error('[API] Onboarding error:', err.message);

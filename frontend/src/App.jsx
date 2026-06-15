@@ -298,7 +298,7 @@ function App() {
     }
 
     const data = await res.json();
-    setUser(data.user);
+    setUser((prev) => ({ ...prev, ...data.user }));
     localStorage.setItem(
       'dvora_last_operator',
       JSON.stringify({

@@ -115,7 +115,7 @@ export default function OperatorCard({
             </div>
             <div className="text-[10px] text-slate-400 truncate">
               SQUAD:{' '}
-              {user ? (
+              {user && user.squad_id ? (
                 <span
                   style={{ color: getSquadColor(user.squad_id, isLightMode).color }}
                   className="font-bold"
