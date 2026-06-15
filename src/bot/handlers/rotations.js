@@ -273,10 +273,10 @@ export async function handleAddRotationText(ctx, state) {
     const db = getDb();
     const squads = await getSquads(db);
 
-    if (squads.length < 3) {
+    if (squads.length < 2) {
       setConversationState(ctx.chat.id, null);
       return ctx.reply(
-        '⚠️ *ERROR*: At least 3 squads must exist in the system to create a rotation. Please add fighters to other squads first.'
+        '⚠️ *ERROR*: At least 2 squads must exist in the system to create a rotation. Please add fighters to other squads first.'
       );
     }
 
