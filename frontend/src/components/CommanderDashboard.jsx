@@ -169,14 +169,14 @@ export default function CommanderDashboard({
     he: {
       title: '// לוח_פיקוד_אסטרטגי // מפקד',
       squadTitle: 'סקירת צוות',
-      alarmOn: 'מערכת בהמתנה // הפעל אזעקה',
-      alarmOff: 'אזעקה פעילה // ביטול אזעקה',
-      logsTitle: 'יומן אירועים',
-      btnLogs: 'פתח מגירת יומן',
-      closeLogs: 'סגור מגירה',
+      alarmOn: 'מערכת בהמתנה   //   הפעל הקפצה',
+      alarmOff: 'הקפצה פעילה   //   ביטול הקפצה',
+      logsTitle: 'דיווחים',
+      btnLogs: 'פתח תיבת דיווחים',
+      closeLogs: 'סגור',
       member: 'לוחם',
       wpn: 'נשק',
-      med: 'רפו',
+      med: 'רפוא',
       gear: 'ציוד',
       trsp: 'רכב',
       opName: 'מפעיל: REAPER',
@@ -188,7 +188,7 @@ export default function CommanderDashboard({
       ready: 'תקין',
       issue: 'תקלה',
       pending: 'טרם נקבע',
-      selectedIssuesTitle: 'פירוט תקלות טקטי // דיווח חוסרים',
+      selectedIssuesTitle: 'פירוט תקלות טקטי  //  דיווח חוסרים',
       allOperational: 'כלל הציוד והמשאבים של הלוחם תקינים לחלוטין',
       notReadyStatus: 'לא סומנו תתי-פריטים כתקולים. סטטוס כללי מסומן כתקלה.',
       faultyItems: 'ציוד תקול / חסר:',
@@ -269,9 +269,9 @@ export default function CommanderDashboard({
     .map((m, idx) => {
       const timeStr = m.updated_at
         ? new Date(m.updated_at).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })
+          hour: '2-digit',
+          minute: '2-digit',
+        })
         : '00:00';
       return {
         id: idx,
@@ -309,22 +309,20 @@ export default function CommanderDashboard({
         <button
           type="button"
           onClick={() => setActiveTab('rotation')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
-            activeTab === 'rotation'
-              ? 'bg-bf-cyan text-bf-dark font-black'
-              : 'text-slate-400 hover:text-white'
-          }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'rotation'
+            ? 'bg-bf-cyan text-bf-dark font-black'
+            : 'text-slate-400 hover:text-white'
+            }`}
         >
           {lang === 'en' ? '// ROTATIONS' : '// סבבים'}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('readiness')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
-            activeTab === 'readiness'
-              ? 'bg-bf-cyan text-bf-dark font-black'
-              : 'text-slate-400 hover:text-white'
-          }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'readiness'
+            ? 'bg-bf-cyan text-bf-dark font-black'
+            : 'text-slate-400 hover:text-white'
+            }`}
         >
           {lang === 'en' ? '// SQUAD STATUS' : '// מצב הצוות'}
         </button>
@@ -620,11 +618,10 @@ export default function CommanderDashboard({
           {/* Alarm override control */}
           <button
             onClick={onToggleAlarm}
-            className={`w-full py-2.5 font-black text-xs uppercase clip-btn transition-all duration-300 cursor-pointer ${
-              alarmActive
-                ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400] animate-pulse'
-                : 'bg-bf-slate/30 border border-bf-border text-slate-400 hover:bg-bf-cyan/10 hover:border-bf-cyan hover:text-bf-cyan'
-            }`}
+            className={`w-full py-2.5 font-black text-xs uppercase clip-btn transition-all duration-300 cursor-pointer ${alarmActive
+              ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400] animate-pulse'
+              : 'bg-bf-slate/30 border border-bf-border text-slate-400 hover:bg-bf-cyan/10 hover:border-bf-cyan hover:text-bf-cyan'
+              }`}
           >
             {alarmActive ? d.alarmOff : d.alarmOn}
           </button>

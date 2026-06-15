@@ -113,7 +113,7 @@ const i18n = {
     btnSoldier: '> מסוף_לוחם (אפליקציה)',
     btnCommander: '> מסוף_מפקד (תצוגה)',
     btnAdmin: '> ניהול_מודיעין (בוט CLI)',
-    alarmStandby: 'סטאטוס // רשת_בהמתנה',
+    alarmStandby: 'סטאטוס  // רשת_בהמתנה ',
     alarmActive: '!! התרעת פריסה קרבית !!',
     cards: [
       {
@@ -251,7 +251,7 @@ function App() {
       await fetch('/api/auth/logout', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => {});
+      }).catch(() => { });
     }
     localStorage.removeItem('dvora_token');
     setUser(null);
@@ -478,6 +478,12 @@ function App() {
     }
   }, []);
 
+  // Sync HTML dir and lang attributes with the selected language
+  useEffect(() => {
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   // Sync Telegram header/background color with effective theme (auto + manual override)
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
@@ -573,7 +579,7 @@ function App() {
               setGearStatus({});
             }
           })
-          .catch(() => {});
+          .catch(() => { });
       } else if (user.role === 'commander') {
         // Commanders fetch squad status
         fetch('/api/squad/status', {
@@ -588,7 +594,7 @@ function App() {
           .then((data) => {
             setSquadMembers(data);
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     }, 5000);
 
@@ -663,7 +669,7 @@ function App() {
 
         {/* Right: lang switcher + lock */}
         <div className="flex-1 flex items-center justify-end gap-2">
-          <div className="flex p-0.5 bg-bf-dark border border-bf-border clip-btn">
+          <div className="flex p-0.5 bg-bf-dark border border-bf-border clip-btn lang-switcher">
             <button
               onClick={() => setLang('en')}
               className={`px-2 py-0.5 text-[10px] font-bold clip-btn transition-all ${lang === 'en' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'}`}
@@ -674,7 +680,7 @@ function App() {
               onClick={() => setLang('he')}
               className={`px-2 py-0.5 text-[10px] font-bold clip-btn transition-all ${lang === 'he' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'}`}
             >
-              עבר
+              HE
             </button>
           </div>
 
@@ -692,7 +698,7 @@ function App() {
       <main className="max-w-md mx-auto">
         <div className="p-4 glass-panel border-2 border-bf-cyan/30 clip-hud relative flex flex-col justify-between min-h-[440px]">
           {isLocked ? (
-            <LockScreen onUnlock={handleUnlock} />
+            <LockScreen onUnlock={handleUnlock} lang={lang} />
           ) : (
             <>
               {user && !user.specialization ? (

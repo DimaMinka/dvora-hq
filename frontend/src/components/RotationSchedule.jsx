@@ -47,17 +47,26 @@ const i18n = {
     subSelectPrompt: 'Select Substitute Operator:',
     subReset: 'Restore Original Operator',
     subCancel: 'Cancel',
+    activeSquadLabel: 'ACTIVE SQUAD:',
+    standbyLabel: 'STANDBY:',
+    restLabel: 'REST:',
+    missionTimeLabel: 'MISSION TIME:',
+    missionCompletedLabel: 'MISSION COMPLETED',
+    squadDeploymentLabel: '// CURRENT WEEK SQUAD DEPLOYMENT',
+    operatorDirectoryLabel: (squad) => `// ${squad} OPERATOR DIRECTORY`,
+    missionTelemetryBriefingLabel: '// MISSION TELEMETRY BRIEFING',
+    calendarGridLabel: '// CALENDAR_GRID',
   },
   he: {
     title: '// לוח_סבבים // סנכרון',
-    timeline: 'לוח זמנים',
+    timeline: 'שבועי',
     calendar: 'לוח שנה',
     alert: 'כוננות',
     standby: 'גיבוי',
     rest: 'מנוחה',
     currentWeek: 'השבוע הנוכחי',
     noRotation: 'לא נקבע סבב לשבוע זה',
-    membersTitle: 'חברי הצוות',
+    membersTitle: 'הצוות',
     loading: 'טוען נתוני סבבים...',
     error: 'שגיאה בסנכרון נתונים',
     emptyCalendar: 'אין סבבים מתוזמנים',
@@ -90,6 +99,15 @@ const i18n = {
     subSelectPrompt: 'בחר לוחם מחליף:',
     subReset: 'החזר לוחם מקורי',
     subCancel: 'ביטול',
+    activeSquadLabel: 'בכוננות:',
+    standbyLabel: 'עתודה:',
+    restLabel: 'מנוחה:',
+    missionTimeLabel: 'שעת פעילות:',
+    missionCompletedLabel: 'משימה הושלמה',
+    squadDeploymentLabel: '// פריסת כוחות שבועית',
+    operatorDirectoryLabel: (squad) => `// מצבת לוחמים - ${squad}`,
+    missionTelemetryBriefingLabel: '// סיכום טלמטריית משימה',
+    calendarGridLabel: '// לוח_השנה',
   },
 };
 
@@ -424,10 +442,11 @@ export default function RotationSchedule({ lang = 'en', user }) {
         {/* Left selector */}
         <button
           onClick={() => {
+            const diff = -1;
             if (activeTab === 'timeline') {
-              setWeekOffset((prev) => prev - 1);
+              setWeekOffset((prev) => prev + diff);
             } else {
-              setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+              setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + diff, 1));
             }
           }}
           className="nav-btn bg-bf-slate border border-bf-border/40 text-bf-cyan w-7 h-7 flex items-center justify-center clip-btn cursor-pointer hover:bg-bf-cyan/10 hover:text-white transition-all"
@@ -442,7 +461,11 @@ export default function RotationSchedule({ lang = 'en', user }) {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <polyline points="15 18 9 12 15 6"></polyline>
+            {lang === 'he' ? (
+              <polyline points="9 18 15 12 9 6"></polyline>
+            ) : (
+              <polyline points="15 18 9 12 15 6"></polyline>
+            )}
           </svg>
         </button>
 
@@ -450,21 +473,19 @@ export default function RotationSchedule({ lang = 'en', user }) {
         <div className="flex p-0.5 bg-bf-slate/50 border border-bf-border/30 clip-btn w-44">
           <button
             onClick={() => setActiveTab('timeline')}
-            className={`flex-1 py-0.5 text-[9px] font-bold uppercase tracking-wider clip-btn transition-all ${
-              activeTab === 'timeline'
-                ? 'bg-bf-cyan text-bf-dark'
-                : 'text-slate-400 hover:text-white'
-            }`}
+            className={`flex-1 py-0.5 text-[9px] font-bold uppercase tracking-wider clip-btn transition-all ${activeTab === 'timeline'
+              ? 'bg-bf-cyan text-bf-dark'
+              : 'text-slate-400 hover:text-white'
+              }`}
           >
             {d.timeline}
           </button>
           <button
             onClick={() => setActiveTab('calendar')}
-            className={`flex-1 py-0.5 text-[9px] font-bold uppercase tracking-wider clip-btn transition-all ${
-              activeTab === 'calendar'
-                ? 'bg-bf-cyan text-bf-dark'
-                : 'text-slate-400 hover:text-white'
-            }`}
+            className={`flex-1 py-0.5 text-[9px] font-bold uppercase tracking-wider clip-btn transition-all ${activeTab === 'calendar'
+              ? 'bg-bf-cyan text-bf-dark'
+              : 'text-slate-400 hover:text-white'
+              }`}
           >
             {d.calendar}
           </button>
@@ -473,10 +494,11 @@ export default function RotationSchedule({ lang = 'en', user }) {
         {/* Right selector */}
         <button
           onClick={() => {
+            const diff = 1;
             if (activeTab === 'timeline') {
-              setWeekOffset((prev) => prev + 1);
+              setWeekOffset((prev) => prev + diff);
             } else {
-              setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+              setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + diff, 1));
             }
           }}
           className="nav-btn bg-bf-slate border border-bf-border/40 text-bf-cyan w-7 h-7 flex items-center justify-center clip-btn cursor-pointer hover:bg-bf-cyan/10 hover:text-white transition-all"
@@ -491,7 +513,11 @@ export default function RotationSchedule({ lang = 'en', user }) {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <polyline points="9 18 15 12 9 6"></polyline>
+            {lang === 'he' ? (
+              <polyline points="15 18 9 12 15 6"></polyline>
+            ) : (
+              <polyline points="9 18 15 12 9 6"></polyline>
+            )}
           </svg>
         </button>
       </div>
@@ -521,13 +547,12 @@ export default function RotationSchedule({ lang = 'en', user }) {
             return (
               <div
                 key={day.dateStr}
-                className={`border transition-all duration-200 clip-hud p-2 flex flex-col ${
-                  isToday
-                    ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]'
-                    : isPast && !isExpanded
-                      ? 'bg-bf-slate/50 border-bf-border/30 opacity-60'
-                      : 'bg-bf-slate/85 border-bf-border/60'
-                }`}
+                className={`border transition-all duration-200 clip-hud p-2 flex flex-col ${isToday
+                  ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]'
+                  : isPast && !isExpanded
+                    ? 'bg-bf-slate/50 border-bf-border/30 opacity-60'
+                    : 'bg-bf-slate/85 border-bf-border/60'
+                  }`}
               >
                 <div
                   onClick={() => handleTimelineDayClick(day.dateStr, rot)}
@@ -536,11 +561,10 @@ export default function RotationSchedule({ lang = 'en', user }) {
                   <div className="flex items-center gap-3">
                     {/* Date Block */}
                     <div
-                      className={`w-9 h-11 border clip-btn flex flex-col items-center justify-center transition-all ${
-                        hasSubs
-                          ? 'bg-bf-orange border-bf-orange/80 animate-pulse'
-                          : 'bg-bf-dark border-bf-border/50'
-                      }`}
+                      className={`w-9 h-11 border clip-btn flex flex-col items-center justify-center transition-all ${hasSubs
+                        ? 'bg-bf-orange border-bf-orange/80 animate-pulse'
+                        : 'bg-bf-dark border-bf-border/50'
+                        }`}
                     >
                       <span
                         className={`text-xs font-black leading-none ${hasSubs ? '' : 'text-white'}`}
@@ -557,10 +581,10 @@ export default function RotationSchedule({ lang = 'en', user }) {
                     </div>
 
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-bold text-white uppercase">
+                      <span className="text-[11px] font-bold text-white uppercase flex items-center gap-1">
                         {rot ? (
                           <>
-                            ACTIVE SQUAD:{' '}
+                            <span className="me-1">{d.activeSquadLabel}</span>
                             <span style={{ color: squadColor?.color }}>{alertSquad}</span>
                           </>
                         ) : (
@@ -568,9 +592,16 @@ export default function RotationSchedule({ lang = 'en', user }) {
                         )}
                       </span>
                       {rot && (
-                        <span className="text-[9px] text-slate-500">
-                          STANDBY: {rot.squads.standby}
-                          {rot.squads.rest ? ` | REST: ${rot.squads.rest}` : ''}
+                        <span className="text-[9px] text-slate-500 flex items-center flex-wrap gap-x-1">
+                          <span className="me-1">{d.standbyLabel}</span>
+                          <span>{rot.squads.standby}</span>
+                          {rot.squads.rest && (
+                            <>
+                              <span className="mx-1">|</span>
+                              <span className="me-1">{d.restLabel}</span>
+                              <span>{rot.squads.rest}</span>
+                            </>
+                          )}
                         </span>
                       )}
                       {meetingTime && (
@@ -585,7 +616,8 @@ export default function RotationSchedule({ lang = 'en', user }) {
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                           </svg>
-                          <span>MISSION TIME: {meetingTime}</span>
+                          <span className="me-1">{d.missionTimeLabel}</span>
+                          <span>{meetingTime}</span>
                         </div>
                       )}
                       {completedMission && (
@@ -603,7 +635,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                             />
                           </svg>
-                          <span>MISSION COMPLETED</span>
+                          <span>{d.missionCompletedLabel}</span>
                         </div>
                       )}
                     </div>
@@ -640,16 +672,17 @@ export default function RotationSchedule({ lang = 'en', user }) {
                     {completedMission && (
                       <div className="mb-4">
                         <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
-                          // MISSION TELEMETRY BRIEFING
+                          {d.missionTelemetryBriefingLabel}
                         </div>
                         <MissionTelemetryCard
                           telemetry={completedMission.telemetry}
                           isLightMode={isLightMode}
+                          lang={lang}
                         />
                       </div>
                     )}
                     <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
-                      // {alertSquad} OPERATOR DIRECTORY
+                      {d.operatorDirectoryLabel(alertSquad)}
                     </div>
                     {substitutionModal && substitutionModal.dateStr === day.dateStr ? (
                       /* Timeline Inline Substitution selection panel */
@@ -972,7 +1005,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
               {d.months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
             </span>
             <span className="text-[9px] text-bf-cyan select-none tracking-widest">
-              // CALENDAR_GRID
+              {d.calendarGridLabel}
             </span>
           </div>
 
@@ -1009,32 +1042,30 @@ export default function RotationSchedule({ lang = 'en', user }) {
                 hasRot && colorInfo
                   ? hasSubs
                     ? {
-                        backgroundColor: 'var(--color-bf-orange)',
-                        borderColor: 'var(--color-bf-orange)',
-                        color: '#ffffff',
-                        borderWidth: '1px',
-                      }
+                      backgroundColor: 'var(--color-bf-orange)',
+                      borderColor: 'var(--color-bf-orange)',
+                      color: '#ffffff',
+                      borderWidth: '1px',
+                    }
                     : {
-                        backgroundColor: colorInfo.bg,
-                        borderColor: colorInfo.border,
-                        color: colorInfo.color,
-                        borderWidth: '1px',
-                      }
+                      backgroundColor: colorInfo.bg,
+                      borderColor: colorInfo.border,
+                      color: colorInfo.color,
+                      borderWidth: '1px',
+                    }
                   : {
-                      borderColor: 'transparent',
-                      color: isLightMode ? '#4a3728' : '#cbd5e1',
-                    };
+                    borderColor: 'transparent',
+                    color: isLightMode ? '#4a3728' : '#cbd5e1',
+                  };
 
               return (
                 <div
                   key={day.key}
                   onClick={() => handleCalendarDayClick(day)}
                   style={customStyle}
-                  className={`aspect-square clip-btn flex flex-col items-center justify-center text-[10px] font-black cursor-pointer transition-all duration-200 border relative select-none hover:scale-105 ${
-                    isToday ? 'outline-2 outline-bf-cyan outline-offset-1' : ''
-                  } ${isSelected ? 'shadow-[0_0_10px_rgba(255,255,255,0.4)] border-white!' : ''} ${
-                    hasSubs ? 'animate-pulse' : ''
-                  }`}
+                  className={`aspect-square clip-btn flex flex-col items-center justify-center text-[10px] font-black cursor-pointer transition-all duration-200 border relative select-none hover:scale-105 ${isToday ? 'outline-2 outline-bf-cyan outline-offset-1' : ''
+                    } ${isSelected ? 'shadow-[0_0_10px_rgba(255,255,255,0.4)] border-white!' : ''} ${hasSubs ? 'animate-pulse' : ''
+                    }`}
                 >
                   <span>{day.day}</span>
                   {isToday && <div className="w-1 h-1 bg-white rounded-full absolute bottom-1" />}

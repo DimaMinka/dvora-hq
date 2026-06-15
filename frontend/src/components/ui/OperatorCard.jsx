@@ -30,6 +30,13 @@ export default function OperatorCard({
         },
         alarmStandby: 'STATUS // NETWORK_STANDBY',
         alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
+        activeLabel: 'ACTIVE:',
+        standbyLabel: 'STANDBY:',
+        restLabel: 'REST:',
+        operatorLabel: 'OPERATOR:',
+        squadLabel: 'SQUAD:',
+        roleLabel: 'ROLE:',
+        deploymentLabel: '// CURRENT WEEK SQUAD DEPLOYMENT',
       },
       he: {
         alert: 'כוננות מבצעית פעילה',
@@ -40,8 +47,15 @@ export default function OperatorCard({
           if (count === 0) return 'יום אחרון';
           return `נותרו ${count} ימים`;
         },
-        alarmStandby: 'סטאטוס // רשת_בהמתנה',
-        alarmActive: '!! התרעת פריסה קרבית !!',
+        alarmStandby: 'סטאטוס  // רשת_בהמתנה ',
+        alarmActive: '!!  הקפצת אמת  !!',
+        activeLabel: 'בכוננות:',
+        standbyLabel: 'עתודה:',
+        restLabel: 'מנוחה:',
+        operatorLabel: 'מפעיל:',
+        squadLabel: 'צוות:',
+        roleLabel: 'תפקיד:',
+        deploymentLabel: '// פריסת כוחות שבועית',
       },
     }),
     []
@@ -110,11 +124,11 @@ export default function OperatorCard({
           <div className="min-w-0 flex-1">
             <div className="text-white font-black text-xs uppercase tracking-wider truncate">
               {user
-                ? `OPERATOR: ${user.tg_username ? '@' + user.tg_username : user.phone_number}`
+                ? `${t.operatorLabel} ${user.tg_username ? '@' + user.tg_username : user.phone_number}`
                 : placeholderName}
             </div>
             <div className="text-[10px] text-slate-400 truncate">
-              SQUAD:{' '}
+              {t.squadLabel}{' '}
               {user && user.squad_id ? (
                 <span
                   style={{ color: getSquadColor(user.squad_id, isLightMode).color }}
@@ -128,7 +142,7 @@ export default function OperatorCard({
             </div>
             {specializationLabel && (
               <div className="text-[10px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
-                <span className="shrink-0">ROLE:</span>
+                <span className="shrink-0">{t.roleLabel}</span>
                 {isLong ? (
                   <div className="overflow-hidden whitespace-nowrap flex-1 flex font-bold text-bf-cyan">
                     <span className="animate-marquee pr-6 shrink-0">{specializationLabel}</span>
@@ -150,7 +164,7 @@ export default function OperatorCard({
         <div className="border-t border-bf-border/30 pt-2 mt-1 flex flex-col gap-1 font-mono text-[9px]">
           <div className="flex justify-between items-center text-slate-400">
             <div className="flex items-center gap-2">
-              <span>// CURRENT WEEK SQUAD DEPLOYMENT</span>
+              <span>{t.deploymentLabel}</span>
               {statusConfig?.daysText && (
                 <span className="text-[7px] text-slate-500 font-bold uppercase tracking-widest">
                   // {statusConfig.daysText}
@@ -160,7 +174,7 @@ export default function OperatorCard({
           </div>
           <div className="flex justify-between text-[10px] gap-2">
             <div>
-              <span className="text-slate-400 font-black">ACTIVE:</span>{' '}
+              <span className="text-slate-400 font-black">{t.activeLabel}</span>{' '}
               <span
                 style={{ color: getSquadColor(currentRotation.squads.alert, isLightMode).color }}
                 className="font-bold"
@@ -169,7 +183,7 @@ export default function OperatorCard({
               </span>
             </div>
             <div>
-              <span className="text-slate-400 font-black">STANDBY:</span>{' '}
+              <span className="text-slate-400 font-black">{t.standbyLabel}</span>{' '}
               <span
                 style={{ color: getSquadColor(currentRotation.squads.standby, isLightMode).color }}
                 className="font-bold"
@@ -179,7 +193,7 @@ export default function OperatorCard({
             </div>
             {currentRotation.squads.rest && (
               <div>
-                <span className="text-slate-400 font-black">REST:</span>{' '}
+                <span className="text-slate-400 font-black">{t.restLabel}</span>{' '}
                 <span
                   style={{ color: getSquadColor(currentRotation.squads.rest, isLightMode).color }}
                   className="font-bold"
@@ -194,11 +208,10 @@ export default function OperatorCard({
 
       {/* Alarm / Combat Alert status */}
       <div
-        className={`p-1.5 text-center font-black border tracking-wider text-[9px] transition-all duration-300 clip-btn ${
-          alarmActive
-            ? 'bg-bf-orange/15 border-bf-orange/40 text-bf-orange animate-pulse'
-            : 'bg-bf-cyan/5 border-bf-cyan/20 text-bf-cyan/70'
-        }`}
+        className={`p-1.5 text-center font-black border tracking-wider text-[9px] transition-all duration-300 clip-btn ${alarmActive
+          ? 'bg-bf-orange/15 border-bf-orange/40 text-bf-orange animate-pulse'
+          : 'bg-bf-cyan/5 border-bf-cyan/20 text-bf-cyan/70'
+          }`}
       >
         {alarmActive ? t.alarmActive : t.alarmStandby}
       </div>

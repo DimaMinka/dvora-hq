@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function LockScreen({ onUnlock }) {
+function LockScreen({ onUnlock, lang }) {
   const [pin, setPin] = useState('');
   const [keyboardMode, setKeyboardMode] = useState('numeric'); // 'numeric' | 'alpha'
   const [error, setError] = useState(null);
@@ -83,7 +83,7 @@ function LockScreen({ onUnlock }) {
       try {
         await onUnlock(finalPin.toUpperCase());
       } catch (err) {
-        setError(err.message.toUpperCase() || 'ACCESS DENIED');
+        setError(err.message ? err.message.toUpperCase() : (lang === 'he' ? 'גישה נדחתה' : 'ACCESS DENIED'));
         setTimeout(() => {
           setPin('');
           setError(null);
@@ -91,7 +91,7 @@ function LockScreen({ onUnlock }) {
         }, 1500);
       }
     } else {
-      setError('INVALID PIN STRUCTURE (5 DIGITS + 1 LETTER)');
+      setError(lang === 'he' ? 'מבנה קוד PIN שגוי (5 ספרות + אות אחת)' : 'INVALID PIN STRUCTURE (5 DIGITS + 1 LETTER)');
       // Reset pin after short delay to let user retry
       setTimeout(() => {
         setPin('');
@@ -105,7 +105,7 @@ function LockScreen({ onUnlock }) {
     <div className="flex flex-col items-center justify-center min-h-[500px] p-6 max-w-sm mx-auto glass-panel border border-bf-cyan/30 clip-hud">
       <div className="w-full text-center space-y-4">
         <div className="text-[10px] text-bf-cyan font-bold tracking-widest uppercase animate-pulse">
-          // SECURITY_GATEWAY // SECURE_SHELL
+          {lang === 'he' ? '// פתיחת_נהילה // מערכת_מאובטחת' : '// SECURITY_GATEWAY // SECURE_SHELL'}
         </div>
         {(() => {
           const lastOperatorStr = localStorage.getItem('dvora_last_operator');
@@ -138,7 +138,7 @@ function LockScreen({ onUnlock }) {
                 </div>
                 <div>
                   <div className="text-[8px] text-slate-500 font-mono font-bold tracking-widest uppercase">
-                    // CURRENT_OPERATOR
+                    {lang === 'he' ? '// פרופיל נוכחי' : '// CURRENT_OPERATOR'}
                   </div>
                   <div className="text-white font-black text-xs uppercase tracking-wider">
                     {lastOperator.tg_username
@@ -151,7 +151,7 @@ function LockScreen({ onUnlock }) {
           }
           return (
             <h2 className="text-xl font-black text-white tracking-widest uppercase">
-              ENTER ACCESS CREDENTIALS
+              {lang === 'he' ? 'פתיחת נעילה - מערכת מאובטחת' : 'ENTER ACCESS CREDENTIALS'}
             </h2>
           );
         })()}
@@ -159,15 +159,14 @@ function LockScreen({ onUnlock }) {
         {/* PIN Code Verification */}
 
         {/* Display placeholders for 6 characters */}
-        <div className="flex justify-center gap-2.5 py-4">
+        <div className="flex justify-center gap-2.5 py-4" dir="ltr">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className={`w-9 h-12 border flex items-center justify-center font-bold text-lg rounded transition-all duration-200 ${
-                i < pin.length
-                  ? 'border-bf-cyan bg-bf-cyan/10 text-bf-cyan'
-                  : 'border-bf-border bg-bf-dark/50 text-slate-600'
-              }`}
+              className={`w-9 h-12 border flex items-center justify-center font-bold text-lg rounded transition-all duration-200 ${i < pin.length
+                ? 'border-bf-cyan bg-bf-cyan/10 text-bf-cyan'
+                : 'border-bf-border bg-bf-dark/50 text-slate-600'
+                }`}
             >
               {i < pin.length ? pin[i] : ''}
             </div>
@@ -179,13 +178,13 @@ function LockScreen({ onUnlock }) {
             {error}
           </div>
         ) : (
-          <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider py-1 min-h-[20px]">
+          <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider py-1 min-h-[20px]" dir="ltr">
             STRUCTURE: [ 0 - 9 ] x 5 + [ A - Z ] x 1
           </div>
         )}
 
         {/* Keyboard Layout */}
-        <div className="space-y-3 pt-4">
+        <div className="space-y-3 pt-4" dir="ltr">
           {keyboardMode === 'numeric' ? (
             /* Numeric Keypad Grid */
             <div className="grid grid-cols-3 gap-2 justify-items-center">

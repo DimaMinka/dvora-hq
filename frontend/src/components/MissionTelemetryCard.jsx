@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export default function MissionTelemetryCard({ telemetry, isLightMode }) {
+export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'en' }) {
   const {
     distance_km = 0,
     duration_formatted = '00:00:00',
@@ -9,6 +9,36 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
     avg_hr_bpm = 0,
     route_waypoints = [],
   } = telemetry;
+
+  const t = useMemo(() => {
+    const translations = {
+      en: {
+        waypoints: 'Waypoints',
+        distance: 'Distance',
+        distanceUnit: 'km',
+        totalTime: 'Total Time',
+        avgSpeed: 'Avg Speed',
+        speedUnit: 'km/h',
+        totalAscent: 'Total Ascent',
+        ascentUnit: 'm',
+        avgHeartRate: 'Avg Heart Rate',
+        hrUnit: 'bpm',
+      },
+      he: {
+        waypoints: 'נקודות ציון',
+        distance: 'מרחק',
+        distanceUnit: 'ק"מ',
+        totalTime: 'זמן כולל',
+        avgSpeed: 'מהירות ממוצעת',
+        speedUnit: 'קמ"ש',
+        totalAscent: 'טיפוס מצטבר',
+        ascentUnit: "מ'",
+        avgHeartRate: 'דופק ממוצע',
+        hrUnit: 'bpm',
+      },
+    };
+    return translations[lang] || translations.en;
+  }, [lang]);
 
   // Custom colors depending on light/dark mode for the SVG map and metrics
   const colors = useMemo(() => {
@@ -190,7 +220,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
               className="text-[10px] uppercase tracking-[0.1em]"
               style={{ color: colors.textMuted }}
             >
-              Waypoints
+              {t.waypoints}
             </span>
             <div className="flex flex-col gap-2.5">
               {route_waypoints.slice(0, 3).map((wp, idx) => (
@@ -205,7 +235,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
                     {idx + 1}
                   </span>
                   <span
-                    className="font-bold uppercase tracking-wider text-left break-words leading-tight"
+                    className="font-bold uppercase tracking-wider text-start break-words leading-tight"
                     style={{ color: isLightMode ? '#4a3728' : '#e2e8f0' }}
                   >
                     {wp}
@@ -216,27 +246,25 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
           </div>
 
           {/* Right Column: Distance Hero */}
-          <div className="flex flex-col items-center text-center border-l border-black/10 dark:border-white/10 pl-4 h-full justify-center">
+          <div className="flex flex-col items-center text-center border-s border-black/10 dark:border-white/10 ps-4 h-full justify-center">
             <span
               className="text-[10px] uppercase tracking-[0.15em] mb-1"
               style={{ color: colors.textMuted }}
             >
-              Distance
+              {t.distance}
             </span>
-            <div className="flex items-baseline justify-center">
-              <span
-                className="text-4xl font-extrabold tracking-tight"
-                style={{
-                  color: isLightMode ? '#271a10' : '#ffffff',
-                  textShadow: isLightMode ? 'none' : `0 0 20px rgba(0, 240, 255, 0.25)`,
-                }}
-              >
-                {distance_km.toFixed(2)}
+            <span
+              className="text-4xl font-extrabold tracking-tight"
+              style={{
+                color: isLightMode ? '#271a10' : '#ffffff',
+                textShadow: isLightMode ? 'none' : `0 0 20px rgba(0, 240, 255, 0.25)`,
+              }}
+            >
+              {distance_km.toFixed(2)}
+              <span className="text-sm font-bold ms-1" style={{ color: colors.cyan }}>
+                {t.distanceUnit}
               </span>
-              <span className="text-sm font-bold ml-1" style={{ color: colors.cyan }}>
-                km
-              </span>
-            </div>
+            </span>
           </div>
         </div>
       )}
@@ -251,7 +279,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              Total Time
+              {t.totalTime}
             </span>
             <span
               className="text-xl font-bold"
@@ -267,19 +295,17 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              Avg Speed
+              {t.avgSpeed}
             </span>
-            <div className="flex items-baseline">
-              <span
-                className="text-xl font-bold"
-                style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
-              >
-                {avg_speed_kmh.toFixed(1)}
+            <span
+              className="text-xl font-bold"
+              style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
+            >
+              {avg_speed_kmh.toFixed(1)}
+              <span className="text-[10px] ms-1 font-normal" style={{ color: colors.textMuted }}>
+                {t.speedUnit}
               </span>
-              <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
-                km/h
-              </span>
-            </div>
+            </span>
           </div>
 
           {/* Total Ascent */}
@@ -288,19 +314,17 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              Total Ascent
+              {t.totalAscent}
             </span>
-            <div className="flex items-baseline">
-              <span
-                className="text-xl font-bold"
-                style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
-              >
-                {total_ascent_m}
+            <span
+              className="text-xl font-bold"
+              style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
+            >
+              {total_ascent_m}
+              <span className="text-[10px] ms-1 font-normal" style={{ color: colors.textMuted }}>
+                {t.ascentUnit}
               </span>
-              <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
-                m
-              </span>
-            </div>
+            </span>
           </div>
 
           {/* Avg Heart Rate */}
@@ -309,19 +333,17 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              Avg Heart Rate
+              {t.avgHeartRate}
             </span>
-            <div className="flex items-baseline">
-              <span
-                className="text-xl font-bold"
-                style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
-              >
-                {avg_hr_bpm}
+            <span
+              className="text-xl font-bold"
+              style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
+            >
+              {avg_hr_bpm}
+              <span className="text-[10px] ms-1 font-normal" style={{ color: colors.textMuted }}>
+                {t.hrUnit}
               </span>
-              <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
-                bpm
-              </span>
-            </div>
+            </span>
           </div>
         </div>
       </div>

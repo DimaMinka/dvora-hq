@@ -179,9 +179,9 @@ export default function FighterDashboard({
       title: '// מסוף_לוחם // פעיל',
       opName: 'מפעיל: REAPER',
       opSquad: 'צוות: אלפא (01)',
-      alarmStandby: 'סטאטוס // רשת_בהמתנה',
+      alarmStandby: 'סטאטוס  // רשת_בהמתנה ',
       alarmActive: '!! התרעת פריסה קרבית !!',
-      btnSend: 'הזרקת דיווח תקלה',
+      btnSend: 'דווח תקלה',
       placeholder: 'הקלד דיווח על בעיה טקטית או אירוע...',
       weapons: '01_נשק',
       medkit: '02_רפואה',
@@ -223,22 +223,20 @@ export default function FighterDashboard({
         <button
           type="button"
           onClick={() => setActiveTab('rotation')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
-            activeTab === 'rotation'
-              ? 'bg-bf-cyan text-bf-dark font-black'
-              : 'text-slate-400 hover:text-white'
-          }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'rotation'
+            ? 'bg-bf-cyan text-bf-dark font-black'
+            : 'text-slate-400 hover:text-white'
+            }`}
         >
           {lang === 'en' ? '// ROTATIONS' : '// סבבים'}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('readiness')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
-            activeTab === 'readiness'
-              ? 'bg-bf-cyan text-bf-dark font-black'
-              : 'text-slate-400 hover:text-white'
-          }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'readiness'
+            ? 'bg-bf-cyan text-bf-dark font-black'
+            : 'text-slate-400 hover:text-white'
+            }`}
         >
           {lang === 'en' ? '// READINESS' : '// מוכנות'}
         </button>
@@ -312,18 +310,20 @@ export default function FighterDashboard({
 
           {/* Report Form */}
           <form onSubmit={handleSend} className="space-y-2">
-            <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn focus-within:border-bf-cyan/60 transition-colors relative">
+            <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider px-1">
+              {d.placeholder}
+            </div>
+            <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn focus-within:border-bf-cyan/60 transition-colors">
               <textarea
                 value={reportText}
                 onChange={(e) => setReportText(e.target.value)}
-                placeholder={d.placeholder}
-                className="w-full h-14 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-0.5 pb-4 resize-none uppercase text-[10px] font-mono outline-none"
+                className={`w-full h-16 bg-transparent text-bf-cyan placeholder-bf-cyan/20 border-0 focus:ring-0 p-1 resize-none text-[10px] font-mono outline-none text-start ${lang === 'en' ? 'uppercase' : ''}`}
               />
-              <div
-                className={`absolute bottom-1 right-2 text-[8px] font-mono select-none ${reportText.trim().length >= 10 ? 'text-bf-cyan' : 'text-slate-600'}`}
-              >
+            </div>
+            <div className="flex justify-end text-[8px] font-mono select-none px-1">
+              <span className={reportText.trim().length >= 10 ? 'text-bf-cyan' : 'text-slate-600'}>
                 {reportText.trim().length}/10 CHARS
-              </div>
+              </span>
             </div>
             <button
               type="submit"
