@@ -34,7 +34,7 @@ export default function FighterDashboard({
 
   const { activePanel, openPanel, closePanel } = useChecklistPanel();
 
-  const { currentRotation } = useRotations();
+  const { currentRotation, rotations } = useRotations();
 
   const userStatus = useMemo(() => {
     if (!user || !user.squad_id || !currentRotation) return 'none';
@@ -62,10 +62,63 @@ export default function FighterDashboard({
   }, [user, currentRotation]);
 
   const daysLeft = useMemo(() => {
+    if (!user || !user.squad_id || !rotations || rotations.length === 0) return 0;
+
+    const userSquad = user.squad_id.toUpperCase();
     const today = new Date();
-    const day = today.getDay(); // 0 (Sun) to 6 (Sat)
-    return 6 - day;
-  }, []);
+    today.setHours(0, 0, 0, 0);
+
+    let consecutiveDays = 0;
+    const checkDate = new Date(today);
+
+    // Check up to 30 days ahead to find consecutive active days
+    for (let i = 0; i < 30; i++) {
+      const y = checkDate.getFullYear();
+      const m = String(checkDate.getMonth() + 1).padStart(2, '0');
+      const d = String(checkDate.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${d}`;
+
+      // Find rotation covering this date
+      const r = rotations.find((rot) => {
+        const start = rot.actual_start_date || rot.start_date;
+        const end = rot.actual_end_date || rot.end_date;
+        return dateStr >= start && dateStr <= end;
+      });
+
+      if (!r) {
+        break;
+      }
+
+      // Check substitutions
+      let isActive;
+      const daySubs = r.substitutions?.[dateStr] || {};
+
+      // 1. Is user substituted by someone else?
+      const isSubbedOut = !!daySubs[user.id];
+      // 2. Is user substituting someone else?
+      const isSubbedIn = Object.values(daySubs).some((sub) => sub.replaced_by === user.id);
+
+      if (isSubbedOut) {
+        isActive = false;
+      } else if (isSubbedIn) {
+        isActive = true;
+      } else {
+        // No substitution, check squad role
+        const alertSquad = r.squads?.alert?.toUpperCase();
+        isActive = userSquad === alertSquad;
+      }
+
+      if (isActive) {
+        consecutiveDays++;
+      } else {
+        break;
+      }
+
+      checkDate.setDate(checkDate.getDate() + 1);
+    }
+
+    return consecutiveDays > 0 ? consecutiveDays - 1 : 0;
+  }, [user, rotations]);
 
   const { weaponItems, medItems, gearItems, handleToggleItem } = useLoadoutItems(
     user,
