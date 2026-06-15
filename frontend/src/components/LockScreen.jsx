@@ -71,7 +71,7 @@ function LockScreen({ onUnlock }) {
     setKeyboardMode('numeric');
   };
 
-  const handleSubmit = (finalPin) => {
+  const handleSubmit = async (finalPin) => {
     // Basic structural check: 5 digits + 1 letter
     const digits = finalPin.slice(0, 5);
     const letter = finalPin.charAt(5);
@@ -80,13 +80,23 @@ function LockScreen({ onUnlock }) {
     const isLetterOk = /^[A-Z]$/i.test(letter);
 
     if (isDigitsOk && isLetterOk) {
-      onUnlock(finalPin.toUpperCase());
+      try {
+        await onUnlock(finalPin.toUpperCase());
+      } catch (err) {
+        setError(err.message.toUpperCase() || 'ACCESS DENIED');
+        setTimeout(() => {
+          setPin('');
+          setError(null);
+          setKeyboardMode('numeric');
+        }, 1500);
+      }
     } else {
       setError('INVALID PIN STRUCTURE (5 DIGITS + 1 LETTER)');
       // Reset pin after short delay to let user retry
       setTimeout(() => {
         setPin('');
         setError(null);
+        setKeyboardMode('numeric');
       }, 1500);
     }
   };

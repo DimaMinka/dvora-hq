@@ -256,31 +256,27 @@ function App() {
   };
 
   const handleUnlock = async (pin) => {
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin }),
-      });
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin }),
+    });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Login failed');
-      }
-
-      const data = await res.json();
-      localStorage.setItem('dvora_token', data.token);
-      localStorage.setItem(
-        'dvora_last_operator',
-        JSON.stringify({
-          tg_username: data.user.tg_username,
-          avatar_url: data.user.avatar_url,
-        })
-      );
-      applyUserData(data.user);
-    } catch (err) {
-      alert(`AUTH ERROR: ${err.message}`);
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || 'Login failed');
     }
+
+    const data = await res.json();
+    localStorage.setItem('dvora_token', data.token);
+    localStorage.setItem(
+      'dvora_last_operator',
+      JSON.stringify({
+        tg_username: data.user.tg_username,
+        avatar_url: data.user.avatar_url,
+      })
+    );
+    applyUserData(data.user);
   };
 
   const handleOnboardingComplete = async (loadout) => {

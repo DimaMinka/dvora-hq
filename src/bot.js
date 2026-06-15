@@ -334,6 +334,67 @@ async function handleRemoveUserCallback(ctx, state, data) {
   }
 }
 
+async function handleRemoveSquadCallback(ctx, state, data) {
+  if (state.step === 'select_squad') {
+    if (data.startsWith('squad:')) {
+      const squad = data.split(':')[1];
+      state.data.squad_id = squad;
+
+      const db = getDb();
+      const squadsToQuery = Array.from(new Set([squad, squad.toLowerCase(), squad.toUpperCase()]));
+      const snapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
+      const count = snapshot.size;
+
+      state.step = 'confirm';
+      setConversationState(ctx.chat.id, state);
+
+      return ctx.editMessageText(
+        `⚠️ *Delete squad \`${squad}\`?*\n\n` +
+          `• All \`${count}\` operator(s) belonging to this squad will be permanently deleted from the database.\n` +
+          `• The squad status document in \`commander_reports\` will be revoked.\n\n` +
+          `Confirm deletion:`,
+        {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: '✅ Yes, delete squad', callback_data: 'confirm_remove_squad' },
+                { text: '❌ Cancel', callback_data: 'cancel' },
+              ],
+            ],
+          },
+        }
+      );
+    }
+  } else if (state.step === 'confirm') {
+    if (data === 'confirm_remove_squad') {
+      const squad = state.data.squad_id;
+      const db = getDb();
+
+      // 1. Delete all users belonging to this squad
+      const squadsToQuery = Array.from(new Set([squad, squad.toLowerCase(), squad.toUpperCase()]));
+      const snapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
+      
+      const batch = db.batch();
+      snapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+
+      // 2. Delete commander reports document for this squad
+      await db.collection('commander_reports').doc(squad).delete();
+
+      await ctx.editMessageText(
+        `✅ *SQUAD DELETED*: Squad \`${squad}\` has been permanently removed.\n` +
+          `All \`${snapshot.size}\` associated operator(s) have been evicted.`,
+        { parse_mode: 'Markdown' }
+      );
+      setConversationState(ctx.chat.id, null);
+    }
+  }
+}
+
+
 async function handleListUsersCallback(ctx, state, data) {
   if (state.step === 'squad') {
     if (data.startsWith('squad:')) {
@@ -881,6 +942,7 @@ if (bot) {
           { command: 'add_fighter', description: '➕ Add a fighter to squad' },
           { command: 'add_commander', description: '➕ Add a commander to squad' },
           { command: 'remove_user', description: '➖ Remove a user' },
+          { command: 'remove_squad', description: '➖ Remove a squad and all its fighters' },
           { command: 'list_users', description: '📋 List authorized operators' },
           { command: 'add_rotation', description: '📅 Schedule a weekly rotation' },
           { command: 'remove_rotation', description: '📅 Remove a scheduled rotation' },
@@ -901,6 +963,7 @@ if (bot) {
       `• \`/add_fighter\` — Add fighter (wizard dialog)\n` +
       `• \`/add_commander\` — Add commander (wizard dialog)\n` +
       `• \`/remove_user\` — Remove operator from the database\n` +
+      `• \`/remove_squad\` — Delete a squad and all associated fighters\n` +
       `• \`/list_users\` — Show list of registered operators\n` +
       `• \`/add_rotation\` — Schedule a weekly rotation\n` +
       `• \`/remove_rotation\` — Remove a scheduled rotation\n` +
@@ -1022,6 +1085,46 @@ if (bot) {
       });
     } catch (err) {
       console.error('[Bot] Remove user initialization error:', err.message);
+      return ctx.reply(`❌ *DATABASE FAILURE*: \`${err.message}\``, { parse_mode: 'Markdown' });
+    }
+  });
+
+  // Command: Remove Squad
+  bot.command('remove_squad', async (ctx) => {
+    if (!isAdmin(ctx)) {
+      return ctx.reply('❌ *ACCESS DENIED*: Unauthorized operator signature.', {
+        parse_mode: 'Markdown',
+      });
+    }
+    try {
+      const db = getDb();
+      const squads = await getSquads(db);
+      if (squads.length === 0) {
+        return ctx.reply('⚠️ No squads found in the database.');
+      }
+
+      const keyboardRows = [];
+      const buttons = squads.map((squad) => ({
+        text: squad,
+        callback_data: `squad:${squad}`,
+      }));
+
+      for (let i = 0; i < buttons.length; i += 2) {
+        keyboardRows.push(buttons.slice(i, i + 2));
+      }
+      keyboardRows.push([{ text: '❌ Cancel', callback_data: 'cancel' }]);
+
+      setConversationState(ctx.chat.id, {
+        flow: 'remove_squad',
+        step: 'select_squad',
+        data: {},
+      });
+
+      return ctx.reply('Select the squad to delete (this will evict all associated operators):', {
+        reply_markup: { inline_keyboard: keyboardRows },
+      });
+    } catch (err) {
+      console.error('[Bot] Remove squad initialization error:', err.message);
       return ctx.reply(`❌ *DATABASE FAILURE*: \`${err.message}\``, { parse_mode: 'Markdown' });
     }
   });
@@ -1429,6 +1532,8 @@ if (bot) {
         await handleAddRotationCallback(ctx, state, data);
       } else if (state.flow === 'remove_rotation') {
         await handleRemoveRotationCallback(ctx, state, data);
+      } else if (state.flow === 'remove_squad') {
+        await handleRemoveSquadCallback(ctx, state, data);
       } else if (state.flow === 'set_meeting') {
         await handleSetMeetingCallback(ctx, state, data);
       }
