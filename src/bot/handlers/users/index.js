@@ -1,4 +1,9 @@
-import { commandAddFighter, commandAddCommander, handleAddUserCallback, handleAddUserText } from './add.js';
+import {
+  commandAddFighter,
+  commandAddCommander,
+  handleAddUserCallback,
+  handleAddUserText,
+} from './add.js';
 import { commandRemoveUser, handleRemoveUserCallback } from './remove.js';
 import { commandRemoveSquad, handleRemoveSquadCallback } from './removeSquad.js';
 import { commandListUsers, handleListUsersCallback } from './list.js';

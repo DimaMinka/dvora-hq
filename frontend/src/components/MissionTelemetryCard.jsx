@@ -14,10 +14,10 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
   const colors = useMemo(() => {
     if (isLightMode) {
       return {
-        cyan: '#705335',    // Camo dark brown
-        orange: '#b24900',  // Rust orange
-        green: '#3b6e35',   // Camo green
-        red: '#9c2424',     // Dark red
+        cyan: '#705335', // Camo dark brown
+        orange: '#b24900', // Rust orange
+        green: '#3b6e35', // Camo green
+        red: '#9c2424', // Dark red
         textMuted: '#543c26', // Darker brown for high contrast
         border: 'rgba(112, 83, 53, 0.45)', // Higher visibility border
         badgeBg: '#705335',
@@ -25,10 +25,10 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
       };
     } else {
       return {
-        cyan: '#00f0ff',    // Neon cyan
-        orange: '#ff6c00',  // Neon orange
-        green: '#30d158',   // Neon green
-        red: '#ff3b30',     // Neon red
+        cyan: '#00f0ff', // Neon cyan
+        orange: '#ff6c00', // Neon orange
+        green: '#30d158', // Neon green
+        red: '#ff3b30', // Neon red
         textMuted: '#627285',
         border: 'rgba(0, 240, 255, 0.12)',
         badgeBg: '#ffffff',
@@ -39,9 +39,9 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
 
   // Coordinate mapping for up to 3 waypoints on the 400x320 SVG viewport
   const waypointCoords = [
-    { x: 330, y: 50 },  // Start
+    { x: 330, y: 50 }, // Start
     { x: 125, y: 220 }, // Mid
-    { x: 45, y: 280 },  // End
+    { x: 45, y: 280 }, // End
   ];
 
   return (
@@ -62,13 +62,27 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
       <div className="flex flex-col gap-5">
         {/* SVG Route Map */}
         <div className="flex flex-col gap-3">
-          <div
-            className="w-full h-[260px] relative border border-black/10 dark:border-white/5 bg-black/5 dark:bg-black/20 rounded overflow-hidden"
-          >
+          <div className="w-full h-[260px] relative border border-black/10 dark:border-white/5 bg-black/5 dark:bg-black/20 rounded overflow-hidden">
             <svg className="w-full h-full" viewBox="0 0 400 320">
               {/* Semi-transparent Grid Lines */}
-              <line x1="200" y1="0" x2="200" y2="320" stroke={colors.cyan} strokeWidth="1" strokeOpacity={isLightMode ? 0.18 : 0.04} />
-              <line x1="0" y1="160" x2="400" y2="160" stroke={colors.cyan} strokeWidth="1" strokeOpacity={isLightMode ? 0.18 : 0.04} />
+              <line
+                x1="200"
+                y1="0"
+                x2="200"
+                y2="320"
+                stroke={colors.cyan}
+                strokeWidth="1"
+                strokeOpacity={isLightMode ? 0.18 : 0.04}
+              />
+              <line
+                x1="0"
+                y1="160"
+                x2="400"
+                y2="160"
+                stroke={colors.cyan}
+                strokeWidth="1"
+                strokeOpacity={isLightMode ? 0.18 : 0.04}
+              />
 
               {route_waypoints.length > 0 && (
                 <>
@@ -164,7 +178,6 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
               )}
             </svg>
           </div>
-
         </div>
       </div>
 
@@ -173,7 +186,10 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
         <div className="grid grid-cols-2 gap-4 border-t border-black/10 dark:border-white/10 pt-4 items-center">
           {/* Left Column: Vertical Waypoints */}
           <div className="flex flex-col gap-3">
-            <span className="text-[10px] uppercase tracking-[0.1em]" style={{ color: colors.textMuted }}>
+            <span
+              className="text-[10px] uppercase tracking-[0.1em]"
+              style={{ color: colors.textMuted }}
+            >
               Waypoints
             </span>
             <div className="flex flex-col gap-2.5">
@@ -217,10 +233,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
               >
                 {distance_km.toFixed(2)}
               </span>
-              <span
-                className="text-sm font-bold ml-1"
-                style={{ color: colors.cyan }}
-              >
+              <span className="text-sm font-bold ml-1" style={{ color: colors.cyan }}>
                 km
               </span>
             </div>
@@ -230,89 +243,88 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
 
       {/* Sub-Metrics Section */}
       <div className="flex flex-col gap-5 border-t border-black/10 dark:border-white/10 pt-4">
+        {/* 2-Column Sub-Metrics Grid */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          {/* Total Time */}
+          <div className="flex flex-col gap-0.5">
+            <span
+              className="text-[9px] uppercase tracking-wider"
+              style={{ color: colors.textMuted }}
+            >
+              Total Time
+            </span>
+            <span
+              className="text-xl font-bold"
+              style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
+            >
+              {duration_formatted}
+            </span>
+          </div>
 
-          {/* 2-Column Sub-Metrics Grid */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-            {/* Total Time */}
-            <div className="flex flex-col gap-0.5">
-              <span
-                className="text-[9px] uppercase tracking-wider"
-                style={{ color: colors.textMuted }}
-              >
-                Total Time
-              </span>
+          {/* Avg Speed */}
+          <div className="flex flex-col gap-0.5">
+            <span
+              className="text-[9px] uppercase tracking-wider"
+              style={{ color: colors.textMuted }}
+            >
+              Avg Speed
+            </span>
+            <div className="flex items-baseline">
               <span
                 className="text-xl font-bold"
                 style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
               >
-                {duration_formatted}
+                {avg_speed_kmh.toFixed(1)}
+              </span>
+              <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
+                km/h
               </span>
             </div>
+          </div>
 
-            {/* Avg Speed */}
-            <div className="flex flex-col gap-0.5">
+          {/* Total Ascent */}
+          <div className="flex flex-col gap-0.5">
+            <span
+              className="text-[9px] uppercase tracking-wider"
+              style={{ color: colors.textMuted }}
+            >
+              Total Ascent
+            </span>
+            <div className="flex items-baseline">
               <span
-                className="text-[9px] uppercase tracking-wider"
-                style={{ color: colors.textMuted }}
+                className="text-xl font-bold"
+                style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
               >
-                Avg Speed
+                {total_ascent_m}
               </span>
-              <div className="flex items-baseline">
-                <span
-                  className="text-xl font-bold"
-                  style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
-                >
-                  {avg_speed_kmh.toFixed(1)}
-                </span>
-                <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
-                  km/h
-                </span>
-              </div>
+              <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
+                m
+              </span>
             </div>
+          </div>
 
-            {/* Total Ascent */}
-            <div className="flex flex-col gap-0.5">
+          {/* Avg Heart Rate */}
+          <div className="flex flex-col gap-0.5">
+            <span
+              className="text-[9px] uppercase tracking-wider"
+              style={{ color: colors.textMuted }}
+            >
+              Avg Heart Rate
+            </span>
+            <div className="flex items-baseline">
               <span
-                className="text-[9px] uppercase tracking-wider"
-                style={{ color: colors.textMuted }}
+                className="text-xl font-bold"
+                style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
               >
-                Total Ascent
+                {avg_hr_bpm}
               </span>
-              <div className="flex items-baseline">
-                <span
-                  className="text-xl font-bold"
-                  style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
-                >
-                  {total_ascent_m}
-                </span>
-                <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
-                  m
-                </span>
-              </div>
-            </div>
-
-            {/* Avg Heart Rate */}
-            <div className="flex flex-col gap-0.5">
-              <span
-                className="text-[9px] uppercase tracking-wider"
-                style={{ color: colors.textMuted }}
-              >
-                Avg Heart Rate
+              <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
+                bpm
               </span>
-              <div className="flex items-baseline">
-                <span
-                  className="text-xl font-bold"
-                  style={{ color: isLightMode ? '#271a10' : '#ffffff' }}
-                >
-                  {avg_hr_bpm}
-                </span>
-                <span className="text-[10px] ml-1" style={{ color: colors.textMuted }}>
-                  bpm
-                </span>
-              </div>
             </div>
           </div>
         </div>
+      </div>
 
       <style>{`
         @keyframes drawRoute {

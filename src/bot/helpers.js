@@ -16,7 +16,7 @@ export async function isCommanderOrAdmin(ctx) {
   if (isAdmin(ctx)) return true;
   const username = ctx.from?.username;
   if (!username) return false;
-  
+
   try {
     const { getDb } = await import('../db.js');
     const db = getDb();
@@ -32,7 +32,6 @@ export async function isCommanderOrAdmin(ctx) {
     return false;
   }
 }
-
 
 // Helper to generate a secure PIN: 5 digits + 1 uppercase letter
 export function generateTacticalPin() {

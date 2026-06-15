@@ -24,7 +24,7 @@ async function checkAndIncrementAiLimit() {
 
   return db.runTransaction(async (transaction) => {
     const doc = await transaction.get(counterRef);
-    const count = doc.exists ? (doc.data().count || 0) : 0;
+    const count = doc.exists ? doc.data().count || 0 : 0;
     if (count >= 5) {
       throw new Error('⚠️ Daily AI request limit exceeded for the squad (maximum 5 per day).');
     }
@@ -113,7 +113,10 @@ export async function handleCompleteMissionCallback(ctx, state, data) {
         const row = [];
         row.push({ text: days[i].label, callback_data: `complete_day:${days[i].dateStr}` });
         if (days[i + 1]) {
-          row.push({ text: days[i + 1].label, callback_data: `complete_day:${days[i + 1].dateStr}` });
+          row.push({
+            text: days[i + 1].label,
+            callback_data: `complete_day:${days[i + 1].dateStr}`,
+          });
         }
         buttons.push(row);
       }
@@ -149,9 +152,12 @@ export async function handleCompleteMissionCallback(ctx, state, data) {
         const r = doc.data();
         if (r.completed_missions && r.completed_missions[dateStr]) {
           setConversationState(ctx.chat.id, null);
-          return ctx.editMessageText(`⚠️ *ERROR*: This slot is already filled with mission telemetry (${dateStr}). Overwrite locked.`, {
-            parse_mode: 'Markdown',
-          });
+          return ctx.editMessageText(
+            `⚠️ *ERROR*: This slot is already filled with mission telemetry (${dateStr}). Overwrite locked.`,
+            {
+              parse_mode: 'Markdown',
+            }
+          );
         }
       }
 
@@ -247,7 +253,7 @@ async function triggerAiAnalysis(ctx, state, files) {
     for (const f of files) {
       const fileInfo = await ctx.api.getFile(f.fileId);
       const url = `https://api.telegram.org/file/bot${config.botToken}/${fileInfo.file_path}`;
-      
+
       const fileRes = await fetch(url);
       if (!fileRes.ok) {
         throw new Error('Failed to download file from Telegram.');
@@ -264,7 +270,8 @@ async function triggerAiAnalysis(ctx, state, files) {
     }
 
     // Call Gemini with Response Schema
-    const prompt = 'Extract telemetry statistics from the provided workout screenshots. Do not generate text outside the schema format.';
+    const prompt =
+      'Extract telemetry statistics from the provided workout screenshots. Do not generate text outside the schema format.';
     modelContents.push(prompt);
 
     console.log(`[AI] Processing completed mission telemetry for slot: ${state.data.dateStr}...`);
@@ -286,7 +293,14 @@ async function triggerAiAnalysis(ctx, state, files) {
               items: { type: 'STRING' },
             },
           },
-          required: ['distance_km', 'duration_formatted', 'avg_speed_kmh', 'total_ascent_m', 'avg_hr_bpm', 'route_waypoints'],
+          required: [
+            'distance_km',
+            'duration_formatted',
+            'avg_speed_kmh',
+            'total_ascent_m',
+            'avg_hr_bpm',
+            'route_waypoints',
+          ],
         },
       },
     });
@@ -317,7 +331,7 @@ async function triggerAiAnalysis(ctx, state, files) {
     });
 
     const formattedDay = formatShortDate(parseISODate(state.data.dateStr));
-    const briefingText = 
+    const briefingText =
       `✅ *MISSION SUCCESSFULLY CONFIRMED*\n` +
       `Date: *${formattedDay}*\n\n` +
       `📊 *TELEMETRY SUMMARY (GEMINI AI)*:\n` +

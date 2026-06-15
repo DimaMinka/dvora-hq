@@ -28,4 +28,3 @@ export const MISSION_COMPLETE_STEPS = {
   MEDIA_INPUT: 'complete_media_input',
   PROCESSING: 'complete_processing',
 };
-

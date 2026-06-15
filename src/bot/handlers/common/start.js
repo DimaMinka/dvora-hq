@@ -9,7 +9,7 @@ export async function handleStartHelp(ctx) {
   if (!isCmdOrAdm) {
     return ctx.reply(
       `⚡ *DVORA HQ // SECURE PROTOCOL* ${verDisplay} ⚡\n\n` +
-      `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
+        `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
       { parse_mode: 'Markdown' }
     );
   }
@@ -20,7 +20,10 @@ export async function handleStartHelp(ctx) {
       { command: 'start', description: 'Show command help' },
       { command: 'help', description: 'Show command help' },
       { command: 'my_profile', description: 'Show profile and access PIN' },
-      { command: 'complete_mission', description: '🛰 Confirm mission completion with AI analysis' },
+      {
+        command: 'complete_mission',
+        description: '🛰 Confirm mission completion with AI analysis',
+      },
     ];
 
     if (isAdm) {

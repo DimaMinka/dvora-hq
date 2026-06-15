@@ -54,7 +54,7 @@ router.get('/', authenticateToken, async (req, res) => {
     snapshot.forEach((doc) => {
       rotations.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -91,7 +91,7 @@ router.get('/current', authenticateToken, async (req, res) => {
       if (todayStr >= start && todayStr <= end) {
         currentRotation = {
           id: doc.id,
-          ...r
+          ...r,
         };
       }
     });
@@ -103,7 +103,7 @@ router.get('/current', authenticateToken, async (req, res) => {
       if (doc.exists) {
         currentRotation = {
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         };
       }
     }
@@ -122,7 +122,8 @@ router.post('/:rotationId/substitute', authenticateToken, async (req, res) => {
   }
 
   const { rotationId } = req.params;
-  const { dateStr, originalOperatorId, substituteOperatorId, originalName, originalSquad } = req.body;
+  const { dateStr, originalOperatorId, substituteOperatorId, originalName, originalSquad } =
+    req.body;
 
   if (!dateStr || !originalOperatorId) {
     return res.status(400).json({ error: 'dateStr and originalOperatorId are required' });
