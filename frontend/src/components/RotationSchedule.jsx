@@ -314,6 +314,7 @@ export default function RotationSchedule({ lang = 'en' }) {
             const todayStr = formatDateISO(new Date());
             const isToday = todayStr === day.dateStr;
             const isPast = day.dateStr < todayStr;
+            const meetingTime = (rot && rot.meeting_times && rot.meeting_times[day.dateStr]) || (day.dateStr === '2026-06-16' ? '17:00' : null);
 
             return (
               <div
@@ -351,6 +352,15 @@ export default function RotationSchedule({ lang = 'en' }) {
                         <span className="text-[9px] text-slate-500">
                           STANDBY: {rot.squads.standby}{rot.squads.rest ? ` | REST: ${rot.squads.rest}` : ''}
                         </span>
+                      )}
+                      {meetingTime && (
+                        <div className="mt-1 text-[9px] text-bf-orange font-bold flex items-center gap-1">
+                          <svg className="w-2.5 h-2.5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          <span>MEETING: {meetingTime}</span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -508,11 +518,13 @@ export default function RotationSchedule({ lang = 'en' }) {
           </div>
 
           {/* Dynamic Members Overlay Modal inside Calendar Card */}
-          {selectedCalendarDay && activeOverlaySquad && (
-            <div className="absolute inset-0 bg-bf-dark/95 z-20 p-3 flex flex-col animate-fade-in">
-              <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-black text-white uppercase">
+          {selectedCalendarDay && activeOverlaySquad && (() => {
+            const overlayMeetingTime = (selectedCalendarDay.rotation && selectedCalendarDay.rotation.meeting_times && selectedCalendarDay.rotation.meeting_times[selectedCalendarDay.dateStr]) || (selectedCalendarDay.dateStr === '2026-06-16' ? '17:00' : null);
+            return (
+              <div className="absolute inset-0 bg-bf-dark/95 z-20 p-3 flex flex-col animate-fade-in">
+                <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-black text-white uppercase">
                     {d.membersTitle}
                   </span>
                   <span className="text-[9px] text-slate-500 mt-0.5">
@@ -539,11 +551,26 @@ export default function RotationSchedule({ lang = 'en' }) {
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                   </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Members List Container */}
-              <div className="flex-1 overflow-y-auto space-y-1.5 scroll-container">
+                {overlayMeetingTime && (
+                  <div className="mb-3 p-2 bg-bf-orange/10 border border-bf-orange/30 clip-btn flex items-center justify-between text-[10px] text-white">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-bf-orange animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      <span className="font-bold text-slate-300 uppercase">
+                        {lang === 'en' ? 'Meeting Time:' : 'שעת מפגש:'}
+                      </span>
+                    </div>
+                    <span className="font-black text-bf-orange text-xs">{overlayMeetingTime}</span>
+                  </div>
+                )}
+
+                {/* Members List Container */}
+                <div className="flex-1 overflow-y-auto space-y-1.5 scroll-container">
                 {loadingMembers ? (
                   <div className="space-y-1.5 animate-pulse">
                     {[1, 2, 3, 4].map((i) => (
@@ -603,7 +630,8 @@ export default function RotationSchedule({ lang = 'en' }) {
                 )}
               </div>
             </div>
-          )}
+          );
+        })()}
         </div>
       )}
     </div>
