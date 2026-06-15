@@ -1,10 +1,12 @@
+import { useTranslation } from '../../context/LanguageContext.jsx';
+
 export default function ChecklistPanel({
   title,
-  lang = 'en',
   items = [],
   statusMap = {},
   onToggleItem,
 }) {
+  const { t } = useTranslation();
   if (items.length === 0) return null;
 
   return (
@@ -12,7 +14,7 @@ export default function ChecklistPanel({
       <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-1 flex justify-between">
         <span>{title}</span>
         <span className="text-bf-cyan">
-          {lang === 'en' ? 'TAP STATUS TO TOGGLE' : 'הקש לשינוי סטטוס'}
+          {t('fighter.checklistTap')}
         </span>
       </div>
       <div className="space-y-1.5 font-mono">

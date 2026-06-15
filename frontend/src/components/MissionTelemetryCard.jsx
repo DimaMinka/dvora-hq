@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
+import { useTranslation } from '../context/LanguageContext.jsx';
 
-export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'en' }) {
+export default function MissionTelemetryCard({ telemetry, isLightMode }) {
   const {
     distance_km = 0,
     duration_formatted = '00:00:00',
@@ -10,35 +11,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
     route_waypoints = [],
   } = telemetry;
 
-  const t = useMemo(() => {
-    const translations = {
-      en: {
-        waypoints: 'Waypoints',
-        distance: 'Distance',
-        distanceUnit: 'km',
-        totalTime: 'Total Time',
-        avgSpeed: 'Avg Speed',
-        speedUnit: 'km/h',
-        totalAscent: 'Total Ascent',
-        ascentUnit: 'm',
-        avgHeartRate: 'Avg Heart Rate',
-        hrUnit: 'bpm',
-      },
-      he: {
-        waypoints: 'נקודות ציון',
-        distance: 'מרחק',
-        distanceUnit: 'ק"מ',
-        totalTime: 'זמן כולל',
-        avgSpeed: 'מהירות ממוצעת',
-        speedUnit: 'קמ"ש',
-        totalAscent: 'טיפוס מצטבר',
-        ascentUnit: "מ'",
-        avgHeartRate: 'דופק ממוצע',
-        hrUnit: 'bpm',
-      },
-    };
-    return translations[lang] || translations.en;
-  }, [lang]);
+  const { t } = useTranslation();
 
   // Custom colors depending on light/dark mode for the SVG map and metrics
   const colors = useMemo(() => {
@@ -220,7 +193,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
               className="text-[10px] uppercase tracking-[0.1em]"
               style={{ color: colors.textMuted }}
             >
-              {t.waypoints}
+              {t('telemetry.waypoints')}
             </span>
             <div className="flex flex-col gap-2.5">
               {route_waypoints.slice(0, 3).map((wp, idx) => (
@@ -251,7 +224,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
               className="text-[10px] uppercase tracking-[0.15em] mb-1"
               style={{ color: colors.textMuted }}
             >
-              {t.distance}
+              {t('telemetry.distance')}
             </span>
             <span
               className="text-4xl font-extrabold tracking-tight"
@@ -262,7 +235,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
             >
               {distance_km.toFixed(2)}
               <span className="text-sm font-bold ms-1" style={{ color: colors.cyan }}>
-                {t.distanceUnit}
+                {t('telemetry.distanceUnit')}
               </span>
             </span>
           </div>
@@ -279,7 +252,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              {t.totalTime}
+              {t('telemetry.totalTime')}
             </span>
             <span
               className="text-xl font-bold"
@@ -295,7 +268,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              {t.avgSpeed}
+              {t('telemetry.avgSpeed')}
             </span>
             <span
               className="text-xl font-bold"
@@ -303,7 +276,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
             >
               {avg_speed_kmh.toFixed(1)}
               <span className="text-[10px] ms-1 font-normal" style={{ color: colors.textMuted }}>
-                {t.speedUnit}
+                {t('telemetry.speedUnit')}
               </span>
             </span>
           </div>
@@ -314,7 +287,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              {t.totalAscent}
+              {t('telemetry.totalAscent')}
             </span>
             <span
               className="text-xl font-bold"
@@ -322,7 +295,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
             >
               {total_ascent_m}
               <span className="text-[10px] ms-1 font-normal" style={{ color: colors.textMuted }}>
-                {t.ascentUnit}
+                {t('telemetry.ascentUnit')}
               </span>
             </span>
           </div>
@@ -333,7 +306,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
               className="text-[9px] uppercase tracking-wider"
               style={{ color: colors.textMuted }}
             >
-              {t.avgHeartRate}
+              {t('telemetry.avgHeartRate')}
             </span>
             <span
               className="text-xl font-bold"
@@ -341,7 +314,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode, lang = 'e
             >
               {avg_hr_bpm}
               <span className="text-[10px] ms-1 font-normal" style={{ color: colors.textMuted }}>
-                {t.hrUnit}
+                {t('telemetry.hrUnit')}
               </span>
             </span>
           </div>

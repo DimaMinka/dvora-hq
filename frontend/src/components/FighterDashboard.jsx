@@ -8,9 +8,9 @@ import ChecklistPanel from './ui/ChecklistPanel.jsx';
 import RotationSchedule from './RotationSchedule.jsx';
 import { formatCommaLabel } from '../utils/loadout.js';
 import { specializationsList } from '@shared/loadout-data.js';
+import { useTranslation } from '../context/LanguageContext.jsx';
 
 export default function FighterDashboard({
-  lang = 'en',
   checklist = { wpn: true, trsp: true, com: true, med: true },
   onToggleChecklist,
   alarmActive = false,
@@ -20,6 +20,7 @@ export default function FighterDashboard({
   medicalStatus = {},
   gearStatus = {},
 }) {
+  const { t, lang } = useTranslation();
   const [reportText, setReportText] = useState('');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -138,9 +139,7 @@ export default function FighterDashboard({
     e.preventDefault();
     const trimmed = reportText.trim();
     if (trimmed.length < 10) {
-      alert(
-        lang === 'en' ? 'REPORT MUST BE AT LEAST 10 CHARACTERS' : 'הדיווח חייב להכיל לפחות 10 תווים'
-      );
+      alert(t('fighter.reportMinLength'));
       return;
     }
     if (isSending) return;
@@ -158,63 +157,25 @@ export default function FighterDashboard({
     }
   };
 
-  const textDict = {
-    en: {
-      title: '// OPERATOR_HUD // ACTIVE',
-      opName: 'OPERATOR: REAPER',
-      opSquad: 'SQUAD: ALPHA (01)',
-      alarmStandby: 'STATUS // NETWORK_STANDBY',
-      alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
-      btnSend: 'INJECT BOTTLENECK DATA',
-      placeholder: 'TYPE TACTICAL BOTTLENECK OR INCIDENT...',
-      weapons: '01_WEAPONS',
-      medkit: '02_MED_KIT',
-      gear: '03_GEAR',
-      transport: '04_TRANSPORT',
-      ready: 'READY',
-      issue: 'ISSUE',
-      pending: 'PENDING',
-    },
-    he: {
-      title: '// מסוף_לוחם // פעיל',
-      opName: 'מפעיל: REAPER',
-      opSquad: 'צוות: אלפא (01)',
-      alarmStandby: 'סטאטוס  // רשת_בהמתנה ',
-      alarmActive: '!! התרעת פריסה קרבית !!',
-      btnSend: 'דווח תקלה',
-      placeholder: 'הקלד דיווח על בעיה טקטית או אירוע...',
-      weapons: '01_נשק',
-      medkit: '02_רפואה',
-      gear: '03_ציוד',
-      transport: '04_רכב',
-      ready: 'תקין',
-      issue: 'תקלה',
-      pending: 'טרם נקבע',
-    },
-  };
-
-  const d = textDict[lang] || textDict.en;
-
   const specializationLabel = user?.specialization
     ? formatCommaLabel(user.specialization, specializationsList, lang)
     : '';
 
   return (
     <div className="space-y-4 w-full animate-fade-in">
-      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
+      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{t('fighter.title')}</div>
 
       {/* Operator Info */}
       <OperatorCard
         user={user}
         onAvatarClick={() => setLightboxOpen(true)}
-        placeholderName={d.opName}
-        placeholderSquad={d.opSquad}
+        placeholderName={t('fighter.opName')}
+        placeholderSquad={t('fighter.opSquad')}
         specializationLabel={specializationLabel}
         currentRotation={currentRotation}
         userStatus={userStatus}
         daysLeft={daysLeft}
         showRotation={activeTab === 'rotation'}
-        lang={lang}
         alarmActive={alarmActive}
       />
 
@@ -228,7 +189,7 @@ export default function FighterDashboard({
             : 'text-slate-400 hover:text-white'
             }`}
         >
-          {lang === 'en' ? '// ROTATIONS' : '// סבבים'}
+          {t('fighter.tabs.rotations')}
         </button>
         <button
           type="button"
@@ -238,7 +199,7 @@ export default function FighterDashboard({
             : 'text-slate-400 hover:text-white'
             }`}
         >
-          {lang === 'en' ? '// READINESS' : '// מוכנות'}
+          {t('fighter.tabs.readiness')}
         </button>
       </div>
 
@@ -246,7 +207,7 @@ export default function FighterDashboard({
       {activeTab === 'rotation' && (
         <div className="space-y-4 animate-fade-in">
           {/* Rotation Schedule Widget */}
-          <RotationSchedule lang={lang} user={user} />
+          <RotationSchedule user={user} />
         </div>
       )}
 
@@ -263,15 +224,15 @@ export default function FighterDashboard({
               }
             }}
             items={[
-              { key: 'wpn', label: d.weapons },
-              { key: 'med', label: d.medkit },
-              { key: 'gear', label: d.gear },
-              { key: 'trsp', label: d.transport },
+              { key: 'wpn', label: t('fighter.weapons') },
+              { key: 'med', label: t('fighter.medkit') },
+              { key: 'gear', label: t('fighter.gear') },
+              { key: 'trsp', label: t('fighter.transport') },
             ]}
             labels={{
-              pending: d.pending,
-              ready: d.ready,
-              issue: d.issue,
+              pending: t('fighter.pending'),
+              ready: t('fighter.ready'),
+              issue: t('fighter.issue'),
             }}
           />
 
@@ -279,7 +240,6 @@ export default function FighterDashboard({
           {activePanel === 'wpn' && checklist.wpn !== 0 && user && (
             <ChecklistPanel
               title="// LOADOUT WEAPONRY MATRIX"
-              lang={lang}
               items={weaponItems}
               statusMap={weaponStatus}
               onToggleItem={(id) => handleToggleItem('wpn', id)}
@@ -290,7 +250,6 @@ export default function FighterDashboard({
           {activePanel === 'med' && checklist.med !== 0 && user && (
             <ChecklistPanel
               title="// MEDICAL EQUIPMENT MATRIX"
-              lang={lang}
               items={medItems}
               statusMap={medicalStatus}
               onToggleItem={(id) => handleToggleItem('med', id)}
@@ -301,7 +260,6 @@ export default function FighterDashboard({
           {activePanel === 'gear' && checklist.gear !== 0 && user && (
             <ChecklistPanel
               title="// GEAR LOADOUT MATRIX"
-              lang={lang}
               items={gearItems}
               statusMap={gearStatus}
               onToggleItem={(id) => handleToggleItem('gear', id)}
@@ -311,7 +269,7 @@ export default function FighterDashboard({
           {/* Report Form */}
           <form onSubmit={handleSend} className="space-y-2">
             <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider px-1">
-              {d.placeholder}
+              {t('fighter.placeholder')}
             </div>
             <div className="bg-bf-dark/90 border border-bf-border p-1.5 clip-btn focus-within:border-bf-cyan/60 transition-colors">
               <textarea
@@ -330,7 +288,7 @@ export default function FighterDashboard({
               disabled={reportText.trim().length === 0 || isSending}
               className="w-full py-2 bg-bf-cyan/10 border border-bf-cyan/40 hover:bg-bf-cyan/20 hover:border-bf-cyan text-bf-cyan font-bold text-xs uppercase clip-btn transition-all duration-200 cursor-pointer disabled:bg-bf-slate/40 disabled:border-bf-border disabled:text-slate-500 disabled:cursor-not-allowed"
             >
-              {isSending ? (lang === 'en' ? 'TRANSMITTING...' : 'שולח...') : d.btnSend}
+              {isSending ? t('fighter.transmitting') : t('fighter.btnSend')}
             </button>
           </form>
         </div>

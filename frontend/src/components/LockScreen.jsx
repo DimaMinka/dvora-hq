@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from '../context/LanguageContext.jsx';
 
-function LockScreen({ onUnlock, lang }) {
+function LockScreen({ onUnlock }) {
+  const { t } = useTranslation();
   const [pin, setPin] = useState('');
   const [keyboardMode, setKeyboardMode] = useState('numeric'); // 'numeric' | 'alpha'
   const [error, setError] = useState(null);
@@ -83,7 +85,7 @@ function LockScreen({ onUnlock, lang }) {
       try {
         await onUnlock(finalPin.toUpperCase());
       } catch (err) {
-        setError(err.message ? err.message.toUpperCase() : (lang === 'he' ? 'גישה נדחתה' : 'ACCESS DENIED'));
+        setError(err.message ? err.message.toUpperCase() : t('lock.accessDenied'));
         setTimeout(() => {
           setPin('');
           setError(null);
@@ -91,7 +93,7 @@ function LockScreen({ onUnlock, lang }) {
         }, 1500);
       }
     } else {
-      setError(lang === 'he' ? 'מבנה קוד PIN שגוי (5 ספרות + אות אחת)' : 'INVALID PIN STRUCTURE (5 DIGITS + 1 LETTER)');
+      setError(t('lock.invalidPin'));
       // Reset pin after short delay to let user retry
       setTimeout(() => {
         setPin('');
@@ -105,7 +107,7 @@ function LockScreen({ onUnlock, lang }) {
     <div className="flex flex-col items-center justify-center min-h-[500px] p-6 max-w-sm mx-auto glass-panel border border-bf-cyan/30 clip-hud">
       <div className="w-full text-center space-y-4">
         <div className="text-[10px] text-bf-cyan font-bold tracking-widest uppercase animate-pulse">
-          {lang === 'he' ? '// פתיחת_נהילה // מערכת_מאובטחת' : '// SECURITY_GATEWAY // SECURE_SHELL'}
+          {t('lock.secureShell')}
         </div>
         {(() => {
           const lastOperatorStr = localStorage.getItem('dvora_last_operator');
@@ -138,7 +140,7 @@ function LockScreen({ onUnlock, lang }) {
                 </div>
                 <div>
                   <div className="text-[8px] text-slate-500 font-mono font-bold tracking-widest uppercase">
-                    {lang === 'he' ? '// פרופיל נוכחי' : '// CURRENT_OPERATOR'}
+                    {t('lock.currentOperator')}
                   </div>
                   <div className="text-white font-black text-xs uppercase tracking-wider">
                     {lastOperator.tg_username
@@ -151,7 +153,7 @@ function LockScreen({ onUnlock, lang }) {
           }
           return (
             <h2 className="text-xl font-black text-white tracking-widest uppercase">
-              {lang === 'he' ? 'פתיחת נעילה - מערכת מאובטחת' : 'ENTER ACCESS CREDENTIALS'}
+              {t('lock.enterCredentials')}
             </h2>
           );
         })()}

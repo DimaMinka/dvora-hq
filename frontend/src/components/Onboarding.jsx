@@ -10,6 +10,8 @@ import {
   gendersList,
 } from '@shared/loadout-data.js';
 
+import { useTranslation } from '../context/LanguageContext.jsx';
+
 function SelectionSection({
   label,
   list,
@@ -17,10 +19,9 @@ function SelectionSection({
   onToggle,
   isExpanded,
   onToggleExpand,
-  lang,
-  d,
   isSingleSelect = false,
 }) {
+  const { t, lang } = useTranslation();
   const displayedItems = isExpanded
     ? list
     : list.filter(
@@ -63,14 +64,15 @@ function SelectionSection({
             isExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
           }`}
         >
-          {isExpanded ? d.less : d.more}
+          {isExpanded ? t('onboarding.less') : t('onboarding.more')}
         </button>
       )}
     </div>
   );
 }
 
-export default function Onboarding({ lang = 'en', onComplete }) {
+export default function Onboarding({ onComplete }) {
+  const { t, lang } = useTranslation();
   const [selectedSpecs, setSelectedSpecs] = useState([]);
   const [primaryWeapon, setPrimaryWeapon] = useState('m4');
   const [selectedSecondaries, setSelectedSecondaries] = useState([]);
@@ -98,47 +100,6 @@ export default function Onboarding({ lang = 'en', onComplete }) {
     }));
   };
 
-  const textDict = {
-    en: {
-      title: '// INITIALIZATION // FIRST_TIME_LOGIN',
-      subtitle: 'CONFIGURE TACTICAL PROFILE',
-      lblSpec: '01_CHOOSE_SPECIALIZATION (SELECT MULTIPLE)',
-      lblWpn: '02_SELECT_PRIMARY_WEAPONRY',
-      lblOptics: '03_SELECT_PRIMARY_OPTICS (SELECT MULTIPLE)',
-      lblSecWpn: '04_ASSIGN_SECONDARY_WEAPONRY (SELECT MULTIPLE)',
-      lblAccs: '05_TACTICAL_ACCESSORIES (SELECT MULTIPLE)',
-      lblMeds: '06_ASSIGN_MEDICAL_EQUIPMENT (SELECT MULTIPLE)',
-      lblGear: '07_ASSIGN_GEAR_LOADOUT (SELECT MULTIPLE)',
-      lblGender: '08_SELECT_GENDER',
-      btnSubmit: 'GENERATE PROFILE MATRIX',
-      btnGenerating: 'CONNECTING COGNITIVE SYNAPSE...',
-      warning: 'WARNING: Selected credentials will lock into operational profile database.',
-      validationErr: 'SELECT AT LEAST ONE SPECIALIZATION',
-      more: '// SHOW MORE...',
-      less: '// SHOW LESS',
-    },
-    he: {
-      title: '// אתחול // כניסה_ראשונה',
-      subtitle: 'הגדרת פרופיל טקטי',
-      lblSpec: '01_בחר_התמחות_מבצעית (בחירה מרובה)',
-      lblWpn: '02_בחר_נשק_ראשי',
-      lblOptics: '03_בחר_כוונת_לנשק (בחירה מרובה)',
-      lblSecWpn: '04_בחר_נשק_משני (בחירה מרובה)',
-      lblAccs: '05_אביזרים_טקטיים (בחירה מרובה)',
-      lblMeds: '06_בחר_ציוד_רפואי (בחירה מרובה)',
-      lblGear: '07_שייך_ערכת_ציוד (בחירה מרובה)',
-      lblGender: '08_בחר_מגדר',
-      btnSubmit: 'יצירת מטריצת פרופיל',
-      btnGenerating: 'מייצר אוווטאר ביומטרי...',
-      warning: 'אזהרה: הנתונים הנבחרים יינעלו בבסיס הנתונים המבצעי.',
-      validationErr: 'יש לבחור לפחות התמחות אחת',
-      more: '// להציג עוד...',
-      less: '// להציג פחות',
-    },
-  };
-
-  const d = textDict[lang] || textDict.en;
-
   const toggleMultiSelect = (setter, id) => {
     setter((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
@@ -146,7 +107,7 @@ export default function Onboarding({ lang = 'en', onComplete }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (selectedSpecs.length === 0) {
-      alert(d.validationErr);
+      alert(t('onboarding.validationErr'));
       return;
     }
     setLoading(true);
@@ -178,104 +139,88 @@ export default function Onboarding({ lang = 'en', onComplete }) {
       onSubmit={handleSubmit}
       className={`space-y-4 w-full animate-fade-in ${lang === 'he' ? 'text-right' : 'text-left'} max-w-sm mx-auto`}
     >
-      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
-      <h2 className="text-sm font-black text-white tracking-widest uppercase">{d.subtitle}</h2>
+      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{t('onboarding.title')}</div>
+      <h2 className="text-sm font-black text-white tracking-widest uppercase">{t('onboarding.subtitle')}</h2>
 
       {/* 01_Specialization Selection */}
       <SelectionSection
-        label={d.lblSpec}
+        label={t('onboarding.lblSpec')}
         list={specializationsList}
         selectedItems={selectedSpecs}
         onToggle={(id) => toggleMultiSelect(setSelectedSpecs, id)}
         isExpanded={expandedSections.spec}
         onToggleExpand={() => toggleExpand('spec')}
-        lang={lang}
-        d={d}
       />
 
       {/* 02_Primary Weapon Selection */}
       <SelectionSection
-        label={d.lblWpn}
+        label={t('onboarding.lblWpn')}
         list={primaryWeaponsList}
         selectedItems={primaryWeapon}
         onToggle={setPrimaryWeapon}
         isExpanded={expandedSections.wpn}
         onToggleExpand={() => toggleExpand('wpn')}
-        lang={lang}
-        d={d}
         isSingleSelect={true}
       />
 
       {/* 03_Primary Optics Selection */}
       <SelectionSection
-        label={d.lblOptics}
+        label={t('onboarding.lblOptics')}
         list={opticsList}
         selectedItems={selectedOptics}
         onToggle={(id) => toggleMultiSelect(setSelectedOptics, id)}
         isExpanded={expandedSections.opt}
         onToggleExpand={() => toggleExpand('opt')}
-        lang={lang}
-        d={d}
       />
 
       {/* 04_Secondary Weapon Selection */}
       <SelectionSection
-        label={d.lblSecWpn}
+        label={t('onboarding.lblSecWpn')}
         list={secondaryWeaponsList}
         selectedItems={selectedSecondaries}
         onToggle={(id) => toggleMultiSelect(setSelectedSecondaries, id)}
         isExpanded={expandedSections.sec}
         onToggleExpand={() => toggleExpand('sec')}
-        lang={lang}
-        d={d}
       />
 
       {/* 05_Tactical Accessories Selection */}
       <SelectionSection
-        label={d.lblAccs}
+        label={t('onboarding.lblAccs')}
         list={accessoriesList}
         selectedItems={selectedAccs}
         onToggle={(id) => toggleMultiSelect(setSelectedAccs, id)}
         isExpanded={expandedSections.acc}
         onToggleExpand={() => toggleExpand('acc')}
-        lang={lang}
-        d={d}
       />
 
       {/* 06_Medical Equipment Selection */}
       <SelectionSection
-        label={d.lblMeds}
+        label={t('onboarding.lblMeds')}
         list={medsList}
         selectedItems={selectedMeds}
         onToggle={(id) => toggleMultiSelect(setSelectedMeds, id)}
         isExpanded={expandedSections.med}
         onToggleExpand={() => toggleExpand('med')}
-        lang={lang}
-        d={d}
       />
 
       {/* 07_Gear Loadout Selection */}
       <SelectionSection
-        label={d.lblGear}
+        label={t('onboarding.lblGear')}
         list={gearsList}
         selectedItems={selectedGears}
         onToggle={(id) => toggleMultiSelect(setSelectedGears, id)}
         isExpanded={expandedSections.gear}
         onToggleExpand={() => toggleExpand('gear')}
-        lang={lang}
-        d={d}
       />
 
       {/* 08_Gender Selection */}
       <SelectionSection
-        label={d.lblGender}
+        label={t('onboarding.lblGender')}
         list={gendersList}
         selectedItems={gender}
         onToggle={setGender}
         isExpanded={true}
         onToggleExpand={() => {}}
-        lang={lang}
-        d={d}
         isSingleSelect={true}
       />
 
@@ -285,10 +230,10 @@ export default function Onboarding({ lang = 'en', onComplete }) {
           disabled={loading || selectedSpecs.length === 0}
           className="w-full py-2.5 bg-bf-cyan/15 border border-bf-cyan/40 hover:bg-bf-cyan/30 hover:border-bf-cyan text-bf-cyan font-black text-xs uppercase clip-btn transition-all duration-200 cursor-pointer disabled:bg-bf-slate/40 disabled:border-bf-border disabled:text-slate-500 disabled:cursor-not-allowed shadow-[0_0_12px_rgba(0,240,255,0.05)]"
         >
-          {loading ? d.btnGenerating : d.btnSubmit}
+          {loading ? t('onboarding.btnGenerating') : t('onboarding.btnSubmit')}
         </button>
         <div className="text-[8px] font-mono text-slate-500 text-center uppercase tracking-wider">
-          {d.warning}
+          {t('onboarding.warning')}
         </div>
       </div>
     </form>

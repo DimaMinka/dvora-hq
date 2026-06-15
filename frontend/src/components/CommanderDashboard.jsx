@@ -8,9 +8,9 @@ import ChecklistPanel from './ui/ChecklistPanel.jsx';
 import RotationSchedule from './RotationSchedule.jsx';
 import { formatCommaLabel, parseWeaponry, parseCommaList } from '../utils/loadout.js';
 import { specializationsList, gearsList, medsList } from '@shared/loadout-data.js';
+import { useTranslation } from '../context/LanguageContext.jsx';
 
 export default function CommanderDashboard({
-  lang = 'en',
   alarmActive = false,
   onToggleAlarm,
   squadMembers = [],
@@ -22,6 +22,7 @@ export default function CommanderDashboard({
   gearStatus = {},
   isLoading = false,
 }) {
+  const { t, lang } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
@@ -137,66 +138,6 @@ export default function CommanderDashboard({
     }
   );
 
-  const textDict = {
-    en: {
-      title: '// STRATEGIC_DASHBOARD // COMMAND_NODE',
-      squadTitle: 'SQUAD OVERVIEW',
-      alarmOn: 'SYSTEM STANDBY // ACTIVATE ALARM',
-      alarmOff: 'ALARM ACTIVE // DEACTIVATE ALARM',
-      logsTitle: 'INCIDENT LOGS',
-      btnLogs: 'OPEN LIVE LOG DRAWER',
-      closeLogs: 'CLOSE DRAWER',
-      member: 'MEMBER',
-      wpn: 'WPN',
-      med: 'MED',
-      gear: 'GER',
-      trsp: 'TRS',
-      opName: 'OPERATOR: REAPER',
-      opSquad: 'SQUAD: ALPHA (01)',
-      weapons: '01_WEAPONS',
-      medkit: '02_MED_KIT',
-      gearLabel: '03_GEAR',
-      transport: '04_TRANSPORT',
-      ready: 'READY',
-      issue: 'ISSUE',
-      pending: 'PENDING',
-      selectedIssuesTitle: 'TACTICAL DRILL-DOWN // REPORT',
-      allOperational: 'ALL ASSETS FOR THIS AXIS ARE GREEN / OPERATIONAL',
-      notReadyStatus: 'NO SUB-ITEMS MARKED FAULTY. OVERALL AXIS MARKED AS ISSUE.',
-      faultyItems: 'FAULTY / MISSING ASSETS:',
-      btnDismiss: 'DISMISS REPORT',
-    },
-    he: {
-      title: '// לוח_פיקוד_אסטרטגי // מפקד',
-      squadTitle: 'סקירת צוות',
-      alarmOn: 'מערכת בהמתנה   //   הפעל הקפצה',
-      alarmOff: 'הקפצה פעילה   //   ביטול הקפצה',
-      logsTitle: 'דיווחים',
-      btnLogs: 'פתח תיבת דיווחים',
-      closeLogs: 'סגור',
-      member: 'לוחם',
-      wpn: 'נשק',
-      med: 'רפוא',
-      gear: 'ציוד',
-      trsp: 'רכב',
-      opName: 'מפעיל: REAPER',
-      opSquad: 'צוות: אלפא (01)',
-      weapons: '01_נשק',
-      medkit: '02_רפואה',
-      gearLabel: '03_ציוד',
-      transport: '04_רכב',
-      ready: 'תקין',
-      issue: 'תקלה',
-      pending: 'טרם נקבע',
-      selectedIssuesTitle: 'פירוט תקלות טקטי  //  דיווח חוסרים',
-      allOperational: 'כלל הציוד והמשאבים של הלוחם תקינים לחלוטין',
-      notReadyStatus: 'לא סומנו תתי-פריטים כתקולים. סטטוס כללי מסומן כתקלה.',
-      faultyItems: 'ציוד תקול / חסר:',
-      btnDismiss: 'סגור פירוט',
-    },
-  };
-
-  const d = textDict[lang] || textDict.en;
 
   const handleShowIssues = (member, category) => {
     setSelectedProfile(null);
@@ -287,20 +228,19 @@ export default function CommanderDashboard({
 
   return (
     <div className="space-y-4 w-full animate-fade-in relative">
-      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
+      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{t('commander.title')}</div>
 
       {/* Operator Info */}
       <OperatorCard
         user={user}
         onAvatarClick={() => setLightboxOpen(true)}
-        placeholderName={d.opName}
-        placeholderSquad={d.opSquad}
+        placeholderName={t('commander.opName')}
+        placeholderSquad={t('commander.opSquad')}
         specializationLabel={specializationLabel}
         currentRotation={currentRotation}
         userStatus={userStatus}
         daysLeft={daysLeft}
         showRotation={activeTab === 'rotation'}
-        lang={lang}
         alarmActive={alarmActive}
       />
 
@@ -314,7 +254,7 @@ export default function CommanderDashboard({
             : 'text-slate-400 hover:text-white'
             }`}
         >
-          {lang === 'en' ? '// ROTATIONS' : '// סבבים'}
+          {t('commander.tabs.rotations')}
         </button>
         <button
           type="button"
@@ -324,7 +264,7 @@ export default function CommanderDashboard({
             : 'text-slate-400 hover:text-white'
             }`}
         >
-          {lang === 'en' ? '// SQUAD STATUS' : '// מצב הצוות'}
+          {t('commander.tabs.squadStatus')}
         </button>
       </div>
 
@@ -332,14 +272,14 @@ export default function CommanderDashboard({
       {activeTab === 'rotation' && (
         <div className="space-y-4 animate-fade-in">
           {/* Rotation Schedule Widget */}
-          <RotationSchedule lang={lang} user={user} />
+          <RotationSchedule user={user} />
         </div>
       )}
 
       {/* TAB 2: SQUAD STATUS */}
       {activeTab === 'readiness' && (
         <div className="space-y-4 animate-fade-in">
-          {/* Commander's Own Checklist Toggles */}
+          {/* Checklist Toggle Grid */}
           <ChecklistToggleGrid
             checklist={checklist}
             onToggle={(key) => {
@@ -349,23 +289,23 @@ export default function CommanderDashboard({
               }
             }}
             items={[
-              { key: 'wpn', label: d.weapons },
-              { key: 'med', label: d.medkit },
-              { key: 'gear', label: d.gearLabel },
-              { key: 'trsp', label: d.transport },
+              { key: 'wpn', label: t('commander.weapons') },
+              { key: 'med', label: t('commander.medkit') },
+              { key: 'gear', label: t('commander.gearLabel') },
+              { key: 'trsp', label: t('commander.transport') },
             ]}
             labels={{
-              pending: d.pending,
-              ready: d.ready,
-              issue: d.issue,
+              pending: t('commander.pending'),
+              ready: t('commander.ready'),
+              issue: t('commander.issue'),
             }}
           />
+
 
           {/* Collapsible Weapon Details Panel */}
           {activePanel === 'wpn' && checklist.wpn !== 0 && user && (
             <ChecklistPanel
               title="// LOADOUT WEAPONRY MATRIX"
-              lang={lang}
               items={weaponItems}
               statusMap={weaponStatus}
               onToggleItem={(id) => handleToggleItem('wpn', id)}
@@ -376,7 +316,6 @@ export default function CommanderDashboard({
           {activePanel === 'med' && checklist.med !== 0 && user && (
             <ChecklistPanel
               title="// MEDICAL EQUIPMENT MATRIX"
-              lang={lang}
               items={medItems}
               statusMap={medicalStatus}
               onToggleItem={(id) => handleToggleItem('med', id)}
@@ -387,7 +326,6 @@ export default function CommanderDashboard({
           {activePanel === 'gear' && checklist.gear !== 0 && user && (
             <ChecklistPanel
               title="// GEAR LOADOUT MATRIX"
-              lang={lang}
               items={gearItems}
               statusMap={gearStatus}
               onToggleItem={(id) => handleToggleItem('gear', id)}
@@ -396,16 +334,16 @@ export default function CommanderDashboard({
 
           <div className="border-t border-bf-border/60 my-2"></div>
 
-          <h3 className="text-sm font-black text-white uppercase tracking-wider">{d.squadTitle}</h3>
+          <h3 className="text-sm font-black text-white uppercase tracking-wider">{t('commander.squadTitle')}</h3>
 
           {/* Grid of squad members */}
           <div className="space-y-2">
             <div className="grid grid-cols-5 text-[8px] font-black text-slate-500 pb-1 border-b border-bf-border">
-              <div className="col-span-1">{d.member}</div>
-              <div className="text-center">{d.wpn}</div>
-              <div className="text-center">{d.med}</div>
-              <div className="text-center">{d.gear}</div>
-              <div className="text-center">{d.trsp}</div>
+              <div className="col-span-1">{t('commander.member')}</div>
+              <div className="text-center">{t('commander.wpn')}</div>
+              <div className="text-center">{t('commander.med')}</div>
+              <div className="text-center">{t('commander.gear')}</div>
+              <div className="text-center">{t('commander.trsp')}</div>
             </div>
 
             {isLoading && squadMembers.length === 0 ? (
@@ -521,14 +459,14 @@ export default function CommanderDashboard({
                       <div className="p-2 bg-bf-slate/90 border-x border-b border-bf-orange/40 text-[9px] font-mono space-y-1.5 animate-fade-in relative -mt-1 mx-0.5 z-10 clip-btn shadow-[0_4px_12px_rgba(255,84,0,0.1)]">
                         <div className="text-[7px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-1 flex justify-between">
                           <span>
-                            // {d.selectedIssuesTitle} // {selectedIssue.category}
+                            // {t('commander.selectedIssuesTitle')} // {selectedIssue.category}
                           </span>
                         </div>
 
                         <div className="space-y-1 font-mono text-[8px]">
                           {selectedIssue.status === 1 ? (
                             <div className="p-1 border border-bf-cyan/30 bg-bf-cyan/10 text-bf-cyan clip-btn text-center select-none uppercase tracking-wider font-bold">
-                              ✓ {d.allOperational}
+                              ✓ {t('commander.allOperational')}
                             </div>
                           ) : selectedIssue.items.length > 0 ? (
                             <div className="space-y-0.5">
@@ -546,7 +484,7 @@ export default function CommanderDashboard({
                             </div>
                           ) : (
                             <div className="p-1 border border-bf-orange/30 bg-bf-orange/10 text-bf-orange clip-btn text-center select-none uppercase tracking-wider font-bold animate-pulse">
-                              ⚠ {d.notReadyStatus}
+                              ⚠ {t('commander.notReadyStatus')}
                             </div>
                           )}
                         </div>
@@ -623,7 +561,7 @@ export default function CommanderDashboard({
               : 'bg-bf-slate/30 border border-bf-border text-slate-400 hover:bg-bf-cyan/10 hover:border-bf-cyan hover:text-bf-cyan'
               }`}
           >
-            {alarmActive ? d.alarmOff : d.alarmOn}
+            {alarmActive ? t('commander.alarmOff') : t('commander.alarmOn')}
           </button>
 
           {/* Logs Trigger */}
@@ -631,7 +569,7 @@ export default function CommanderDashboard({
             onClick={() => setDrawerOpen(true)}
             className="w-full py-2 bg-bf-cyan/10 border border-bf-cyan/30 text-bf-cyan text-[10px] font-bold uppercase clip-btn hover:border-bf-cyan/80 transition-all cursor-pointer"
           >
-            {d.btnLogs}
+            {t('commander.btnLogs')}
           </button>
 
           {/* Drawer Overlay & Panel */}
@@ -639,7 +577,7 @@ export default function CommanderDashboard({
             <div className="absolute inset-0 bg-bf-dark/95 z-50 p-4 border-2 border-bf-cyan/40 clip-hud flex flex-col justify-between animate-fade-in">
               <div className="space-y-3 flex-1 overflow-y-auto">
                 <div className="text-[10px] font-black text-bf-cyan tracking-widest border-b border-bf-border pb-1">
-                  // {d.logsTitle}
+                  // {t('commander.logsTitle')}
                 </div>
                 <div className="space-y-1.5 font-mono text-[9px]">
                   {logs.map((log) => (
@@ -655,7 +593,7 @@ export default function CommanderDashboard({
                 onClick={() => setDrawerOpen(false)}
                 className="w-full mt-3 py-1.5 bg-bf-cyan border border-bf-cyan text-bf-dark text-[9px] font-black uppercase clip-btn hover:bg-bf-cyan/80 transition-all cursor-pointer"
               >
-                {d.closeLogs}
+                {t('commander.closeLogs')}
               </button>
             </div>
           )}

@@ -1,0 +1,252 @@
+{
+  "app": {
+    "metaStatus": "// CODENAME: DVORA // NETWORK_STATUS: ONLINE",
+    "capsTitle": "System Capabilities [Deploy_Log]",
+    "nodesTitle": "Live Mini App HUD [Node_Matrix]",
+    "techTitle": "Core Infrastructure Blueprint [GCP_Serverless]",
+    "simTitle": "// LOCAL_HUD_SIMULATOR_ACTIONS",
+    "appDescTitle": "TACTICAL COMMAND OPERATIONS HUB",
+    "appDescText": "Dvora HQ is an ultra-secure, invite-only tactical synchronization dashboard integrated natively into the Telegram ecosystem. Built for modern rapid field operations, it guarantees instant status alignment, decentralized resource tracking, and real-time squad activation under a strictly audited perimeter.",
+    "footer": "CRITICAL DATA STREAM // SECURITY ENFORCED BY DVORA HQ PROTOCOLS // NO OUTBOUND EGRESS DETECTED",
+    "sysLoc": "SYS_LOC:",
+    "security": "SECURITY:",
+    "btnSoldier": "> OPERATOR_NODE (LIVE APP)",
+    "btnCommander": "> COMMAND_NODE (VIEW)",
+    "btnAdmin": "> INTEL_ADMIN (BOT CLI)",
+    "alarmStandby": "STATUS // NETWORK_STANDBY",
+    "alarmActive": "!! COMBAT DEPLOYMENT ALERT !!",
+    "reportTransmitted": "REPORT TRANSMITTED",
+    "lightLabel": "LIGHT",
+    "darkLabel": "DARK",
+    "lockLabel": "LOCK",
+    "cards": [
+      {
+        "tag": "[01_SECURE_ACCESS]",
+        "title": "2FA Tactical Lock Screen",
+        "desc": "Strict pairing of Telegram native hardware verification with an encrypted numeric-alpha PIN. Hard token wipe executed precisely at T-120 minutes."
+      },
+      {
+        "tag": "[02_AI_RENDER]",
+        "title": "Loadout Biometrics",
+        "desc": "Onboarding protocols evaluate operator loadout & specialization. Asynchronous GCP queues spin up neural assets to render a permanent custom profile matrix."
+      },
+      {
+        "tag": "[03_STATUS_HUB]",
+        "title": "Readiness Diagnostics",
+        "desc": "Quad-axis checks: Weapons, Transport, Comms, Meds. Direct raw-text pipeline allows battlefield operators to feed asset bottlenecks instantly up the chain."
+      },
+      {
+        "tag": "[04_COMBAT_ALARM]",
+        "title": "Squad Overrides",
+        "desc": "Commanders deploy precision alarms. Instantly overwrites the client state of target sub-squads with no resource overhead or background polling fatigue."
+      }
+    ],
+    "tech": [
+      {
+        "name": "[ENGINE] Cloud Run",
+        "desc": "Isolated environment container. Param `min-instances: 1` targeted to completely vaporize Telegram webhook latency."
+      },
+      {
+        "name": "[DATABASE] Cloud SQL",
+        "desc": "MySQL 8 instance running restricted connection parameters (`poolSize: 2`) preventing serverless memory collapse."
+      },
+      {
+        "name": "[CYPHER] Argon2id",
+        "desc": "OWASP cryptographic mandate for offline numeric validation. Zero plaintext vectors across the persistence layer."
+      },
+      {
+        "name": "[QUEUE] Cloud Tasks",
+        "desc": "Asynchronous token ingestion. Isolates expensive generative AI endpoints from core application runtime."
+      }
+    ],
+    "roles": {
+      "soldier": {
+        "feed": "[NODE_FEED: OPERATOR_HUD]",
+        "op": "OPERATOR: REAPER",
+        "squad": "SQUAD: ALPHA (01)",
+        "tasks": [
+          "Pass 2FA validation sequence (Native Phone Identity + Hash PIN)",
+          "Report real-time combat status toggles [Weapons, Transport, Comms, Meds]",
+          "Inject raw unencrypted asset bottleneck text directly up the chain"
+        ]
+      },
+      "commander": {
+        "feed": "[NODE_FEED: STRATEGIC_DASHBOARD]",
+        "title": "SQUAD ALPHA OVERVIEW",
+        "tasks": [
+          "Oversee full operational green/red matrix status of assigned unit",
+          "Query read-only append-only incident reports filed by field operators",
+          "Execute immediate targeted Squad-Level Alarm state-overrides"
+        ]
+      },
+      "admin": {
+        "feed": "[NODE_FEED: TELEGRAM_BOT_CLI]",
+        "title": "INTEL COMMAND LINE",
+        "tasks": [
+          "Inject pre-approved network whitelist entries (Phone Identity Vectors)",
+          "Deploy automatically generated unique PIN codes (5-digits + 1-alpha)",
+          "Zero layout footprint within client Mini App interface"
+        ]
+      }
+    }
+  },
+  "lock": {
+    "secureShell": "// SECURITY_GATEWAY // SECURE_SHELL",
+    "currentOperator": "// CURRENT_OPERATOR",
+    "enterCredentials": "ENTER ACCESS CREDENTIALS",
+    "accessDenied": "ACCESS DENIED",
+    "invalidPin": "INVALID PIN STRUCTURE (5 DIGITS + 1 LETTER)"
+  },
+  "fighter": {
+    "title": "// OPERATOR_HUD // ACTIVE",
+    "opName": "OPERATOR: REAPER",
+    "opSquad": "SQUAD: ALPHA (01)",
+    "btnSend": "INJECT BOTTLENECK DATA",
+    "placeholder": "TYPE TACTICAL BOTTLENECK OR INCIDENT...",
+    "weapons": "01_WEAPONS",
+    "medkit": "02_MED_KIT",
+    "gear": "03_GEAR",
+    "transport": "04_TRANSPORT",
+    "ready": "READY",
+    "issue": "ISSUE",
+    "pending": "PENDING",
+    "reportMinLength": "REPORT MUST BE AT LEAST 10 CHARACTERS",
+    "transmitting": "TRANSMITTING...",
+    "checklistTap": "TAP STATUS TO TOGGLE",
+    "tabs": {
+      "rotations": "// ROTATIONS",
+      "readiness": "// READINESS"
+    }
+  },
+  "commander": {
+    "title": "// STRATEGIC_DASHBOARD // COMMAND_NODE",
+    "squadTitle": "SQUAD OVERVIEW",
+    "alarmOn": "SYSTEM STANDBY // ACTIVATE ALARM",
+    "alarmOff": "ALARM ACTIVE // DEACTIVATE ALARM",
+    "logsTitle": "INCIDENT LOGS",
+    "btnLogs": "OPEN LIVE LOG DRAWER",
+    "closeLogs": "CLOSE DRAWER",
+    "member": "MEMBER",
+    "wpn": "WPN",
+    "med": "MED",
+    "gear": "GER",
+    "trsp": "TRS",
+    "opName": "OPERATOR: REAPER",
+    "opSquad": "SQUAD: ALPHA (01)",
+    "weapons": "01_WEAPONS",
+    "medkit": "02_MED_KIT",
+    "gearLabel": "03_GEAR",
+    "transport": "04_TRANSPORT",
+    "ready": "READY",
+    "issue": "ISSUE",
+    "pending": "PENDING",
+    "selectedIssuesTitle": "TACTICAL DRILL-DOWN // REPORT",
+    "allOperational": "ALL ASSETS FOR THIS AXIS ARE GREEN / OPERATIONAL",
+    "notReadyStatus": "NO SUB-ITEMS MARKED FAULTY. OVERALL AXIS MARKED AS ISSUE.",
+    "faultyItems": "FAULTY / MISSING ASSETS:",
+    "btnDismiss": "DISMISS REPORT",
+    "tabs": {
+      "rotations": "// ROTATIONS",
+      "squadStatus": "// SQUAD STATUS"
+    }
+  },
+  "onboarding": {
+    "title": "// INITIALIZATION // FIRST_TIME_LOGIN",
+    "subtitle": "CONFIGURE TACTICAL PROFILE",
+    "lblSpec": "01_CHOOSE_SPECIALIZATION (SELECT MULTIPLE)",
+    "lblWpn": "02_SELECT_PRIMARY_WEAPONRY",
+    "lblOptics": "03_SELECT_PRIMARY_OPTICS (SELECT MULTIPLE)",
+    "lblSecWpn": "04_ASSIGN_SECONDARY_WEAPONRY (SELECT MULTIPLE)",
+    "lblAccs": "05_TACTICAL_ACCESSORIES (SELECT MULTIPLE)",
+    "lblMeds": "06_ASSIGN_MEDICAL_EQUIPMENT (SELECT MULTIPLE)",
+    "lblGear": "07_ASSIGN_GEAR_LOADOUT (SELECT MULTIPLE)",
+    "lblGender": "08_SELECT_GENDER",
+    "btnSubmit": "GENERATE PROFILE MATRIX",
+    "btnGenerating": "CONNECTING COGNITIVE SYNAPSE...",
+    "warning": "WARNING: Selected credentials will lock into operational profile database.",
+    "validationErr": "SELECT AT LEAST ONE SPECIALIZATION",
+    "more": "// SHOW MORE...",
+    "less": "// SHOW LESS"
+  },
+  "rotation": {
+    "title": "// ROTATION SCHEDULE // SYNC",
+    "timeline": "Timeline",
+    "calendar": "Calendar",
+    "alert": "Alert",
+    "standby": "Standby",
+    "rest": "Rest",
+    "currentWeek": "Current Week",
+    "noRotation": "No rotation scheduled for this week",
+    "membersTitle": "Squad Members",
+    "loading": "Loading rotation parameters...",
+    "error": "Error syncing rotation data",
+    "emptyCalendar": "No rotations scheduled",
+    "operatorStatus": {
+      "alert": "ACTIVE DUTY ALERT",
+      "standby": "STANDBY RESERVE",
+      "rest": "TACTICAL REST",
+      "none": "ASSIGNMENT PENDING"
+    },
+    "daysLeft": {
+      "zero": "Last day of current rotation",
+      "one": "1 day remaining in rotation",
+      "other": "{count} days remaining in rotation",
+      "cardZero": "Last day",
+      "cardOne": "1 day left",
+      "cardOther": "{count} days left"
+    },
+    "daysOfWeek": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "subTitle": "Substitute Operator",
+    "subSelectPrompt": "Select Substitute Operator:",
+    "subReset": "Restore Original Operator",
+    "subCancel": "Cancel",
+    "activeSquadLabel": "ACTIVE SQUAD:",
+    "standbyLabel": "STANDBY:",
+    "restLabel": "REST:",
+    "missionTimeLabel": "MISSION TIME:",
+    "missionCompletedLabel": "MISSION COMPLETED",
+    "squadDeploymentLabel": "// CURRENT WEEK SQUAD DEPLOYMENT",
+    "operatorDirectoryLabel": "// {squad} OPERATOR DIRECTORY",
+    "selectSubFor": "Select Substitute for: @",
+    "currentSub": "Current Substitute: @",
+    "missionTelemetryBriefingLabel": "// MISSION TELEMETRY BRIEFING",
+    "calendarGridLabel": "// CALENDAR_GRID",
+    "confirmRestore": "Confirm restoring the original operator for {date}?",
+    "confirmSubstitute": "Confirm substituting @{original} with @{sub} on {date}?",
+    "confirmRestoreBtn": "Confirm Restore",
+    "confirmSubBtn": "Confirm Substitution",
+    "scanningOperators": "// SCANNING SQUAD DATABASES...",
+    "noOperatorsFound": "// NO OPERATORS FOUND"
+  },
+  "telemetry": {
+    "waypoints": "Waypoints",
+    "distance": "Distance",
+    "distanceUnit": "km",
+    "totalTime": "Total Time",
+    "avgSpeed": "Avg Speed",
+    "speedUnit": "km/h",
+    "totalAscent": "Total Ascent",
+    "ascentUnit": "m",
+    "avgHeartRate": "Avg Heart Rate",
+    "hrUnit": "bpm"
+  },
+  "operatorCard": {
+    "operatorLabel": "OPERATOR:",
+    "squadLabel": "SQUAD:",
+    "roleLabel": "ROLE:"
+  }
+}

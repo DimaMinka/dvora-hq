@@ -2,114 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRotations } from '../hooks/useRotations.js';
 import { getSquadColor } from '../constants/squadColors.js';
 import MissionTelemetryCard from './MissionTelemetryCard.jsx';
-
-const i18n = {
-  en: {
-    title: '// ROTATION SCHEDULE // SYNC',
-    timeline: 'Timeline',
-    calendar: 'Calendar',
-    alert: 'Alert',
-    standby: 'Standby',
-    rest: 'Rest',
-    currentWeek: 'Current Week',
-    noRotation: 'No rotation scheduled for this week',
-    membersTitle: 'Squad Members',
-    loading: 'Loading rotation parameters...',
-    error: 'Error syncing rotation data',
-    emptyCalendar: 'No rotations scheduled',
-    operatorStatus: {
-      alert: 'ACTIVE DUTY ALERT',
-      standby: 'STANDBY RESERVE',
-      rest: 'TACTICAL REST',
-      none: 'ASSIGNMENT PENDING',
-    },
-    daysLeft: (count) => {
-      if (count === 0) return 'Last day of current rotation';
-      return `${count} ${count === 1 ? 'day' : 'days'} remaining in rotation`;
-    },
-    daysOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    months: [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ],
-    subTitle: 'Substitute Operator',
-    subTitleHe: 'החלפת לוחם',
-    subSelectPrompt: 'Select Substitute Operator:',
-    subReset: 'Restore Original Operator',
-    subCancel: 'Cancel',
-    activeSquadLabel: 'ACTIVE SQUAD:',
-    standbyLabel: 'STANDBY:',
-    restLabel: 'REST:',
-    missionTimeLabel: 'MISSION TIME:',
-    missionCompletedLabel: 'MISSION COMPLETED',
-    squadDeploymentLabel: '// CURRENT WEEK SQUAD DEPLOYMENT',
-    operatorDirectoryLabel: (squad) => `// ${squad} OPERATOR DIRECTORY`,
-    missionTelemetryBriefingLabel: '// MISSION TELEMETRY BRIEFING',
-    calendarGridLabel: '// CALENDAR_GRID',
-  },
-  he: {
-    title: '// לוח_סבבים // סנכרון',
-    timeline: 'שבועי',
-    calendar: 'לוח שנה',
-    alert: 'כוננות',
-    standby: 'גיבוי',
-    rest: 'מנוחה',
-    currentWeek: 'השבוע הנוכחי',
-    noRotation: 'לא נקבע סבב לשבוע זה',
-    membersTitle: 'הצוות',
-    loading: 'טוען נתוני סבבים...',
-    error: 'שגיאה בסנכרון נתונים',
-    emptyCalendar: 'אין סבבים מתוזמנים',
-    operatorStatus: {
-      alert: 'כוננות מבצעית פעילה',
-      standby: 'כוננות גיבוי ועתודה',
-      rest: 'מנוחה טקטית מאושרת',
-      none: 'ממתין לעדכון סבב',
-    },
-    daysLeft: (count) => {
-      if (count === 0) return 'יום אחרון לסבב הנוכחי';
-      return `נותרו ${count} ימים לסיום הסבב`;
-    },
-    daysOfWeek: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'],
-    months: [
-      'ינואר',
-      'פברואר',
-      'מרץ',
-      'אפריל',
-      'מאי',
-      'יוני',
-      'יולי',
-      'אוגוסט',
-      'ספטמבר',
-      'אוקטובר',
-      'נובמבר',
-      'דצמבר',
-    ],
-    subTitle: 'החלפת לוחם',
-    subSelectPrompt: 'בחר לוחם מחליף:',
-    subReset: 'החזר לוחם מקורי',
-    subCancel: 'ביטול',
-    activeSquadLabel: 'בכוננות:',
-    standbyLabel: 'עתודה:',
-    restLabel: 'מנוחה:',
-    missionTimeLabel: 'שעת פעילות:',
-    missionCompletedLabel: 'משימה הושלמה',
-    squadDeploymentLabel: '// פריסת כוחות שבועית',
-    operatorDirectoryLabel: (squad) => `// מצבת לוחמים - ${squad}`,
-    missionTelemetryBriefingLabel: '// סיכום טלמטריית משימה',
-    calendarGridLabel: '// לוח_השנה',
-  },
-};
+import { useTranslation } from '../context/LanguageContext.jsx';
 
 // Date helper: Format to YYYY-MM-DD
 function formatDateISO(date) {
@@ -129,8 +22,8 @@ function getSunday(date) {
   return sunday;
 }
 
-export default function RotationSchedule({ lang = 'en', user }) {
-  const d = i18n[lang] || i18n.en;
+export default function RotationSchedule({ user }) {
+  const { t, lang } = useTranslation();
 
   const { rotations, loading, error, refresh } = useRotations();
   const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' or 'calendar'
@@ -422,7 +315,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
   if (loading) {
     return (
       <div className="p-4 glass-panel border border-bf-border/60 clip-hud font-mono text-[11px] text-center text-bf-cyan">
-        <div className="animate-pulse">{d.loading}</div>
+        <div className="animate-pulse">{t('rotation.loading')}</div>
       </div>
     );
   }
@@ -430,7 +323,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
   if (error) {
     return (
       <div className="p-4 glass-panel border border-bf-orange/40 clip-hud font-mono text-[11px] text-center text-bf-orange">
-        {d.error}
+        {t('rotation.error')}
       </div>
     );
   }
@@ -478,7 +371,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
               : 'text-slate-400 hover:text-white'
               }`}
           >
-            {d.timeline}
+            {t('rotation.timeline')}
           </button>
           <button
             onClick={() => setActiveTab('calendar')}
@@ -487,7 +380,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
               : 'text-slate-400 hover:text-white'
               }`}
           >
-            {d.calendar}
+            {t('rotation.calendar')}
           </button>
         </div>
 
@@ -530,7 +423,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
             const isExpanded = expandedDayStr === day.dateStr;
             const alertSquad = rot ? rot.squads.alert : null;
             const squadColor = alertSquad ? getSquadColor(alertSquad, isLightMode) : null;
-            const dayOfWeekName = d.daysOfWeek[day.weekday];
+            const dayOfWeekName = t('rotation.daysOfWeek')[day.weekday];
 
             const todayStr = formatDateISO(new Date());
             const isToday = todayStr === day.dateStr;
@@ -584,7 +477,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                       <span className="text-[11px] font-bold text-white uppercase flex items-center gap-1">
                         {rot ? (
                           <>
-                            <span className="me-1">{d.activeSquadLabel}</span>
+                            <span className="me-1">{t('rotation.activeSquadLabel')}</span>
                             <span style={{ color: squadColor?.color }}>{alertSquad}</span>
                           </>
                         ) : (
@@ -593,12 +486,12 @@ export default function RotationSchedule({ lang = 'en', user }) {
                       </span>
                       {rot && (
                         <span className="text-[9px] text-slate-500 flex items-center flex-wrap gap-x-1">
-                          <span className="me-1">{d.standbyLabel}</span>
+                          <span className="me-1">{t('rotation.standbyLabel')}</span>
                           <span>{rot.squads.standby}</span>
                           {rot.squads.rest && (
                             <>
                               <span className="mx-1">|</span>
-                              <span className="me-1">{d.restLabel}</span>
+                              <span className="me-1">{t('rotation.restLabel')}</span>
                               <span>{rot.squads.rest}</span>
                             </>
                           )}
@@ -616,7 +509,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                           </svg>
-                          <span className="me-1">{d.missionTimeLabel}</span>
+                          <span className="me-1">{t('rotation.missionTimeLabel')}</span>
                           <span>{meetingTime}</span>
                         </div>
                       )}
@@ -635,7 +528,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                             />
                           </svg>
-                          <span>{d.missionCompletedLabel}</span>
+                          <span>{t('rotation.missionCompletedLabel')}</span>
                         </div>
                       )}
                     </div>
@@ -672,25 +565,23 @@ export default function RotationSchedule({ lang = 'en', user }) {
                     {completedMission && (
                       <div className="mb-4">
                         <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
-                          {d.missionTelemetryBriefingLabel}
+                          {t('rotation.missionTelemetryBriefingLabel')}
                         </div>
                         <MissionTelemetryCard
                           telemetry={completedMission.telemetry}
                           isLightMode={isLightMode}
-                          lang={lang}
                         />
                       </div>
                     )}
                     <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
-                      {d.operatorDirectoryLabel(alertSquad)}
+                      {t('rotation.operatorDirectoryLabel', { squad: alertSquad })}
                     </div>
                     {substitutionModal && substitutionModal.dateStr === day.dateStr ? (
                       /* Timeline Inline Substitution selection panel */
                       <div className="space-y-3 font-mono text-[10px] bg-bf-dark/30 p-2 border border-bf-border/30 clip-btn">
                         <div className="flex items-center justify-between border-b border-bf-border/20 pb-1 mb-2">
                           <span className="text-[9px] text-bf-orange font-bold uppercase">
-                            {lang === 'en' ? 'Select Substitute for:' : 'בחר מחליף עבור:'} @
-                            {substitutionModal.originalOperator.tg_username ||
+                            {t('rotation.selectSubFor')}{substitutionModal.originalOperator.tg_username ||
                               substitutionModal.originalOperator.phone_number}
                           </span>
                           <button
@@ -701,7 +592,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                             }}
                             className="text-slate-400 hover:text-white text-[9px] uppercase font-bold"
                           >
-                            {d.subCancel}
+                            {t('rotation.subCancel')}
                           </button>
                         </div>
 
@@ -713,8 +604,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
 
                         {substitutionModal.currentSubId && !pendingSub && (
                           <div className="p-1.5 mb-2 bg-bf-orange/10 border border-bf-orange/30 text-[9px] text-bf-orange font-bold uppercase clip-btn">
-                            {lang === 'en' ? 'Current Substitute:' : 'מחליף נוכחי:'} @
-                            {substituteProfilesCache[substitutionModal.currentSubId]?.tg_username ||
+                            {t('rotation.currentSub')}{substituteProfilesCache[substitutionModal.currentSubId]?.tg_username ||
                               '...'}
                           </div>
                         )}
@@ -723,55 +613,13 @@ export default function RotationSchedule({ lang = 'en', user }) {
                           <div className="space-y-3 p-2 bg-bf-dark/40 border border-bf-orange/30 clip-btn">
                             <div className="text-[10px] text-white font-bold leading-normal uppercase">
                               {pendingSub.action === 'reset' ? (
-                                lang === 'en' ? (
-                                  <span>
-                                    Confirm restoring the original operator for{' '}
-                                    <span className="text-bf-orange">
-                                      {substitutionModal.dateStr}
-                                    </span>
-                                    ?
-                                  </span>
-                                ) : (
-                                  <span>
-                                    האם לאשר החזרת הלוחם המקורי לתאריך{' '}
-                                    <span className="text-bf-orange">
-                                      {substitutionModal.dateStr}
-                                    </span>
-                                    ?
-                                  </span>
-                                )
-                              ) : lang === 'en' ? (
-                                <span>
-                                  Confirm substituting{' '}
-                                  <span className="text-bf-orange">
-                                    @{substitutionModal.originalOperator.tg_username}
-                                  </span>{' '}
-                                  with{' '}
-                                  <span className="text-bf-cyan">
-                                    @{pendingSub.substitute.tg_username}
-                                  </span>{' '}
-                                  on{' '}
-                                  <span className="text-slate-400">
-                                    {substitutionModal.dateStr}
-                                  </span>
-                                  ?
-                                </span>
+                                t('rotation.confirmRestore', { date: substitutionModal.dateStr })
                               ) : (
-                                <span>
-                                  האם לאשר החלפת{' '}
-                                  <span className="text-bf-orange">
-                                    @{substitutionModal.originalOperator.tg_username}
-                                  </span>{' '}
-                                  ב-
-                                  <span className="text-bf-cyan">
-                                    @{pendingSub.substitute.tg_username}
-                                  </span>{' '}
-                                  בתאריך{' '}
-                                  <span className="text-slate-400">
-                                    {substitutionModal.dateStr}
-                                  </span>
-                                  ?
-                                </span>
+                                t('rotation.confirmSubstitute', {
+                                  original: substitutionModal.originalOperator.tg_username,
+                                  sub: pendingSub.substitute.tg_username,
+                                  date: substitutionModal.dateStr,
+                                })
                               )}
                             </div>
                             <div className="flex gap-2">
@@ -791,12 +639,8 @@ export default function RotationSchedule({ lang = 'en', user }) {
                                 className="flex-1 py-1.5 bg-bf-cyan text-bf-dark font-black text-[9px] uppercase tracking-wider clip-btn hover:bg-bf-cyan/85 transition-all cursor-pointer text-center"
                               >
                                 {pendingSub.action === 'reset'
-                                  ? lang === 'en'
-                                    ? 'Confirm Restore'
-                                    : 'אשר החזרה'
-                                  : lang === 'en'
-                                    ? 'Confirm Substitution'
-                                    : 'אשר החלפה'}
+                                  ? t('rotation.confirmRestoreBtn')
+                                  : t('rotation.confirmSubBtn')}
                               </button>
                               <button
                                 onClick={(e) => {
@@ -805,7 +649,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                                 }}
                                 className="px-3 py-1.5 bg-bf-slate border border-bf-border/40 text-slate-300 font-bold text-[9px] uppercase tracking-wider clip-btn hover:text-white transition-all cursor-pointer text-center"
                               >
-                                {d.subCancel}
+                                {t('rotation.subCancel')}
                               </button>
                             </div>
                           </div>
@@ -819,7 +663,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                                 }}
                                 className="w-full py-1.5 bg-bf-orange/10 border border-bf-orange/40 hover:bg-bf-orange/20 text-bf-orange font-bold text-[9px] uppercase tracking-wider clip-btn transition-all cursor-pointer text-center"
                               >
-                                {d.subReset}
+                                {t('rotation.subReset')}
                               </button>
                             )}
 
@@ -1002,16 +846,16 @@ export default function RotationSchedule({ lang = 'en', user }) {
           {/* Header */}
           <div className="flex justify-between items-center mb-3">
             <span className="text-[11px] font-bold text-white uppercase">
-              {d.months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+              {t('rotation.months')[currentMonth.getMonth()]} {currentMonth.getFullYear()}
             </span>
             <span className="text-[9px] text-bf-cyan select-none tracking-widest">
-              {d.calendarGridLabel}
+              {t('rotation.calendarGridLabel')}
             </span>
           </div>
 
           {/* Weekday headers */}
           <div className="grid grid-cols-7 gap-1 text-center text-[9px] text-slate-500 font-bold mb-2">
-            {d.daysOfWeek.map((day, i) => (
+            {t('rotation.daysOfWeek').map((day, i) => (
               <div key={i}>{day}</div>
             ))}
           </div>
@@ -1087,10 +931,10 @@ export default function RotationSchedule({ lang = 'en', user }) {
                   <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
                     <div className="flex flex-col">
                       <span className="text-[11px] font-black text-white uppercase">
-                        {d.membersTitle}
+                        {t('rotation.membersTitle')}
                       </span>
                       <span className="text-[9px] text-slate-500 mt-0.5">
-                        {selectedCalendarDay.day} {d.months[selectedCalendarDay.date.getMonth()]}
+                        {selectedCalendarDay.day} {t('rotation.months')[selectedCalendarDay.date.getMonth()]}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -1139,7 +983,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                           <polyline points="12 6 12 12 16 14" />
                         </svg>
                         <span className="font-bold text-slate-300 uppercase">
-                          {lang === 'en' ? 'Mission Time:' : 'שעת משימה:'}
+                          {t('rotation.missionTimeLabel')}
                         </span>
                       </div>
                       <span className="font-black text-bf-orange text-xs">
@@ -1155,8 +999,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                       <div className="space-y-3 font-mono text-[10px]">
                         <div className="flex items-center justify-between border-b border-bf-border/20 pb-1 mb-2">
                           <span className="text-[9px] text-bf-orange font-bold uppercase">
-                            {lang === 'en' ? 'Select Substitute for:' : 'בחר מחליף עבור:'} @
-                            {substitutionModal.originalOperator.tg_username ||
+                            {t('rotation.selectSubFor')}{substitutionModal.originalOperator.tg_username ||
                               substitutionModal.originalOperator.phone_number}
                           </span>
                           <button
@@ -1167,7 +1010,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                             }}
                             className="text-slate-400 hover:text-white text-[9px] uppercase font-bold"
                           >
-                            {d.subCancel}
+                            {t('rotation.subCancel')}
                           </button>
                         </div>
 
@@ -1179,8 +1022,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
 
                         {substitutionModal.currentSubId && !pendingSub && (
                           <div className="p-1.5 mb-2 bg-bf-orange/10 border border-bf-orange/30 text-[9px] text-bf-orange font-bold uppercase clip-btn">
-                            {lang === 'en' ? 'Current Substitute:' : 'מחליף נוכחי:'} @
-                            {substituteProfilesCache[substitutionModal.currentSubId]?.tg_username ||
+                            {t('rotation.currentSub')}{substituteProfilesCache[substitutionModal.currentSubId]?.tg_username ||
                               '...'}
                           </div>
                         )}
@@ -1189,55 +1031,13 @@ export default function RotationSchedule({ lang = 'en', user }) {
                           <div className="space-y-3 p-2 bg-bf-dark/40 border border-bf-orange/30 clip-btn">
                             <div className="text-[10px] text-white font-bold leading-normal uppercase">
                               {pendingSub.action === 'reset' ? (
-                                lang === 'en' ? (
-                                  <span>
-                                    Confirm restoring the original operator for{' '}
-                                    <span className="text-bf-orange">
-                                      {substitutionModal.dateStr}
-                                    </span>
-                                    ?
-                                  </span>
-                                ) : (
-                                  <span>
-                                    האם לאשר החזרת הלוחם המקורי לתאריך{' '}
-                                    <span className="text-bf-orange">
-                                      {substitutionModal.dateStr}
-                                    </span>
-                                    ?
-                                  </span>
-                                )
-                              ) : lang === 'en' ? (
-                                <span>
-                                  Confirm substituting{' '}
-                                  <span className="text-bf-orange">
-                                    @{substitutionModal.originalOperator.tg_username}
-                                  </span>{' '}
-                                  with{' '}
-                                  <span className="text-bf-cyan">
-                                    @{pendingSub.substitute.tg_username}
-                                  </span>{' '}
-                                  on{' '}
-                                  <span className="text-slate-400">
-                                    {substitutionModal.dateStr}
-                                  </span>
-                                  ?
-                                </span>
+                                t('rotation.confirmRestore', { date: substitutionModal.dateStr })
                               ) : (
-                                <span>
-                                  האם לאשר החלפת{' '}
-                                  <span className="text-bf-orange">
-                                    @{substitutionModal.originalOperator.tg_username}
-                                  </span>{' '}
-                                  ב-
-                                  <span className="text-bf-cyan">
-                                    @{pendingSub.substitute.tg_username}
-                                  </span>{' '}
-                                  בתאריך{' '}
-                                  <span className="text-slate-400">
-                                    {substitutionModal.dateStr}
-                                  </span>
-                                  ?
-                                </span>
+                                t('rotation.confirmSubstitute', {
+                                  original: substitutionModal.originalOperator.tg_username,
+                                  sub: pendingSub.substitute.tg_username,
+                                  date: substitutionModal.dateStr,
+                                })
                               )}
                             </div>
                             <div className="flex gap-2">
@@ -1257,12 +1057,8 @@ export default function RotationSchedule({ lang = 'en', user }) {
                                 className="flex-1 py-1.5 bg-bf-cyan text-bf-dark font-black text-[9px] uppercase tracking-wider clip-btn hover:bg-bf-cyan/85 transition-all cursor-pointer text-center"
                               >
                                 {pendingSub.action === 'reset'
-                                  ? lang === 'en'
-                                    ? 'Confirm Restore'
-                                    : 'אשר החזרה'
-                                  : lang === 'en'
-                                    ? 'Confirm Substitution'
-                                    : 'אשר החלפה'}
+                                  ? t('rotation.confirmRestoreBtn')
+                                  : t('rotation.confirmSubBtn')}
                               </button>
                               <button
                                 onClick={(e) => {
@@ -1271,7 +1067,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                                 }}
                                 className="px-3 py-1.5 bg-bf-slate border border-bf-border/40 text-slate-300 font-bold text-[9px] uppercase tracking-wider clip-btn hover:text-white transition-all cursor-pointer text-center"
                               >
-                                {d.subCancel}
+                                {t('rotation.subCancel')}
                               </button>
                             </div>
                           </div>
@@ -1285,13 +1081,13 @@ export default function RotationSchedule({ lang = 'en', user }) {
                                 }}
                                 className="w-full py-1.5 bg-bf-orange/10 border border-bf-orange/40 hover:bg-bf-orange/20 text-bf-orange font-bold text-[9px] uppercase tracking-wider clip-btn transition-all cursor-pointer text-center"
                               >
-                                {d.subReset}
+                                {t('rotation.subReset')}
                               </button>
                             )}
 
                             {loadingAllOperators ? (
                               <div className="text-center py-4 text-bf-cyan/60 animate-pulse text-[9px]">
-                                // SCANNING SQUAD DATABASES...
+                                {t('rotation.scanningOperators')}
                               </div>
                             ) : allOperators ? (
                               Object.entries(allOperators).map(([squadName, ops]) => {
@@ -1348,7 +1144,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                               })
                             ) : (
                               <div className="text-center py-4 text-slate-600 text-[9px]">
-                                // NO OPERATORS FOUND
+                                {t('rotation.noOperatorsFound')}
                               </div>
                             )}
                           </>
