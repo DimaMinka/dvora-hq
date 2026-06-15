@@ -36,9 +36,10 @@ const aiDescriptions = {
   tactical_glasses: 'tactical goggles',
   knee_pads: 'protective combat knee pads',
   tactical_gloves: 'tactical combat gloves',
-  shacham: 'Shacham night vision device',
+  shacham: 'OE-14 Mouse monocular night vision device mounted on the helmet over one eye, featuring a blue-coated optical lens',
   adi: 'Adi night vision device',
   nyx: 'Nyx thermal camera',
+  desert_weapon: 'desert camo weapon style',
   // Meds
   personal_bandage: 'personal medical bandage pouch',
   cat_tourniquet: 'CAT tourniquet',
@@ -140,6 +141,7 @@ export function formatLoadoutForAIPrompt({
   const hasOptics = optics && optics.trim().toLowerCase() !== 'none';
   const hasSecondary = secondaryIds.length > 0;
   const isDronePilot = specialization ? (specialization.toLowerCase().includes('avata') || specialization.toLowerCase().includes('evo') || specialization.toLowerCase().includes('fpv')) : false;
+  const isDesertStyle = gearListLower.includes('desert_weapon');
 
   return {
     formattedSpec,
@@ -158,5 +160,6 @@ export function formatLoadoutForAIPrompt({
     hasOptics,
     hasSecondary,
     isDronePilot,
+    isDesertStyle,
   };
 }

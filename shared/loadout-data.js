@@ -65,9 +65,10 @@ export const gearsList = [
   { id: 'tactical_glasses', en: 'Tactical Glasses', he: 'משקפיים טקטיות שומר אחי' },
   { id: 'knee_pads', en: 'Knee Pads', he: 'בירקיות' },
   { id: 'tactical_gloves', en: 'Tactical Gloves', he: 'כפפות טקטיות' },
-  { id: 'shacham', en: 'Shacham NVD', he: 'שח"מ' },
+  { id: 'shacham', en: 'Shacham/Shacha NVD', he: 'שחמ/שחע' },
   { id: 'adi', en: 'Adi NVD', he: 'עדי' },
   { id: 'nyx', en: 'Nyx Thermal', he: 'ניקס' },
+  { id: 'desert_weapon', en: 'Desert Style Weapon', he: 'נשק בסגנון מדברי (Desert)' },
 ];
 
 export const medsList = [

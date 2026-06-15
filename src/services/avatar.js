@@ -33,6 +33,7 @@ export async function generateAndSaveAvatar(userRef, userId, formattedSpecData) 
       hasOptics,
       hasSecondary,
       isDronePilot,
+      isDesertStyle,
     } = formattedSpecData;
 
     const genderWord = genderLabel ? genderLabel.toLowerCase() : 'soldier';
@@ -48,7 +49,12 @@ export async function generateAndSaveAvatar(userRef, userId, formattedSpecData) 
     if (hasHelmet) {
       let helmetDesc = "Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud";
       if (hasNVD) {
-        helmetDesc += " and mounted night vision goggle device";
+        const gearListLower = formattedGear.toLowerCase();
+        if (gearListLower.includes('oe-14') || gearListLower.includes('mouse') || gearListLower.includes('monocular')) {
+          helmetDesc += " with the monocular night vision device mounted over one eye";
+        } else {
+          helmetDesc += " and mounted night vision goggle device";
+        }
       }
       gearDescriptions.push(helmetDesc);
     } else {
@@ -75,13 +81,20 @@ export async function generateAndSaveAvatar(userRef, userId, formattedSpecData) 
     const gearPrompt = `Gear & Loadout: ${formattedGear} (${gearDescriptions.join(', ')}).`;
 
     // Weapon description
-    let weaponPrompt = `Primary weapon: ${weaponryLabel}`;
+    let weaponName = isDesertStyle ? "Colt M5 rifle in desert tan sand color (FDE - Flat Dark Earth)" : weaponryLabel;
+    let weaponPrompt = `Primary weapon: ${weaponName}`;
     if (hasOptics) {
-      weaponPrompt += ` equipped with ${formattedOptics}`;
+      const opticDesc = isDesertStyle ? `${formattedOptics} in matching desert tan sand color` : formattedOptics;
+      weaponPrompt += ` equipped with ${opticDesc}`;
     } else {
       weaponPrompt += ` with no optics sight (plain iron sights)`;
     }
-    weaponPrompt += ` (highly customized, suppressor).`;
+
+    if (isDesertStyle) {
+      weaponPrompt += ` (highly customized, desert tan suppressor, matching desert tan magazines, desert tan PEQ laser and weapon light).`;
+    } else {
+      weaponPrompt += ` (highly customized, suppressor).`;
+    }
 
     // Secondary weapon
     let secondaryPrompt = '';
