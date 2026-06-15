@@ -388,7 +388,21 @@ export default function RotationSchedule({ lang = 'en' }) {
                       // {alertSquad} OPERATOR DIRECTORY
                     </div>
                     {loadingMembers ? (
-                      <div className="text-[10px] text-bf-cyan animate-pulse py-1">{d.loading}</div>
+                      <div className="grid grid-cols-2 gap-1.5 animate-pulse">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div 
+                            key={i} 
+                            className="flex items-center gap-2 p-1.5 bg-bf-dark/40 border border-bf-border/20 clip-btn text-[10px]"
+                          >
+                            <div className="w-5 h-5 rounded-full bg-bf-slate/50 shrink-0" />
+                            <div className="flex flex-col flex-1 gap-1">
+                              <div className="h-2 w-12 bg-bf-slate/60 rounded" />
+                              <div className="h-1.5 w-8 bg-bf-slate/40 rounded" />
+                            </div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-bf-slate/50" />
+                          </div>
+                        ))}
+                      </div>
                     ) : (squadMembersCache[alertSquad] || []).length === 0 ? (
                       <div className="text-[10px] text-slate-600 py-1">// NO OPERATORS WHitelisted</div>
                     ) : (
@@ -532,8 +546,22 @@ export default function RotationSchedule({ lang = 'en' }) {
               {/* Members List Container */}
               <div className="flex-1 overflow-y-auto space-y-1.5 scroll-container">
                 {loadingMembers ? (
-                  <div className="text-[10px] text-bf-cyan animate-pulse text-center py-4">
-                    {d.loading}
+                  <div className="space-y-1.5 animate-pulse">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-2 bg-bf-slate/40 border border-bf-border/20 clip-btn text-[10px]"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-bf-dark/60 shrink-0" />
+                          <div className="flex flex-col gap-1">
+                            <div className="h-2.5 w-16 bg-bf-dark/80 rounded" />
+                            <div className="h-1.5 w-10 bg-bf-dark/40 rounded" />
+                          </div>
+                        </div>
+                        <div className="w-2 h-2 rounded-full bg-bf-dark/50" />
+                      </div>
+                    ))}
                   </div>
                 ) : (squadMembersCache[activeOverlaySquad] || []).length === 0 ? (
                   <div className="text-[10px] text-slate-600 text-center py-4">
