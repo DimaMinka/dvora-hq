@@ -133,16 +133,50 @@ export default function RotationSchedule({ lang = 'en', user }) {
   const [subError, setSubError] = useState(null);
   const [pendingSub, setPendingSub] = useState(null);
 
-  // Detect dark/light mode dynamically from prefers-color-scheme media query
-  const [isLightMode, setIsLightMode] = useState(
-    () => window.matchMedia('(prefers-color-scheme: light)').matches
-  );
+  // Detect dark/light mode dynamically from prefers-color-scheme media query and html class overrides
+  const [isLightMode, setIsLightMode] = useState(() => {
+    const isHtmlLight = typeof document !== 'undefined' && document.documentElement.classList.contains('theme-light');
+    const isHtmlDark = typeof document !== 'undefined' && document.documentElement.classList.contains('theme-dark');
+    if (isHtmlLight) return true;
+    if (isHtmlDark) return false;
+    return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches;
+  });
 
   useEffect(() => {
+    const checkTheme = () => {
+      const isHtmlLight = document.documentElement.classList.contains('theme-light');
+      const isHtmlDark = document.documentElement.classList.contains('theme-dark');
+      
+      if (isHtmlLight) {
+        setIsLightMode(true);
+      } else if (isHtmlDark) {
+        setIsLightMode(false);
+      } else {
+        setIsLightMode(window.matchMedia('(prefers-color-scheme: light)').matches);
+      }
+    };
+
+    checkTheme();
+
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-    const handleChange = (e) => setIsLightMode(e.matches);
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    const handleMediaChange = () => {
+      if (!document.documentElement.classList.contains('theme-light') && 
+          !document.documentElement.classList.contains('theme-dark')) {
+        setIsLightMode(mediaQuery.matches);
+      }
+    };
+    mediaQuery.addEventListener('change', handleMediaChange);
+
+    return () => {
+      observer.disconnect();
+      mediaQuery.removeEventListener('change', handleMediaChange);
+    };
   }, []);
 
   // Rotation details moved to parent dashboards' OperatorCard
