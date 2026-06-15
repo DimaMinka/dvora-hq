@@ -15,6 +15,7 @@ export default function OperatorCard({
   alarmActive = false,
 }) {
   const isLong = specializationLabel.length > 16;
+  const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
 
   const labels = useMemo(() => ({
     en: {
@@ -48,7 +49,6 @@ export default function OperatorCard({
   // Compute status badge styling and labels
   const statusConfig = useMemo(() => {
     if (!user || !user.squad_id) return null;
-    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
     const squadColor = getSquadColor(user.squad_id, isLightMode);
 
     if (userStatus === 'alert') {
@@ -90,7 +90,7 @@ export default function OperatorCard({
       color: isLightMode ? '#836e59' : '#cbd5e1',
       daysText: '',
     };
-  }, [userStatus, user, t, daysLeft]);
+  }, [userStatus, user, t, daysLeft, isLightMode]);
 
   return (
     <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2">
@@ -111,7 +111,14 @@ export default function OperatorCard({
                 : placeholderName}
             </div>
             <div className="text-[10px] text-slate-400 truncate">
-              {user ? `SQUAD: ${user.squad_id}` : placeholderSquad}
+              SQUAD:{' '}
+              {user ? (
+                <span style={{ color: getSquadColor(user.squad_id, isLightMode).color }} className="font-bold">
+                  {user.squad_id.toUpperCase()}
+                </span>
+              ) : (
+                placeholderSquad
+              )}
             </div>
             {specializationLabel && (
               <div className="text-[10px] text-slate-400 flex items-center gap-1 min-w-0 overflow-hidden">
@@ -147,17 +154,23 @@ export default function OperatorCard({
           </div>
           <div className="flex justify-between text-[10px] gap-2">
             <div>
-              <span className="text-bf-orange font-black">ACTIVE:</span>{' '}
-              <span className="text-white font-bold">{currentRotation.squads.alert}</span>
+              <span className="text-slate-400 font-black">ACTIVE:</span>{' '}
+              <span style={{ color: getSquadColor(currentRotation.squads.alert, isLightMode).color }} className="font-bold">
+                {currentRotation.squads.alert}
+              </span>
             </div>
             <div>
-              <span className="text-bf-cyan font-black">STANDBY:</span>{' '}
-              <span className="text-slate-300 font-bold">{currentRotation.squads.standby}</span>
+              <span className="text-slate-400 font-black">STANDBY:</span>{' '}
+              <span style={{ color: getSquadColor(currentRotation.squads.standby, isLightMode).color }} className="font-bold">
+                {currentRotation.squads.standby}
+              </span>
             </div>
             {currentRotation.squads.rest && (
               <div>
-                <span className="text-slate-500 font-black">REST:</span>{' '}
-                <span className="text-slate-400 font-bold">{currentRotation.squads.rest}</span>
+                <span className="text-slate-400 font-black">REST:</span>{' '}
+                <span style={{ color: getSquadColor(currentRotation.squads.rest, isLightMode).color }} className="font-bold">
+                  {currentRotation.squads.rest}
+                </span>
               </div>
             )}
           </div>

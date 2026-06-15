@@ -2,6 +2,28 @@
 // Supports dark and light themes dynamically based on prefers-color-scheme
 
 export const SQUAD_COLORS = {
+  MINKA: {
+    dark: {
+      color: '#6366f1', // electric indigo
+      bg: 'rgba(99, 102, 241, 0.12)',
+      border: 'rgba(99, 102, 241, 0.3)',
+      glow: '0 0 10px rgba(99, 102, 241, 0.35)',
+      textClass: 'text-[#6366f1]',
+      bgClass: 'bg-[#6366f1]/12',
+      borderClass: 'border-[#6366f1]/30',
+      glowClass: 'shadow-[0_0_10px_rgba(99, 102, 241, 0.35)]',
+    },
+    light: {
+      color: '#4f46e5', // dark indigo
+      bg: 'rgba(79, 70, 229, 0.12)',
+      border: 'rgba(79, 70, 229, 0.3)',
+      glow: '0 0 8px rgba(79, 70, 229, 0.2)',
+      textClass: 'text-[#4f46e5]',
+      bgClass: 'bg-[#4f46e5]/12',
+      borderClass: 'border-[#4f46e5]/30',
+      glowClass: 'shadow-[0_0_8px_rgba(79, 70, 229, 0.2)]',
+    },
+  },
   ALPHA: {
     dark: {
       color: '#ff5400', // bf-orange
