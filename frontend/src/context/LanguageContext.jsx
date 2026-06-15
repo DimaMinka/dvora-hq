@@ -21,7 +21,7 @@ export function LanguageProvider({ children }) {
 
   const t = (path, variables = {}) => {
     const keys = path.split('.');
-    
+
     // Resolve for current language
     let result = locales[lang];
     let found = true;
@@ -65,6 +65,7 @@ export function LanguageProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTranslation() {
   const context = useContext(LanguageContext);
   if (!context) {

@@ -170,10 +170,11 @@ export default function OperatorCard({
 
       {/* Alarm / Combat Alert status */}
       <div
-        className={`p-1.5 text-center font-black border tracking-wider text-[9px] transition-all duration-300 clip-btn ${alarmActive
-          ? 'bg-bf-orange/15 border-bf-orange/40 text-bf-orange animate-pulse'
-          : 'bg-bf-cyan/5 border-bf-cyan/20 text-bf-cyan/70'
-          }`}
+        className={`p-1.5 text-center font-black border tracking-wider text-[9px] transition-all duration-300 clip-btn ${
+          alarmActive
+            ? 'bg-bf-orange/15 border-bf-orange/40 text-bf-orange animate-pulse'
+            : 'bg-bf-cyan/5 border-bf-cyan/20 text-bf-cyan/70'
+        }`}
       >
         {alarmActive ? t('app.alarmActive') : t('app.alarmStandby')}
       </div>

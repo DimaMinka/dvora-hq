@@ -165,10 +165,11 @@ function LockScreen({ onUnlock }) {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className={`w-9 h-12 border flex items-center justify-center font-bold text-lg rounded transition-all duration-200 ${i < pin.length
-                ? 'border-bf-cyan bg-bf-cyan/10 text-bf-cyan'
-                : 'border-bf-border bg-bf-dark/50 text-slate-600'
-                }`}
+              className={`w-9 h-12 border flex items-center justify-center font-bold text-lg rounded transition-all duration-200 ${
+                i < pin.length
+                  ? 'border-bf-cyan bg-bf-cyan/10 text-bf-cyan'
+                  : 'border-bf-border bg-bf-dark/50 text-slate-600'
+              }`}
             >
               {i < pin.length ? pin[i] : ''}
             </div>
@@ -180,7 +181,10 @@ function LockScreen({ onUnlock }) {
             {error}
           </div>
         ) : (
-          <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider py-1 min-h-[20px]" dir="ltr">
+          <div
+            className="text-[9px] text-slate-500 font-bold uppercase tracking-wider py-1 min-h-[20px]"
+            dir="ltr"
+          >
             STRUCTURE: [ 0 - 9 ] x 5 + [ A - Z ] x 1
           </div>
         )}

@@ -138,7 +138,6 @@ export default function CommanderDashboard({
     }
   );
 
-
   const handleShowIssues = (member, category) => {
     setSelectedProfile(null);
     if (category === 'trsp') {
@@ -210,9 +209,9 @@ export default function CommanderDashboard({
     .map((m, idx) => {
       const timeStr = m.updated_at
         ? new Date(m.updated_at).toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
+            hour: '2-digit',
+            minute: '2-digit',
+          })
         : '00:00';
       return {
         id: idx,
@@ -228,7 +227,9 @@ export default function CommanderDashboard({
 
   return (
     <div className="space-y-4 w-full animate-fade-in relative">
-      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{t('commander.title')}</div>
+      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
+        {t('commander.title')}
+      </div>
 
       {/* Operator Info */}
       <OperatorCard
@@ -249,20 +250,22 @@ export default function CommanderDashboard({
         <button
           type="button"
           onClick={() => setActiveTab('rotation')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'rotation'
-            ? 'bg-bf-cyan text-bf-dark font-black'
-            : 'text-slate-400 hover:text-white'
-            }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'rotation'
+              ? 'bg-bf-cyan text-bf-dark font-black'
+              : 'text-slate-400 hover:text-white'
+          }`}
         >
           {t('commander.tabs.rotations')}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('readiness')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'readiness'
-            ? 'bg-bf-cyan text-bf-dark font-black'
-            : 'text-slate-400 hover:text-white'
-            }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'readiness'
+              ? 'bg-bf-cyan text-bf-dark font-black'
+              : 'text-slate-400 hover:text-white'
+          }`}
         >
           {t('commander.tabs.squadStatus')}
         </button>
@@ -301,7 +304,6 @@ export default function CommanderDashboard({
             }}
           />
 
-
           {/* Collapsible Weapon Details Panel */}
           {activePanel === 'wpn' && checklist.wpn !== 0 && user && (
             <ChecklistPanel
@@ -334,7 +336,9 @@ export default function CommanderDashboard({
 
           <div className="border-t border-bf-border/60 my-2"></div>
 
-          <h3 className="text-sm font-black text-white uppercase tracking-wider">{t('commander.squadTitle')}</h3>
+          <h3 className="text-sm font-black text-white uppercase tracking-wider">
+            {t('commander.squadTitle')}
+          </h3>
 
           {/* Grid of squad members */}
           <div className="space-y-2">
@@ -556,10 +560,11 @@ export default function CommanderDashboard({
           {/* Alarm override control */}
           <button
             onClick={onToggleAlarm}
-            className={`w-full py-2.5 font-black text-xs uppercase clip-btn transition-all duration-300 cursor-pointer ${alarmActive
-              ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400] animate-pulse'
-              : 'bg-bf-slate/30 border border-bf-border text-slate-400 hover:bg-bf-cyan/10 hover:border-bf-cyan hover:text-bf-cyan'
-              }`}
+            className={`w-full py-2.5 font-black text-xs uppercase clip-btn transition-all duration-300 cursor-pointer ${
+              alarmActive
+                ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400] animate-pulse'
+                : 'bg-bf-slate/30 border border-bf-border text-slate-400 hover:bg-bf-cyan/10 hover:border-bf-cyan hover:text-bf-cyan'
+            }`}
           >
             {alarmActive ? t('commander.alarmOff') : t('commander.alarmOn')}
           </button>

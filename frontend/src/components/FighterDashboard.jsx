@@ -163,7 +163,9 @@ export default function FighterDashboard({
 
   return (
     <div className="space-y-4 w-full animate-fade-in">
-      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{t('fighter.title')}</div>
+      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
+        {t('fighter.title')}
+      </div>
 
       {/* Operator Info */}
       <OperatorCard
@@ -184,20 +186,22 @@ export default function FighterDashboard({
         <button
           type="button"
           onClick={() => setActiveTab('rotation')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'rotation'
-            ? 'bg-bf-cyan text-bf-dark font-black'
-            : 'text-slate-400 hover:text-white'
-            }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'rotation'
+              ? 'bg-bf-cyan text-bf-dark font-black'
+              : 'text-slate-400 hover:text-white'
+          }`}
         >
           {t('fighter.tabs.rotations')}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('readiness')}
-          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${activeTab === 'readiness'
-            ? 'bg-bf-cyan text-bf-dark font-black'
-            : 'text-slate-400 hover:text-white'
-            }`}
+          className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
+            activeTab === 'readiness'
+              ? 'bg-bf-cyan text-bf-dark font-black'
+              : 'text-slate-400 hover:text-white'
+          }`}
         >
           {t('fighter.tabs.readiness')}
         </button>

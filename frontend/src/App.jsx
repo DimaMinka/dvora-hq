@@ -69,7 +69,7 @@ function AppContent() {
       await fetch('/api/auth/logout', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => { });
+      }).catch(() => {});
     }
     localStorage.removeItem('dvora_token');
     setUser(null);
@@ -391,7 +391,7 @@ function AppContent() {
               setGearStatus({});
             }
           })
-          .catch(() => { });
+          .catch(() => {});
       } else if (user.role === 'commander') {
         // Commanders fetch squad status
         fetch('/api/squad/status', {
@@ -406,7 +406,7 @@ function AppContent() {
           .then((data) => {
             setSquadMembers(data);
           })
-          .catch(() => { });
+          .catch(() => {});
       }
     }, 5000);
 

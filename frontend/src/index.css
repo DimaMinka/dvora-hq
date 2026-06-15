@@ -60,9 +60,11 @@ html.theme-light {
 /* Custom styles from mockup */
 .dvora-bg {
   background-color: var(--color-bf-dark);
-  background-image: radial-gradient(circle at center,
-      var(--color-bf-slate) 0%,
-      var(--color-bf-dark) 100%);
+  background-image: radial-gradient(
+    circle at center,
+    var(--color-bf-slate) 0%,
+    var(--color-bf-dark) 100%
+  );
   background-attachment: fixed;
 }
 
@@ -91,12 +93,14 @@ html.theme-light {
 }
 
 .clip-hud {
-  clip-path: polygon(0 0,
-      calc(100% - 15px) 0,
-      100% 15px,
-      100% 100%,
-      15px 100%,
-      0 calc(100% - 15px));
+  clip-path: polygon(
+    0 0,
+    calc(100% - 15px) 0,
+    100% 15px,
+    100% 100%,
+    15px 100%,
+    0 calc(100% - 15px)
+  );
 }
 
 .clip-btn {
@@ -118,7 +122,6 @@ html.theme-light {
 
 /* Global Light Mode overrides for texts and states */
 @media (prefers-color-scheme: light) {
-
   /* Default page text */
   .min-h-screen,
   body {

@@ -26,7 +26,9 @@ export default function ChecklistToggleGrid({ checklist = {}, onToggle, items = 
             className={`p-2 bg-bf-dark/90 border text-start clip-btn transition-all duration-200 cursor-pointer select-none hover:border-white/40 ${btnBorderClass}`}
           >
             <div className="text-[8px] rtl:text-[10px] text-slate-500">{item.label}</div>
-            <div className={`text-xs rtl:text-sm font-black uppercase ${btnTextClass}`}>{statusLabel}</div>
+            <div className={`text-xs rtl:text-sm font-black uppercase ${btnTextClass}`}>
+              {statusLabel}
+            </div>
           </button>
         );
       })}

@@ -139,8 +139,12 @@ export default function Onboarding({ onComplete }) {
       onSubmit={handleSubmit}
       className={`space-y-4 w-full animate-fade-in ${lang === 'he' ? 'text-right' : 'text-left'} max-w-sm mx-auto`}
     >
-      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{t('onboarding.title')}</div>
-      <h2 className="text-sm font-black text-white tracking-widest uppercase">{t('onboarding.subtitle')}</h2>
+      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
+        {t('onboarding.title')}
+      </div>
+      <h2 className="text-sm font-black text-white tracking-widest uppercase">
+        {t('onboarding.subtitle')}
+      </h2>
 
       {/* 01_Specialization Selection */}
       <SelectionSection

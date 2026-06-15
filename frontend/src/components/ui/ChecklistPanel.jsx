@@ -1,11 +1,6 @@
 import { useTranslation } from '../../context/LanguageContext.jsx';
 
-export default function ChecklistPanel({
-  title,
-  items = [],
-  statusMap = {},
-  onToggleItem,
-}) {
+export default function ChecklistPanel({ title, items = [], statusMap = {}, onToggleItem }) {
   const { t } = useTranslation();
   if (items.length === 0) return null;
 
@@ -13,9 +8,7 @@ export default function ChecklistPanel({
     <div className="p-3 bg-bf-dark/95 border border-bf-cyan/40 clip-btn glass-panel text-[10px] space-y-2 animate-fade-in">
       <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider border-b border-bf-border/40 pb-1 flex justify-between">
         <span>{title}</span>
-        <span className="text-bf-cyan">
-          {t('fighter.checklistTap')}
-        </span>
+        <span className="text-bf-cyan">{t('fighter.checklistTap')}</span>
       </div>
       <div className="space-y-1.5 font-mono">
         {items.map((item) => {
