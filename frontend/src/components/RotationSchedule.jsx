@@ -189,7 +189,11 @@ export default function RotationSchedule({ lang = 'en' }) {
       const date = new Date(dayStr);
       const sunday = getSunday(date);
       const sundayStr = formatDateISO(sunday);
-      return rotations.find((r) => r.start_date === sundayStr);
+      const rot = rotations.find((r) => r.start_date === sundayStr);
+      if (rot && rot.actual_start_date && dayStr < rot.actual_start_date) {
+        return null;
+      }
+      return rot;
     },
     [rotations]
   );

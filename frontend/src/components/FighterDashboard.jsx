@@ -38,6 +38,18 @@ export default function FighterDashboard({
 
   const userStatus = useMemo(() => {
     if (!user || !user.squad_id || !currentRotation) return 'none';
+
+    if (currentRotation.actual_start_date) {
+      const today = new Date();
+      const y = today.getFullYear();
+      const m = String(today.getMonth() + 1).padStart(2, '0');
+      const d = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${y}-${m}-${d}`;
+      if (todayStr < currentRotation.actual_start_date) {
+        return 'none';
+      }
+    }
+
     const userSquad = user.squad_id.toUpperCase();
     const alertSquad = currentRotation.squads?.alert?.toUpperCase();
     const standbySquad = currentRotation.squads?.standby?.toUpperCase();

@@ -154,6 +154,7 @@ async function saveRotation(ctx, state) {
     .set({
       start_date: state.data.start_date,
       end_date: state.data.end_date,
+      actual_start_date: state.data.actual_start_date || state.data.start_date,
       squads: {
         alert: state.data.alert,
         standby: state.data.standby,
@@ -268,6 +269,7 @@ export async function handleAddRotationText(ctx, state) {
 
     state.data.start_date = formatDateISO(monday);
     state.data.end_date = formatDateISO(sunday);
+    state.data.actual_start_date = formatDateISO(date);
     state.data.formattedRange = formatWeekRangeEN(monday, sunday);
 
     const db = getDb();
