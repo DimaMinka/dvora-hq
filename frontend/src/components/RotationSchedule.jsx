@@ -503,6 +503,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
             const isToday = todayStr === day.dateStr;
             const isPast = day.dateStr < todayStr;
             const meetingTime = rot && rot.meeting_times ? rot.meeting_times[day.dateStr] : null;
+            const hasSubs = rot && rot.substitutions && rot.substitutions[day.dateStr] && Object.keys(rot.substitutions[day.dateStr]).length > 0;
 
             return (
               <div
@@ -521,11 +522,15 @@ export default function RotationSchedule({ lang = 'en', user }) {
                 >
                   <div className="flex items-center gap-3">
                     {/* Date Block */}
-                    <div className="w-9 h-11 bg-bf-dark border border-bf-border/50 clip-btn flex flex-col items-center justify-center">
-                      <span className="text-xs font-black text-white leading-none">
+                    <div className={`w-9 h-11 border clip-btn flex flex-col items-center justify-center transition-all ${
+                      hasSubs
+                        ? 'bg-bf-orange border-bf-orange/80 animate-pulse'
+                        : 'bg-bf-dark border-bf-border/50'
+                    }`}>
+                      <span className={`text-xs font-black leading-none ${hasSubs ? '' : 'text-white'}`} style={hasSubs ? { color: '#ffffff' } : undefined}>
                         {day.dayNum}
                       </span>
-                      <span className="text-[7px] text-slate-500 uppercase tracking-widest mt-0.5">
+                      <span className={`text-[7px] uppercase tracking-widest mt-0.5 ${hasSubs ? '' : 'text-slate-500'}`} style={hasSubs ? { color: '#ffffff' } : undefined}>
                         {dayOfWeekName}
                       </span>
                     </div>
@@ -878,16 +883,24 @@ export default function RotationSchedule({ lang = 'en', user }) {
               const colorInfo = alertSquad ? getSquadColor(alertSquad, isLightMode) : null;
 
               const isSelected = selectedCalendarDay?.dateStr === day.dateStr;
+              const hasSubs = hasRot && hasRot.substitutions && hasRot.substitutions[day.dateStr] && Object.keys(hasRot.substitutions[day.dateStr]).length > 0;
 
               // Build day cell styling
               const customStyle =
                 hasRot && colorInfo
-                  ? {
-                      backgroundColor: colorInfo.bg,
-                      borderColor: colorInfo.border,
-                      color: colorInfo.color,
-                      borderWidth: '1px',
-                    }
+                  ? (hasSubs
+                      ? {
+                          backgroundColor: 'var(--color-bf-orange)',
+                          borderColor: 'var(--color-bf-orange)',
+                          color: '#ffffff',
+                          borderWidth: '1px',
+                        }
+                      : {
+                          backgroundColor: colorInfo.bg,
+                          borderColor: colorInfo.border,
+                          color: colorInfo.color,
+                          borderWidth: '1px',
+                        })
                   : {
                       borderColor: 'transparent',
                       color: isLightMode ? '#4a3728' : '#cbd5e1',
@@ -900,7 +913,9 @@ export default function RotationSchedule({ lang = 'en', user }) {
                   style={customStyle}
                   className={`aspect-square clip-btn flex flex-col items-center justify-center text-[10px] font-black cursor-pointer transition-all duration-200 border relative select-none hover:scale-105 ${
                     isToday ? 'outline-2 outline-bf-cyan outline-offset-1' : ''
-                  } ${isSelected ? 'shadow-[0_0_10px_rgba(255,255,255,0.4)] border-white!' : ''}`}
+                  } ${isSelected ? 'shadow-[0_0_10px_rgba(255,255,255,0.4)] border-white!' : ''} ${
+                    hasSubs ? 'animate-pulse' : ''
+                  }`}
                 >
                   <span>{day.day}</span>
                   {isToday && <div className="w-1 h-1 bg-white rounded-full absolute bottom-1" />}
