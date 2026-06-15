@@ -600,7 +600,6 @@ function App() {
 
       <header className="max-w-md mx-auto mb-6 flex justify-between items-center gap-4 border-b border-bf-border/60 pb-4 glass-panel p-4 clip-hud">
         <div>
-          <div className="text-[10px] text-bf-cyan opacity-70 mb-0.5">{dict.metaStatus}</div>
           <h1 className="text-xl font-black text-white tracking-widest">
             DVORA <span className="text-bf-orange animate-pulse">HQ</span>
           </h1>
