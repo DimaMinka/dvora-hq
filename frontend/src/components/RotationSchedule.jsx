@@ -41,6 +41,11 @@ const i18n = {
       'November',
       'December',
     ],
+    subTitle: 'Substitute Operator',
+    subTitleHe: 'החלפת לוחם',
+    subSelectPrompt: 'Select Substitute Operator:',
+    subReset: 'Restore Original Operator',
+    subCancel: 'Cancel',
   },
   he: {
     title: '// לוח_סבבים // סנכרון',
@@ -80,6 +85,10 @@ const i18n = {
       'נובמבר',
       'דצמבר',
     ],
+    subTitle: 'החלפת לוחם',
+    subSelectPrompt: 'בחר לוחם מחליף:',
+    subReset: 'החזר לוחם מקורי',
+    subCancel: 'ביטול',
   },
 };
 
@@ -101,10 +110,10 @@ function getSunday(date) {
   return sunday;
 }
 
-export default function RotationSchedule({ lang = 'en' }) {
+export default function RotationSchedule({ lang = 'en', user }) {
   const d = i18n[lang] || i18n.en;
 
-  const { rotations, loading, error } = useRotations();
+  const { rotations, loading, error, refresh } = useRotations();
   const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' or 'calendar'
   const [weekOffset, setWeekOffset] = useState(0); // -1, 0, 1, 2 etc.
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
@@ -115,6 +124,12 @@ export default function RotationSchedule({ lang = 'en' }) {
   const [squadMembersCache, setSquadMembersCache] = useState({});
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [activeOverlaySquad, setActiveOverlaySquad] = useState(null);
+
+  // Substitution state
+  const [substitutionModal, setSubstitutionModal] = useState(null); // { dateStr, originalOperator, rotationId }
+  const [allOperators, setAllOperators] = useState(null);
+  const [loadingAllOperators, setLoadingAllOperators] = useState(false);
+  const [substituteProfilesCache, setSubstituteProfilesCache] = useState({});
 
   // Detect dark/light mode dynamically from prefers-color-scheme media query
   const [isLightMode, setIsLightMode] = useState(
@@ -182,6 +197,88 @@ export default function RotationSchedule({ lang = 'en' }) {
     },
     [squadMembersCache]
   );
+
+  const fetchSubstituteProfile = useCallback(
+    async (subId) => {
+      if (!subId) return null;
+      if (substituteProfilesCache[subId]) {
+        return substituteProfilesCache[subId];
+      }
+
+      const token = localStorage.getItem('dvora_token');
+      if (!token) return null;
+
+      try {
+        const res = await fetch(`/api/user/${subId}/public-profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Failed to fetch public profile');
+        const data = await res.json();
+        setSubstituteProfilesCache((prev) => ({ ...prev, [subId]: data }));
+        return data;
+      } catch (err) {
+        console.error('[RotationSchedule] Public profile fetch failed:', err.message);
+        return null;
+      }
+    },
+    [substituteProfilesCache]
+  );
+
+  const fetchAllOperators = useCallback(async () => {
+    if (allOperators) return;
+    const token = localStorage.getItem('dvora_token');
+    if (!token) return;
+
+    setLoadingAllOperators(true);
+    try {
+      const res = await fetch('/api/squad/all-operators', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch all operators');
+      const data = await res.json();
+      setAllOperators(data);
+    } catch (err) {
+      console.error('[RotationSchedule] Fetch all operators error:', err.message);
+    } finally {
+      setLoadingAllOperators(false);
+    }
+  }, [allOperators]);
+
+  const handleExecuteSubstitute = async (subId, originalOp, dateStr, rotationId) => {
+    const token = localStorage.getItem('dvora_token');
+    if (!token) return;
+
+    try {
+      const body = {
+        dateStr,
+        originalOperatorId: originalOp.id,
+        substituteOperatorId: subId,
+        originalName: originalOp.tg_username || originalOp.phone_number || 'Unknown',
+        originalSquad: (originalOp.squad_id || '').toUpperCase(),
+      };
+
+      const res = await fetch(`/api/rotations/${rotationId}/substitute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) throw new Error('Failed to save substitution');
+      
+      // Refresh substitutions & rotation list
+      await refresh();
+      setSubstitutionModal(null);
+      // Close overlay to reflect updates or keep open
+      if (selectedCalendarDay) {
+        closeCalendarOverlay();
+      }
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   // Look up active rotation for a specific day string
   const getRotationForDay = useCallback(
@@ -481,42 +578,85 @@ export default function RotationSchedule({ lang = 'en' }) {
                     ) : (
                       <div className="grid grid-cols-2 gap-1.5">
                         {(squadMembersCache[alertSquad] || []).map((m) => {
-                          const isOperatorReady = m.weapons_ready === 1 && m.comms_ready === 1;
-                          const specLabel = m.specialization
-                            ? m.specialization.split(',')[0].toUpperCase()
+                          const dateStr = day.dateStr;
+                          const substitution = rot.substitutions?.[dateStr]?.[m.id];
+                          const subId = substitution?.replaced_by;
+
+                          // Check if we have substitute info in local cache
+                          let currentMember = m;
+                          let subBadge = null;
+
+                          if (subId) {
+                            const subProfile = substituteProfilesCache[subId];
+                            if (subProfile) {
+                              currentMember = subProfile;
+                            } else {
+                              // Dynamically fetch it
+                              fetchSubstituteProfile(subId);
+                            }
+                            subBadge = {
+                              original_name: substitution.original_name,
+                              original_squad: substitution.original_squad
+                            };
+                          }
+
+                          const isOperatorReady = currentMember.weapons_ready === 1 && currentMember.comms_ready === 1;
+                          const specLabel = currentMember.specialization
+                            ? currentMember.specialization.split(',')[0].toUpperCase()
                             : 'FIGHTER';
+
+                          const isCommander = user?.role === 'commander';
+
                           return (
                             <div
                               key={m.id}
-                              className="flex items-center gap-2 p-1.5 bg-bf-dark/60 border border-bf-border/40 clip-btn text-[10px]"
+                              onClick={() => {
+                                if (isCommander) {
+                                  fetchAllOperators();
+                                  setSubstitutionModal({
+                                    dateStr,
+                                    originalOperator: m,
+                                    rotationId: rot.id || rot._id || rot.docId,
+                                    currentSubId: subId
+                                  });
+                                }
+                              }}
+                              className={`flex flex-col gap-1 p-1.5 bg-bf-dark/60 border border-bf-border/40 clip-btn text-[10px] ${isCommander ? 'cursor-pointer hover:border-bf-cyan/70 transition-colors' : ''}`}
                             >
-                              <div className="w-5 h-5 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-slate select-none text-[8px] font-black text-bf-cyan uppercase">
-                                {m.avatar_url ? (
-                                  <img
-                                    src={m.avatar_url}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  m.tg_username?.slice(0, 2) || 'OP'
-                                )}
+                              <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-slate select-none text-[8px] font-black text-bf-cyan uppercase shrink-0">
+                                  {currentMember.avatar_url ? (
+                                    <img
+                                      src={currentMember.avatar_url}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    currentMember.tg_username?.slice(0, 2) || 'OP'
+                                  )}
+                                </div>
+                                <div className="flex flex-col flex-1 min-w-0">
+                                  <span className="text-white font-bold truncate">
+                                    @{currentMember.tg_username}
+                                  </span>
+                                  <span className="text-[8px] text-slate-500 truncate">
+                                    {specLabel}
+                                  </span>
+                                </div>
+                                <div
+                                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${isOperatorReady ? 'bg-[#2ed573]' : 'bg-bf-orange animate-pulse'}`}
+                                  style={{
+                                    boxShadow: isOperatorReady
+                                      ? '0 0 5px #2ed573'
+                                      : '0 0 5px #ff5400',
+                                  }}
+                                />
                               </div>
-                              <div className="flex flex-col flex-1 min-w-0">
-                                <span className="text-white font-bold truncate">
-                                  @{m.tg_username}
-                                </span>
-                                <span className="text-[8px] text-slate-500 truncate">
-                                  {specLabel}
-                                </span>
-                              </div>
-                              <div
-                                className={`w-1.5 h-1.5 rounded-full ${isOperatorReady ? 'bg-[#2ed573]' : 'bg-bf-orange animate-pulse'}`}
-                                style={{
-                                  boxShadow: isOperatorReady
-                                    ? '0 0 5px #2ed573'
-                                    : '0 0 5px #ff5400',
-                                }}
-                              />
+                              {subBadge && (
+                                <div className="text-[7px] text-bf-orange/90 font-mono tracking-tighter mt-0.5 pt-0.5 border-t border-bf-orange/20 border-dashed truncate" title={`⚠️ SUB: Replaced ${subBadge.original_name} (${subBadge.original_squad})`}>
+                                  ⚠️ SUB: Replaced {subBadge.original_name} ({subBadge.original_squad})
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -696,43 +836,85 @@ export default function RotationSchedule({ lang = 'en' }) {
                       </div>
                     ) : (
                       (squadMembersCache[activeOverlaySquad] || []).map((m) => {
-                        const isOperatorReady = m.weapons_ready === 1 && m.comms_ready === 1;
-                        const specLabel = m.specialization
-                          ? m.specialization.split(',')[0].toUpperCase()
+                        const rot = selectedCalendarDay.rotation;
+                        const dateStr = selectedCalendarDay.dateStr;
+                        const substitution = rot.substitutions?.[dateStr]?.[m.id];
+                        const subId = substitution?.replaced_by;
+
+                        let currentMember = m;
+                        let subBadge = null;
+
+                        if (subId) {
+                          const subProfile = substituteProfilesCache[subId];
+                          if (subProfile) {
+                            currentMember = subProfile;
+                          } else {
+                            fetchSubstituteProfile(subId);
+                          }
+                          subBadge = {
+                            original_name: substitution.original_name,
+                            original_squad: substitution.original_squad
+                          };
+                        }
+
+                        const isOperatorReady = currentMember.weapons_ready === 1 && currentMember.comms_ready === 1;
+                        const specLabel = currentMember.specialization
+                          ? currentMember.specialization.split(',')[0].toUpperCase()
                           : 'FIGHTER';
+
+                        const isCommander = user?.role === 'commander';
+
                         return (
                           <div
                             key={m.id}
-                            className="flex items-center justify-between p-2 bg-bf-slate/80 border border-bf-border/40 clip-btn text-[10px]"
+                            onClick={() => {
+                              if (isCommander) {
+                                fetchAllOperators();
+                                setSubstitutionModal({
+                                  dateStr,
+                                  originalOperator: m,
+                                  rotationId: rot.id || rot._id || rot.docId,
+                                  currentSubId: subId
+                                });
+                              }
+                            }}
+                            className={`flex flex-col gap-1.5 p-2 bg-bf-slate/80 border border-bf-border/40 clip-btn text-[10px] ${isCommander ? 'cursor-pointer hover:border-bf-cyan/70 transition-colors' : ''}`}
                           >
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-dark text-[8px] font-black text-bf-cyan">
-                                {m.avatar_url ? (
-                                  <img
-                                    src={m.avatar_url}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  m.tg_username?.slice(0, 2).toUpperCase() || 'OP'
-                                )}
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-dark text-[8px] font-black text-bf-cyan shrink-0">
+                                  {currentMember.avatar_url ? (
+                                    <img
+                                      src={currentMember.avatar_url}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    currentMember.tg_username?.slice(0, 2).toUpperCase() || 'OP'
+                                  )}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-white font-bold">@{currentMember.tg_username}</span>
+                                  <span className="text-[8px] text-slate-500">{specLabel}</span>
+                                </div>
                               </div>
-                              <div className="flex flex-col">
-                                <span className="text-white font-bold">@{m.tg_username}</span>
-                                <span className="text-[8px] text-slate-500">{specLabel}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[8px] text-slate-400 capitalize">{currentMember.role}</span>
+                                <div
+                                  className={`w-2 h-2 rounded-full shrink-0 ${isOperatorReady ? 'bg-[#2ed573]' : 'bg-bf-orange animate-pulse'}`}
+                                  style={{
+                                    boxShadow: isOperatorReady
+                                      ? '0 0 5px #2ed573'
+                                      : '0 0 5px #ff5400',
+                                  }}
+                                />
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[8px] text-slate-400 capitalize">{m.role}</span>
-                              <div
-                                className={`w-2 h-2 rounded-full ${isOperatorReady ? 'bg-[#2ed573]' : 'bg-bf-orange animate-pulse'}`}
-                                style={{
-                                  boxShadow: isOperatorReady
-                                    ? '0 0 5px #2ed573'
-                                    : '0 0 5px #ff5400',
-                                }}
-                              />
-                            </div>
+                            {subBadge && (
+                              <div className="text-[8px] text-bf-orange/90 font-mono tracking-tighter pt-1 border-t border-bf-orange/20 border-dashed truncate" title={`⚠️ SUB: Replaced ${subBadge.original_name} (${subBadge.original_squad})`}>
+                                ⚠️ SUB: Replaced {subBadge.original_name} ({subBadge.original_squad})
+                              </div>
+                            )}
                           </div>
                         );
                       })
@@ -741,6 +923,101 @@ export default function RotationSchedule({ lang = 'en' }) {
                 </div>
               );
             })()}
+        </div>
+      )}
+
+      {/* Substitution Selection Modal Overlay */}
+      {substitutionModal && (
+        <div className="absolute inset-0 bg-bf-dark/95 z-30 p-3 flex flex-col animate-fade-in font-mono">
+          <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black text-white uppercase">
+                {lang === 'en' ? 'OPERATOR SUBSTITUTION' : 'החלפת לוחם בסבב'}
+              </span>
+              <span className="text-[8px] text-slate-500 mt-0.5">
+                {substitutionModal.dateStr} // ORIGINAL: @{substitutionModal.originalOperator.tg_username || substitutionModal.originalOperator.phone_number}
+              </span>
+            </div>
+            <button
+              onClick={() => setSubstitutionModal(null)}
+              className="bg-bf-slate border border-bf-border text-bf-cyan rounded-full w-5 h-5 flex items-center justify-center cursor-pointer hover:bg-bf-cyan/10 transition-colors"
+            >
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto space-y-3 scroll-container pr-1">
+            {substitutionModal.currentSubId && (
+              <button
+                onClick={() => handleExecuteSubstitute(null, substitutionModal.originalOperator, substitutionModal.dateStr, substitutionModal.rotationId)}
+                className="w-full py-2 bg-bf-orange/10 border border-bf-orange/40 hover:bg-bf-orange/20 text-bf-orange font-bold text-[10px] uppercase tracking-wider clip-btn transition-all cursor-pointer text-center"
+              >
+                {d.subReset}
+              </button>
+            )}
+
+            <div className="text-[9px] text-slate-500 uppercase tracking-widest">// {d.subSelectPrompt}</div>
+
+            {loadingAllOperators ? (
+              <div className="text-center py-6 text-bf-cyan/60 animate-pulse text-[10px]">
+                // SCANNING SQUAD DATABASES...
+              </div>
+            ) : allOperators ? (
+              Object.entries(allOperators).map(([squadName, ops]) => {
+                // Exclude the original operator from listing if they belong to this squad, but list others
+                const printableOps = ops.filter(op => op.id !== substitutionModal.originalOperator.id);
+                if (printableOps.length === 0) return null;
+
+                const squadColor = getSquadColor(squadName, isLightMode);
+
+                return (
+                  <div key={squadName} className="space-y-1">
+                    <div className="text-[8px] font-black tracking-widest pb-0.5 border-b border-bf-border/20" style={{ color: squadColor.color }}>
+                      // SQUAD {squadName}
+                    </div>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {printableOps.map((op) => {
+                        const isCurrentSelection = substitutionModal.currentSubId === op.id;
+                        return (
+                          <div
+                            key={op.id}
+                            onClick={() => handleExecuteSubstitute(op.id, substitutionModal.originalOperator, substitutionModal.dateStr, substitutionModal.rotationId)}
+                            className={`flex items-center gap-2 p-1.5 bg-bf-slate/40 border clip-btn text-[10px] cursor-pointer hover:border-bf-cyan transition-all ${isCurrentSelection ? 'border-bf-cyan bg-bf-cyan/5' : 'border-bf-border/30'}`}
+                          >
+                            <div className="w-5 h-5 rounded-full overflow-hidden border border-bf-border/50 flex items-center justify-center bg-bf-dark text-[8px] font-black text-bf-cyan shrink-0">
+                              {op.avatar_url ? (
+                                <img src={op.avatar_url} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                op.tg_username?.slice(0, 2).toUpperCase() || 'OP'
+                              )}
+                            </div>
+                            <div className="flex flex-col min-w-0 flex-1">
+                              <span className="text-white font-bold truncate">@{op.tg_username}</span>
+                              <span className="text-[7px] text-slate-500 truncate capitalize">{op.specialization?.split(',')[0] || 'fighter'}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-6 text-slate-600 text-[10px]">
+                // NO OPERATORS FOUND
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => setSubstitutionModal(null)}
+            className="w-full mt-3 py-1.5 bg-bf-slate border border-bf-border text-slate-400 hover:text-white font-bold text-[9px] uppercase clip-btn transition-all cursor-pointer text-center"
+          >
+            {d.subCancel}
+          </button>
         </div>
       )}
     </div>

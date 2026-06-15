@@ -131,4 +131,41 @@ router.post('/readiness', authenticateToken, async (req, res) => {
   }
 });
 
+// GET /api/user/:userId/public-profile
+router.get('/:userId/public-profile', authenticateToken, async (req, res) => {
+  try {
+    const db = getDb();
+    const userDoc = await db.collection('users').doc(req.params.userId).get();
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const u = userDoc.data();
+
+    const readinessDoc = await db.collection('readiness_status').doc(req.params.userId).get();
+    const readiness = readinessDoc.exists ? readinessDoc.data() : {};
+
+    res.json({
+      id: userDoc.id,
+      role: u.role || 'fighter',
+      squad_id: u.squad_id || null,
+      avatar_url: u.avatar_url || null,
+      tg_username: u.tg_username || null,
+      specialization: u.specialization || null,
+      weaponry: u.weaponry || null,
+      gear: u.gear || null,
+      optics: u.optics || null,
+      accessories: u.accessories || null,
+      meds: u.meds || null,
+      weapons_ready: readiness.weapons_ready || 0,
+      transport_ready: readiness.transport_ready || 0,
+      comms_ready: readiness.comms_ready || 0,
+      meds_ready: readiness.meds_ready || 0,
+      gear_ready: readiness.gear_ready || 0,
+    });
+  } catch (err) {
+    console.error('[API] Get public profile error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

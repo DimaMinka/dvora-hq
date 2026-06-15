@@ -195,7 +195,7 @@ export default function FighterDashboard({
       {activeTab === 'rotation' && (
         <div className="space-y-4 animate-fade-in">
           {/* Rotation Schedule Widget */}
-          <RotationSchedule lang={lang} />
+          <RotationSchedule lang={lang} user={user} />
         </div>
       )}
 

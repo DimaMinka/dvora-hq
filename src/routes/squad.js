@@ -116,6 +116,42 @@ router.post('/alarm', authenticateToken, async (req, res) => {
   }
 });
 
+// GET /api/squad/all-operators
+router.get('/all-operators', authenticateToken, async (req, res) => {
+  if (req.user.role !== 'commander') {
+    return res.status(403).json({ error: 'Access forbidden: Commander role required' });
+  }
+
+  try {
+    const db = getDb();
+    const usersSnapshot = await db.collection('users').get();
+
+    const squads = {};
+    for (const userDoc of usersSnapshot.docs) {
+      const u = userDoc.data();
+      if (!u.squad_id) continue;
+
+      const squadKey = u.squad_id.toUpperCase();
+      if (!squads[squadKey]) {
+        squads[squadKey] = [];
+      }
+
+      squads[squadKey].push({
+        id: userDoc.id,
+        tg_username: u.tg_username || null,
+        role: u.role || 'fighter',
+        avatar_url: u.avatar_url || null,
+        specialization: u.specialization || null,
+      });
+    }
+
+    res.json(squads);
+  } catch (err) {
+    console.error('[API] Get all operators error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // 9. Get Squad Members list (available to all authenticated operators)
 router.get('/:squadId/members', authenticateToken, async (req, res) => {
   const { squadId } = req.params;

@@ -106,4 +106,55 @@ router.get('/current', authenticateToken, async (req, res) => {
   }
 });
 
+// POST /api/rotations/:rotationId/substitute
+router.post('/:rotationId/substitute', authenticateToken, async (req, res) => {
+  if (req.user.role !== 'commander') {
+    return res.status(403).json({ error: 'Access forbidden: Commander role required' });
+  }
+
+  const { rotationId } = req.params;
+  const { dateStr, originalOperatorId, substituteOperatorId, originalName, originalSquad } = req.body;
+
+  if (!dateStr || !originalOperatorId) {
+    return res.status(400).json({ error: 'dateStr and originalOperatorId are required' });
+  }
+
+  try {
+    const db = getDb();
+    const docRef = db.collection('rotations').doc(rotationId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Rotation not found' });
+    }
+
+    const rotation = doc.data();
+    const substitutions = rotation.substitutions || {};
+
+    if (!substitutions[dateStr]) {
+      substitutions[dateStr] = {};
+    }
+
+    if (!substituteOperatorId) {
+      delete substitutions[dateStr][originalOperatorId];
+      if (Object.keys(substitutions[dateStr]).length === 0) {
+        delete substitutions[dateStr];
+      }
+    } else {
+      substitutions[dateStr][originalOperatorId] = {
+        replaced_by: substituteOperatorId,
+        original_name: originalName || 'Unknown',
+        original_squad: originalSquad || 'Unknown',
+      };
+    }
+
+    await docRef.set({ substitutions }, { merge: true });
+
+    res.json({ success: true, substitutions });
+  } catch (err) {
+    console.error('[API] Substitute operator error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;
