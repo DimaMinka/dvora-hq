@@ -52,7 +52,10 @@ router.get('/', authenticateToken, async (req, res) => {
 
     const rotations = [];
     snapshot.forEach((doc) => {
-      rotations.push(doc.data());
+      rotations.push({
+        id: doc.id,
+        ...doc.data()
+      });
     });
 
     // Sort by start_date ascending
@@ -86,7 +89,10 @@ router.get('/current', authenticateToken, async (req, res) => {
       const start = r.actual_start_date || r.start_date;
       const end = r.actual_end_date || r.end_date;
       if (todayStr >= start && todayStr <= end) {
-        currentRotation = r;
+        currentRotation = {
+          id: doc.id,
+          ...r
+        };
       }
     });
 
@@ -95,7 +101,10 @@ router.get('/current', authenticateToken, async (req, res) => {
       const docId = formatDateISO(sunday);
       const doc = await db.collection('rotations').doc(docId).get();
       if (doc.exists) {
-        currentRotation = doc.data();
+        currentRotation = {
+          id: doc.id,
+          ...doc.data()
+        };
       }
     }
 
