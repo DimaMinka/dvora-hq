@@ -1,8 +1,8 @@
 // Squad color bank matching the project's design system
 // Supports dark and light themes dynamically based on prefers-color-scheme
 
-export const SQUAD_COLORS = {
-  MINKA: {
+export const SQUAD_COLORS = [
+  {
     dark: {
       color: '#6366f1', // electric indigo
       bg: 'rgba(99, 102, 241, 0.12)',
@@ -24,7 +24,7 @@ export const SQUAD_COLORS = {
       glowClass: 'shadow-[0_0_8px_rgba(79, 70, 229, 0.2)]',
     },
   },
-  ALPHA: {
+  {
     dark: {
       color: '#ff5400', // bf-orange
       bg: 'rgba(255, 84, 0, 0.12)',
@@ -46,7 +46,7 @@ export const SQUAD_COLORS = {
       glowClass: 'shadow-[0_0_8px_rgba(178, 73, 0, 0.2)]',
     },
   },
-  BRAVO: {
+  {
     dark: {
       color: '#00f0ff', // bf-cyan
       bg: 'rgba(0, 240, 255, 0.12)',
@@ -68,7 +68,7 @@ export const SQUAD_COLORS = {
       glowClass: 'shadow-[0_0_8px_rgba(112, 83, 53, 0.2)]',
     },
   },
-  CHARLIE: {
+  {
     dark: {
       color: '#cbd5e1', // slate-300
       bg: 'rgba(203, 213, 225, 0.12)',
@@ -90,7 +90,7 @@ export const SQUAD_COLORS = {
       glowClass: 'shadow-[0_0_8px_rgba(74, 55, 40, 0.15)]',
     },
   },
-  DELTA: {
+  {
     dark: {
       color: '#2ed573', // acid green
       bg: 'rgba(46, 213, 115, 0.12)',
@@ -112,7 +112,7 @@ export const SQUAD_COLORS = {
       glowClass: 'shadow-[0_0_8px_rgba(27, 138, 90, 0.2)]',
     },
   },
-  ECHO: {
+  {
     dark: {
       color: '#e056fd', // neon purple
       bg: 'rgba(224, 86, 253, 0.12)',
@@ -134,7 +134,7 @@ export const SQUAD_COLORS = {
       glowClass: 'shadow-[0_0_8px_rgba(120, 47, 138, 0.2)]',
     },
   },
-};
+];
 
 export const DEFAULT_SQUAD_COLOR = {
   dark: {
@@ -159,9 +159,39 @@ export const DEFAULT_SQUAD_COLOR = {
   },
 };
 
+const knownSquadsSet = new Set();
+let knownSquads = [];
+
+export function registerSquads(squads) {
+  const arr = Array.isArray(squads) ? squads : [squads];
+  let changed = false;
+  arr.forEach((s) => {
+    if (!s) return;
+    const clean = String(s).toUpperCase().trim();
+    if (!knownSquadsSet.has(clean)) {
+      knownSquadsSet.add(clean);
+      changed = true;
+    }
+  });
+  if (changed) {
+    knownSquads = Array.from(knownSquadsSet).sort();
+  }
+}
+
 export function getSquadColor(squadId, isLightMode = false) {
   if (!squadId) return isLightMode ? DEFAULT_SQUAD_COLOR.light : DEFAULT_SQUAD_COLOR.dark;
-  const key = String(squadId).toUpperCase();
-  const colors = SQUAD_COLORS[key] || DEFAULT_SQUAD_COLOR;
+  const key = String(squadId).toUpperCase().trim();
+
+  let index = knownSquads.indexOf(key);
+  if (index === -1) {
+    // Fallback: simple deterministic hash code to map any string to 0..N
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      hash = key.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    index = Math.abs(hash);
+  }
+
+  const colors = SQUAD_COLORS[index % SQUAD_COLORS.length];
   return isLightMode ? colors.light : colors.dark;
 }

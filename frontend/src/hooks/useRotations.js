@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { registerSquads } from '../constants/squadColors.js';
 
 export function useRotations() {
   const [rotations, setRotations] = useState([]);
@@ -29,6 +30,22 @@ export function useRotations() {
       if (!listRes.ok) throw new Error('Failed to fetch rotations list');
       const listData = await listRes.json();
       setRotations(listData);
+
+      // Register all unique squads
+      const squadsToRegister = [];
+      if (currentData?.squads) {
+        if (currentData.squads.alert) squadsToRegister.push(currentData.squads.alert);
+        if (currentData.squads.standby) squadsToRegister.push(currentData.squads.standby);
+        if (currentData.squads.rest) squadsToRegister.push(currentData.squads.rest);
+      }
+      listData.forEach((r) => {
+        if (r.squads) {
+          if (r.squads.alert) squadsToRegister.push(r.squads.alert);
+          if (r.squads.standby) squadsToRegister.push(r.squads.standby);
+          if (r.squads.rest) squadsToRegister.push(r.squads.rest);
+        }
+      });
+      registerSquads(squadsToRegister);
     } catch (err) {
       console.error('[useRotations] Error fetching rotations:', err.message);
       setError(err.message);
@@ -58,6 +75,22 @@ export function useRotations() {
         if (isMounted) {
           setCurrentRotation(currentData);
           setRotations(listData);
+
+          // Register all unique squads
+          const squadsToRegister = [];
+          if (currentData?.squads) {
+            if (currentData.squads.alert) squadsToRegister.push(currentData.squads.alert);
+            if (currentData.squads.standby) squadsToRegister.push(currentData.squads.standby);
+            if (currentData.squads.rest) squadsToRegister.push(currentData.squads.rest);
+          }
+          listData.forEach((r) => {
+            if (r.squads) {
+              if (r.squads.alert) squadsToRegister.push(r.squads.alert);
+              if (r.squads.standby) squadsToRegister.push(r.squads.standby);
+              if (r.squads.rest) squadsToRegister.push(r.squads.rest);
+            }
+          });
+          registerSquads(squadsToRegister);
         }
       } catch (err) {
         if (isMounted) {

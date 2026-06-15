@@ -6,6 +6,7 @@ import Onboarding from './components/Onboarding.jsx';
 import { parseWeaponry, parseCommaList } from './utils/loadout.js';
 import { gearsList, medsList } from '@shared/loadout-data.js';
 import { useTheme } from './hooks/useTheme.js';
+import { registerSquads } from './constants/squadColors.js';
 
 const i18n = {
   en: {
@@ -223,6 +224,9 @@ function App() {
   const applyUserData = useCallback((profile) => {
     setUser(profile);
     setRole(profile.role === 'fighter' ? 'soldier' : profile.role);
+    if (profile.squad_id) {
+      registerSquads(profile.squad_id);
+    }
     if (profile.readiness) {
       setChecklist({
         wpn: Number(profile.readiness.weapons_ready),
@@ -510,6 +514,13 @@ function App() {
         setIsLocked(true);
       });
   }, [applyUserData]);
+
+  // Sync user squad ID with squad color registration
+  useEffect(() => {
+    if (user?.squad_id) {
+      registerSquads(user.squad_id);
+    }
+  }, [user]);
 
   // 2. Initial Commander Load & Polling for Alarm State (Fighters) or Squad Readiness (Commanders)
   useEffect(() => {
