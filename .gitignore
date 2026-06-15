@@ -35,4 +35,9 @@ dvora_hq_preview.png
 # Prototypes
 prototype_schedule.html
 
+# RLM Analysis store — verdicts and audit contain security findings, keep private
+.rlm/verdicts/
+.rlm/last_audit.md
+
+
 
