@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRotations } from '../hooks/useRotations.js';
 import { getSquadColor } from '../constants/squadColors.js';
+import MissionTelemetryCard from './MissionTelemetryCard.jsx';
 
 const i18n = {
   en: {
@@ -503,6 +504,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
             const isToday = todayStr === day.dateStr;
             const isPast = day.dateStr < todayStr;
             const meetingTime = rot && rot.meeting_times ? rot.meeting_times[day.dateStr] : null;
+            const completedMission = rot && rot.completed_missions ? rot.completed_missions[day.dateStr] : null;
             const hasSubs = rot && rot.substitutions && rot.substitutions[day.dateStr] && Object.keys(rot.substitutions[day.dateStr]).length > 0;
 
             return (
@@ -511,7 +513,7 @@ export default function RotationSchedule({ lang = 'en', user }) {
                 className={`border transition-all duration-200 clip-hud p-2 flex flex-col ${
                   isToday
                     ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]'
-                    : isPast
+                    : isPast && !isExpanded
                       ? 'bg-bf-slate/50 border-bf-border/30 opacity-60'
                       : 'bg-bf-slate/85 border-bf-border/60'
                 }`}
@@ -567,6 +569,20 @@ export default function RotationSchedule({ lang = 'en', user }) {
                           <span>MISSION TIME: {meetingTime}</span>
                         </div>
                       )}
+                      {completedMission && (
+                        <div className="mt-1 text-[9px] text-[#2ed573] font-bold flex items-center gap-1">
+                          <svg
+                            className="w-2.5 h-2.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span>MISSION COMPLETED</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -598,6 +614,12 @@ export default function RotationSchedule({ lang = 'en', user }) {
                 {/* Expanded Members list */}
                 {isExpanded && alertSquad && (
                   <div className="overflow-hidden animate-slide-down mt-2 pt-2 border-t border-bf-border/30">
+                    {completedMission && (
+                      <div className="mb-4">
+                        <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">// MISSION TELEMETRY BRIEFING</div>
+                        <MissionTelemetryCard telemetry={completedMission.telemetry} isLightMode={isLightMode} />
+                      </div>
+                    )}
                     <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
                       // {alertSquad} OPERATOR DIRECTORY
                     </div>

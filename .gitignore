@@ -34,6 +34,7 @@ dvora_hq_preview.png
 
 # Prototypes
 prototype_schedule.html
+prototype_hud_mission.html
 
 # RLM Analysis store — verdicts and audit contain security findings, keep private
 .rlm/verdicts/

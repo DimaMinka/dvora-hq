@@ -386,14 +386,14 @@ html.theme-dark .bg-bf-dark\/50 {
     opacity: 0;
   }
   to {
-    max-height: 500px;
+    max-height: 2000px;
     opacity: 1;
   }
 }
 
 @keyframes slide-up {
   from {
-    max-height: 500px;
+    max-height: 2000px;
     opacity: 1;
   }
   to {
