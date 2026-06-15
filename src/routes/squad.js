@@ -16,9 +16,11 @@ router.get('/status', authenticateToken, async (req, res) => {
 
   try {
     const db = getDb();
+    const squadId = req.user.squadId;
+    const squadsToQuery = Array.from(new Set([squadId, squadId.toLowerCase(), squadId.toUpperCase()]));
     const usersSnapshot = await db
       .collection('users')
-      .where('squad_id', '==', req.user.squadId)
+      .where('squad_id', 'in', squadsToQuery)
       .get();
 
     const rows = [];
@@ -121,9 +123,10 @@ router.get('/:squadId/members', authenticateToken, async (req, res) => {
 
   try {
     const db = getDb();
+    const squadsToQuery = Array.from(new Set([squadId, squadId.toLowerCase(), squadId.toUpperCase()]));
     const usersSnapshot = await db
       .collection('users')
-      .where('squad_id', '==', squadId.toUpperCase())
+      .where('squad_id', 'in', squadsToQuery)
       .get();
 
     const rows = [];

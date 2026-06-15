@@ -121,15 +121,15 @@ function parseDate(str) {
 function getWeekRange(date) {
   const tempDate = new Date(date);
   const day = tempDate.getDay();
-  const diff = tempDate.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(tempDate.setDate(diff));
-  monday.setHours(0, 0, 0, 0);
+  const diff = tempDate.getDate() - day; // Align to Sunday
+  const sundayStart = new Date(tempDate.setDate(diff));
+  sundayStart.setHours(0, 0, 0, 0);
 
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
+  const saturdayEnd = new Date(sundayStart);
+  saturdayEnd.setDate(sundayStart.getDate() + 6);
+  saturdayEnd.setHours(23, 59, 59, 999);
 
-  return { monday, sunday };
+  return { monday: sundayStart, sunday: saturdayEnd };
 }
 
 function formatDateISO(date) {
@@ -959,7 +959,7 @@ if (bot) {
     return ctx.reply(
       '📅 *NEW ROTATION*\n\n' +
         'Enter rotation start date in DD.MM.YYYY format (e.g., `15.06.2026`).\n' +
-        'The period will be automatically aligned to the Monday of that week.',
+        'The period will be automatically aligned to the Sunday of that week.',
       {
         parse_mode: 'Markdown',
         reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },

@@ -16,14 +16,14 @@ function formatDateISO(date) {
   return `${y}-${m}-${d}`;
 }
 
-// Helper: Get Monday of a week
-function getMonday(date) {
+// Helper: Get Sunday of a week
+function getSunday(date) {
   const tempDate = new Date(date);
   const day = tempDate.getDay();
-  const diff = tempDate.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(tempDate.setDate(diff));
-  monday.setHours(0, 0, 0, 0);
-  return monday;
+  const diff = tempDate.getDate() - day;
+  const sunday = new Date(tempDate.setDate(diff));
+  sunday.setHours(0, 0, 0, 0);
+  return sunday;
 }
 
 // GET /api/rotations
@@ -70,8 +70,8 @@ router.get('/current', authenticateToken, async (req, res) => {
   try {
     const db = getDb();
     const today = new Date();
-    const monday = getMonday(today);
-    const docId = formatDateISO(monday);
+    const sunday = getSunday(today);
+    const docId = formatDateISO(sunday);
 
     const doc = await db.collection('rotations').doc(docId).get();
     if (doc.exists) {

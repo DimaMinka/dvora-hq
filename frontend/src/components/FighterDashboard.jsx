@@ -45,7 +45,7 @@ export default function FighterDashboard({
   const daysLeft = useMemo(() => {
     const today = new Date();
     const day = today.getDay(); // 0 (Sun) to 6 (Sat)
-    return day === 0 ? 0 : 7 - day;
+    return 6 - day;
   }, []);
 
   const { weaponItems, medItems, gearItems, handleToggleItem } = useLoadoutItems(

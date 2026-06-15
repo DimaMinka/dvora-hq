@@ -71,14 +71,14 @@ function formatDateISO(date) {
   return `${y}-${m}-${d}`;
 }
 
-// Date helper: Find Monday of a given date
-function getMonday(date) {
+// Date helper: Find Sunday of a given date
+function getSunday(date) {
   const tempDate = new Date(date);
   const day = tempDate.getDay();
-  const diff = tempDate.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(tempDate.setDate(diff));
-  monday.setHours(0, 0, 0, 0);
-  return monday;
+  const diff = tempDate.getDate() - day;
+  const sunday = new Date(tempDate.setDate(diff));
+  sunday.setHours(0, 0, 0, 0);
+  return sunday;
 }
 
 export default function RotationSchedule({ lang = 'en' }) {
@@ -112,13 +112,13 @@ export default function RotationSchedule({ lang = 'en' }) {
 
   // Generate 7 days of the selected week in Timeline
   const timelineDays = useMemo(() => {
-    const monday = getMonday(new Date());
-    monday.setDate(monday.getDate() + weekOffset * 7);
+    const sunday = getSunday(new Date());
+    sunday.setDate(sunday.getDate() + weekOffset * 7);
 
     const list = [];
     for (let i = 0; i < 7; i++) {
-      const dayDate = new Date(monday);
-      dayDate.setDate(monday.getDate() + i);
+      const dayDate = new Date(sunday);
+      dayDate.setDate(sunday.getDate() + i);
       list.push({
         date: dayDate,
         dateStr: formatDateISO(dayDate),
@@ -163,9 +163,9 @@ export default function RotationSchedule({ lang = 'en' }) {
   // Look up active rotation for a specific day string
   const getRotationForDay = useCallback((dayStr) => {
     const date = new Date(dayStr);
-    const monday = getMonday(date);
-    const mondayStr = formatDateISO(monday);
-    return rotations.find((r) => r.start_date === mondayStr);
+    const sunday = getSunday(date);
+    const sundayStr = formatDateISO(sunday);
+    return rotations.find((r) => r.start_date === sundayStr);
   }, [rotations]);
 
   // Handle timeline day click (accordion toggle)
@@ -316,7 +316,9 @@ export default function RotationSchedule({ lang = 'en' }) {
             const squadColor = alertSquad ? getSquadColor(alertSquad, isLightMode) : null;
             const dayOfWeekName = d.daysOfWeek[day.weekday];
 
-            const isToday = formatDateISO(new Date()) === day.dateStr;
+            const todayStr = formatDateISO(new Date());
+            const isToday = todayStr === day.dateStr;
+            const isPast = day.dateStr < todayStr;
 
             return (
               <div
@@ -324,7 +326,9 @@ export default function RotationSchedule({ lang = 'en' }) {
                 className={`border transition-all duration-200 clip-hud p-2 flex flex-col ${
                   isToday 
                     ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]' 
-                    : 'bg-bf-slate/85 border-bf-border/60'
+                    : isPast
+                      ? 'bg-bf-slate/50 border-bf-border/30 opacity-60'
+                      : 'bg-bf-slate/85 border-bf-border/60'
                 }`}
               >
                 <div
