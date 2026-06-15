@@ -359,7 +359,7 @@ export default function RotationSchedule({ lang = 'en' }) {
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                           </svg>
-                          <span>MEETING: {meetingTime}</span>
+                          <span>MISSION TIME: {meetingTime}</span>
                         </div>
                       )}
                     </div>
@@ -562,7 +562,7 @@ export default function RotationSchedule({ lang = 'en' }) {
                         <polyline points="12 6 12 12 16 14" />
                       </svg>
                       <span className="font-bold text-slate-300 uppercase">
-                        {lang === 'en' ? 'Meeting Time:' : 'שעת מפגש:'}
+                        {lang === 'en' ? 'Mission Time:' : 'שעת משימה:'}
                       </span>
                     </div>
                     <span className="font-black text-bf-orange text-xs">{overlayMeetingTime}</span>

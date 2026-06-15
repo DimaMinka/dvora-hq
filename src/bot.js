@@ -531,7 +531,7 @@ async function handleSetMeetingCallback(ctx, state, data) {
 
       return ctx.editMessageText(
         `📅 Rotation: *${formatWeekRangeEN(monday, sunday)}*\n\n` +
-        `Select day to configure meeting time:`,
+        `Select day to configure mission time:`,
         {
           parse_mode: 'Markdown',
           reply_markup: { inline_keyboard: buttons },
@@ -549,9 +549,9 @@ async function handleSetMeetingCallback(ctx, state, data) {
       const formattedDay = formatShortDate(parseISODate(dateStr));
 
       return ctx.editMessageText(
-        `🕒 *SET MEETING TIME*\n` +
+        `🕒 *SET MISSION TIME*\n` +
         `Day: *${formattedDay}*\n\n` +
-        `Enter meeting time in *HH:MM* format (e.g., \`17:00\`) or type \`clear\` to remove:`,
+        `Enter mission time in *HH:MM* format (e.g., \`17:00\`) or type \`clear\` to remove:`,
         {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -607,8 +607,8 @@ async function handleSetMeetingText(ctx, state) {
 
     const formattedDay = formatShortDate(parseISODate(state.data.dateStr));
     const successMsg = isClear
-      ? `✅ *MEETING TIME REMOVED* for *${formattedDay}*.`
-      : `✅ *MEETING TIME SET* to \`${timeVal}\` for *${formattedDay}*.`;
+      ? `✅ *MISSION TIME REMOVED* for *${formattedDay}*.`
+      : `✅ *MISSION TIME SET* to \`${timeVal}\` for *${formattedDay}*.`;
 
     await ctx.reply(successMsg, { parse_mode: 'Markdown' });
     setConversationState(ctx.chat.id, null);
@@ -828,7 +828,7 @@ if (bot) {
           { command: 'add_rotation', description: '📅 Schedule a weekly rotation' },
           { command: 'remove_rotation', description: '📅 Remove a scheduled rotation' },
           { command: 'list_rotations', description: '📅 View rotation schedule' },
-          { command: 'set_meeting', description: '⏱ Set a mission meeting time' },
+          { command: 'set_meeting', description: '⏱ Set a mission time' },
         ],
         {
           scope: { type: 'chat', chat_id: ctx.chat.id },
@@ -848,7 +848,7 @@ if (bot) {
       `• \`/add_rotation\` — Schedule a weekly rotation\n` +
       `• \`/remove_rotation\` — Remove a scheduled rotation\n` +
       `• \`/list_rotations\` — View rotation schedule for the next 4 weeks\n` +
-      `• \`/set_meeting\` — Set a mission meeting time for a specific day\n\n` +
+      `• \`/set_meeting\` — Set a mission time for a specific day\n\n` +
       `_Security protocols active. Management via inline keyboard buttons._`;
     return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
   });
@@ -1301,7 +1301,7 @@ if (bot) {
         data: {},
       });
 
-      return ctx.reply('Select week to set meeting time:', {
+      return ctx.reply('Select week to set mission time:', {
         reply_markup: { inline_keyboard: buttons },
       });
     } catch (err) {
