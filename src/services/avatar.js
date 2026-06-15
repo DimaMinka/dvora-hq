@@ -23,9 +23,11 @@ export async function generateAndSaveAvatar(userRef, userId, formattedSpecData) 
       formattedAccs,
       formattedGear,
       formattedMeds,
+      genderLabel,
     } = formattedSpecData;
 
-    const prompt = `Ultra-realistic 3D render, photorealistic textures, diffuse soft overcast daylight. A high-fidelity tactical modern military special operations soldier avatar. The soldier is always wearing a black tactical balaclava face mask covering the head and face, showing only the eyes.
+    const genderWord = genderLabel ? genderLabel.toLowerCase() : 'soldier';
+    const prompt = `Ultra-realistic 3D render, photorealistic textures, diffuse soft overcast daylight. A high-fidelity tactical modern military special operations ${genderWord} avatar. The soldier is always wearing a black tactical balaclava face mask covering the head and face, showing only the eyes.
 Role/Specialization: ${formattedSpec}.
 Primary weapon: ${weaponryLabel} equipped with ${formattedOptics} (highly customized, tan collapsible stock, extended M-LOK handguard, suppressor).
 Tactical Accessories: ${formattedAccs}.

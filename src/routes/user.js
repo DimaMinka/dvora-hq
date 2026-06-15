@@ -36,7 +36,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
 
 // 5.5 Onboarding (Fighter loadout selection & AI avatar generation)
 router.post('/onboarding', authenticateToken, async (req, res) => {
-  const { specialization, weaponry, gear, optics, accessories, meds } = req.body;
+  const { specialization, weaponry, gear, optics, accessories, meds, gender } = req.body;
 
   if (!specialization || !weaponry || !gear) {
     return res.status(400).json({ error: 'specialization, weaponry, and gear are required' });
@@ -54,6 +54,7 @@ router.post('/onboarding', authenticateToken, async (req, res) => {
     if (optics !== undefined) updateData.optics = optics;
     if (accessories !== undefined) updateData.accessories = accessories;
     if (meds !== undefined) updateData.meds = meds;
+    if (gender !== undefined) updateData.gender = gender;
 
     // Save selections
     await userRef.update(updateData);
@@ -66,6 +67,7 @@ router.post('/onboarding', authenticateToken, async (req, res) => {
       accessories,
       gear,
       meds,
+      gender,
     });
     const avatarUrl = await generateAndSaveAvatar(userRef, req.user.userId, formattedSpecData);
 
@@ -80,6 +82,7 @@ router.post('/onboarding', authenticateToken, async (req, res) => {
         optics: optics || null,
         accessories: accessories || null,
         meds: meds || null,
+        gender: gender || null,
         avatar_url: avatarUrl || null,
         readiness: null,
       },

@@ -75,3 +75,9 @@ export const medsList = [
   { id: 'cat_tourniquet', en: 'CAT Tourniquet', he: '"חוסם עורקים" (ח"ע) cat' },
   { id: 'tactical_soft_stretcher', en: 'Tactical Soft Stretcher', he: 'אלונקת בד טקטית' },
 ];
+
+export const gendersList = [
+  { id: 'male', en: 'Male', he: 'זכר' },
+  { id: 'female', en: 'Female', he: 'נקבה' },
+];
+

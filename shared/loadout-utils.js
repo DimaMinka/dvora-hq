@@ -6,6 +6,7 @@ import {
   accessoriesList,
   gearsList,
   medsList,
+  gendersList,
 } from './loadout-data.js';
 
 const aiDescriptions = {
@@ -51,7 +52,12 @@ export function formatLoadoutForAIPrompt({
   accessories,
   gear,
   meds,
+  gender,
 }) {
+  const cleanGender = (gender || 'male').trim().toLowerCase();
+  const gMatch = gendersList.find((g) => g.id === cleanGender);
+  const genderLabel = gMatch ? gMatch.en : cleanGender;
+
   const formattedSpec = (specialization || '')
     .split(',')
     .map((s) => {
@@ -131,5 +137,6 @@ export function formatLoadoutForAIPrompt({
     formattedAccs,
     formattedGear,
     formattedMeds,
+    genderLabel,
   };
 }

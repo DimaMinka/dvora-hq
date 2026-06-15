@@ -7,6 +7,7 @@ import {
   accessoriesList,
   gearsList,
   medsList,
+  gendersList,
 } from '@shared/loadout-data.js';
 
 function SelectionSection({
@@ -54,15 +55,17 @@ function SelectionSection({
           );
         })}
       </div>
-      <button
-        type="button"
-        onClick={onToggleExpand}
-        className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${
-          isExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
-        }`}
-      >
-        {isExpanded ? d.less : d.more}
-      </button>
+      {list.length > 2 && (
+        <button
+          type="button"
+          onClick={onToggleExpand}
+          className={`w-full text-center py-1 text-[8px] font-mono font-bold uppercase transition-colors cursor-pointer select-none ${
+            isExpanded ? 'text-slate-500 hover:text-slate-300' : 'text-bf-cyan hover:text-white'
+          }`}
+        >
+          {isExpanded ? d.less : d.more}
+        </button>
+      )}
     </div>
   );
 }
@@ -75,6 +78,7 @@ export default function Onboarding({ lang = 'en', onComplete }) {
   const [selectedAccs, setSelectedAccs] = useState([]);
   const [selectedMeds, setSelectedMeds] = useState([]);
   const [selectedGears, setSelectedGears] = useState([]);
+  const [gender, setGender] = useState('male');
   const [loading, setLoading] = useState(false);
 
   const [expandedSections, setExpandedSections] = useState({
@@ -105,6 +109,7 @@ export default function Onboarding({ lang = 'en', onComplete }) {
       lblAccs: '05_TACTICAL_ACCESSORIES (SELECT MULTIPLE)',
       lblMeds: '06_ASSIGN_MEDICAL_EQUIPMENT (SELECT MULTIPLE)',
       lblGear: '07_ASSIGN_GEAR_LOADOUT (SELECT MULTIPLE)',
+      lblGender: '08_SELECT_GENDER',
       btnSubmit: 'GENERATE PROFILE MATRIX',
       btnGenerating: 'CONNECTING COGNITIVE SYNAPSE...',
       warning: 'WARNING: Selected credentials will lock into operational profile database.',
@@ -122,6 +127,7 @@ export default function Onboarding({ lang = 'en', onComplete }) {
       lblAccs: '05_אביזרים_טקטיים (בחירה מרובה)',
       lblMeds: '06_בחר_ציוד_רפואי (בחירה מרובה)',
       lblGear: '07_שייך_ערכת_ציוד (בחירה מרובה)',
+      lblGender: '08_בחר_מגדר',
       btnSubmit: 'יצירת מטריצת פרופיל',
       btnGenerating: 'מייצר אוווטאר ביומטרי...',
       warning: 'אזהרה: הנתונים הנבחרים יינעלו בבסיס הנתונים המבצעי.',
@@ -158,6 +164,7 @@ export default function Onboarding({ lang = 'en', onComplete }) {
         optics: selectedOptics.join(','),
         accessories: selectedAccs.join(','),
         meds: selectedMeds.join(','),
+        gender,
       });
     } catch (err) {
       alert(`ONBOARDING ERROR: ${err.message}`);
@@ -257,6 +264,19 @@ export default function Onboarding({ lang = 'en', onComplete }) {
         onToggleExpand={() => toggleExpand('gear')}
         lang={lang}
         d={d}
+      />
+
+      {/* 08_Gender Selection */}
+      <SelectionSection
+        label={d.lblGender}
+        list={gendersList}
+        selectedItems={gender}
+        onToggle={setGender}
+        isExpanded={true}
+        onToggleExpand={() => {}}
+        lang={lang}
+        d={d}
+        isSingleSelect={true}
       />
 
       <div className="border-t border-bf-border/60 pt-3 space-y-2">
