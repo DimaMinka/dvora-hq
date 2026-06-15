@@ -689,31 +689,90 @@
         const standbyLabel = isHe ? 'גיבוי' : 'STANDBY';
         const restLabel = isHe ? 'מנוחה' : 'REST';
         const missionTimeLabel = isHe ? 'שעת משימה' : 'MISSION TIME';
-        const days = isHe ? ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        
+        const days = isHe
+          ? ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']
+          : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
         const daysData = [
-          { dayNum: 14, weekdayIdx: 0, isPast: true, isToday: false, squad: 'MINKA', standby: 'ALPHA', rest: 'BETA' },
-          { dayNum: 15, weekdayIdx: 1, isPast: true, isToday: false, squad: 'MINKA', standby: 'ALPHA', rest: 'BETA' },
-          { dayNum: 16, weekdayIdx: 2, isPast: false, isToday: true, squad: 'MINKA', standby: 'ALPHA', rest: 'BETA' },
-          { dayNum: 17, weekdayIdx: 3, isPast: false, isToday: false, squad: 'MINKA', standby: 'ALPHA', rest: 'BETA' },
-          { dayNum: 18, weekdayIdx: 4, isPast: false, isToday: false, squad: 'MINKA', standby: 'ALPHA', rest: 'BETA' },
-          { dayNum: 19, weekdayIdx: 5, isPast: false, isToday: false, squad: 'MINKA', standby: 'ALPHA', rest: 'BETA', missionTime: '17:00' },
-          { dayNum: 20, weekdayIdx: 6, isPast: false, isToday: false, squad: 'MINKA', standby: 'ALPHA', rest: 'BETA' },
+          {
+            dayNum: 14,
+            weekdayIdx: 0,
+            isPast: true,
+            isToday: false,
+            squad: 'MINKA',
+            standby: 'ALPHA',
+            rest: 'BETA',
+          },
+          {
+            dayNum: 15,
+            weekdayIdx: 1,
+            isPast: true,
+            isToday: false,
+            squad: 'MINKA',
+            standby: 'ALPHA',
+            rest: 'BETA',
+          },
+          {
+            dayNum: 16,
+            weekdayIdx: 2,
+            isPast: false,
+            isToday: true,
+            squad: 'MINKA',
+            standby: 'ALPHA',
+            rest: 'BETA',
+          },
+          {
+            dayNum: 17,
+            weekdayIdx: 3,
+            isPast: false,
+            isToday: false,
+            squad: 'MINKA',
+            standby: 'ALPHA',
+            rest: 'BETA',
+          },
+          {
+            dayNum: 18,
+            weekdayIdx: 4,
+            isPast: false,
+            isToday: false,
+            squad: 'MINKA',
+            standby: 'ALPHA',
+            rest: 'BETA',
+          },
+          {
+            dayNum: 19,
+            weekdayIdx: 5,
+            isPast: false,
+            isToday: false,
+            squad: 'MINKA',
+            standby: 'ALPHA',
+            rest: 'BETA',
+            missionTime: '17:00',
+          },
+          {
+            dayNum: 20,
+            weekdayIdx: 6,
+            isPast: false,
+            isToday: false,
+            squad: 'MINKA',
+            standby: 'ALPHA',
+            rest: 'BETA',
+          },
         ];
-        
+
         let timelineHtml = `
           <div class="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-2">${title}</div>
           <div class="space-y-1.5 max-h-[280px] overflow-y-auto pr-1">
         `;
-        
-        daysData.forEach(d => {
+
+        daysData.forEach((d) => {
           const weekdayName = days[d.weekdayIdx];
-          const isTodayClass = d.isToday 
-            ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]' 
+          const isTodayClass = d.isToday
+            ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]'
             : d.isPast
               ? 'bg-bf-slate/30 border-bf-border/20 opacity-50'
               : 'bg-bf-slate/75 border-bf-border/60';
-              
+
           timelineHtml += `
             <div class="border transition-all duration-200 clip-hud p-1.5 flex items-center justify-between ${isTodayClass}">
               <div class="flex items-center gap-2">
@@ -728,7 +787,9 @@
                   <span class="text-[7px] text-slate-500 truncate">
                     ${standbyLabel}: ${d.standby} | ${restLabel}: ${d.rest}
                   </span>
-                  ${d.missionTime ? `
+                  ${
+                    d.missionTime
+                      ? `
                     <div class="mt-0.5 text-[8px] text-bf-orange font-bold flex items-center gap-0.5">
                       <svg class="w-2 h-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <circle cx="12" cy="12" r="10" />
@@ -736,14 +797,16 @@
                       </svg>
                       <span>${missionTimeLabel}: ${d.missionTime}</span>
                     </div>
-                  ` : ''}
+                  `
+                      : ''
+                  }
                 </div>
               </div>
               <div class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: #6366f1; box-shadow: 0 0 4px #6366f1;"></div>
             </div>
           `;
         });
-        
+
         timelineHtml += `</div>`;
         return timelineHtml;
       }

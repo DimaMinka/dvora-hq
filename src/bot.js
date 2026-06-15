@@ -34,19 +34,26 @@ function setConversationState(chatId, state) {
     return;
   }
 
-  const timeoutId = setTimeout(async () => {
-    const currentState = conversationState.get(chatId);
-    if (currentState && currentState.timeoutId === timeoutId) {
-      conversationState.delete(chatId);
-      try {
-        if (bot) {
-          await bot.api.sendMessage(chatId, '⏱ *Session expired*. Please start over using the commands.', { parse_mode: 'Markdown' });
+  const timeoutId = setTimeout(
+    async () => {
+      const currentState = conversationState.get(chatId);
+      if (currentState && currentState.timeoutId === timeoutId) {
+        conversationState.delete(chatId);
+        try {
+          if (bot) {
+            await bot.api.sendMessage(
+              chatId,
+              '⏱ *Session expired*. Please start over using the commands.',
+              { parse_mode: 'Markdown' }
+            );
+          }
+        } catch (err) {
+          console.error('[Bot Timeout] Failed to send timeout notice:', err.message);
         }
-      } catch (err) {
-        console.error('[Bot Timeout] Failed to send timeout notice:', err.message);
       }
-    }
-  }, 5 * 60 * 1000);
+    },
+    5 * 60 * 1000
+  );
 
   state.timeoutId = timeoutId;
   conversationState.set(chatId, state);
@@ -117,7 +124,8 @@ function parseDate(str) {
   if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
 
   const date = new Date(year, month, day);
-  if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) return null;
+  if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day)
+    return null;
   return date;
 }
 
@@ -147,8 +155,34 @@ function parseISODate(str) {
   return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
 }
 
-const EN_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const EN_MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const EN_MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+const EN_MONTHS_SHORT = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 function formatWeekRangeEN(monday, sunday) {
   const mMonth = monday.getMonth();
@@ -175,10 +209,13 @@ async function handleAddUserCallback(ctx, state, data) {
       state.data.squad_id = squad;
       state.step = 'username';
       setConversationState(ctx.chat.id, state);
-      return ctx.editMessageText(`Squad selected: *${squad}*\n\nEnter the @username of the new user:`, {
-        parse_mode: 'Markdown',
-        reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
-      });
+      return ctx.editMessageText(
+        `Squad selected: *${squad}*\n\nEnter the @username of the new user:`,
+        {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
+        }
+      );
     }
   } else if (state.step === 'confirm') {
     if (data === 'confirm_add') {
@@ -187,14 +224,17 @@ async function handleAddUserCallback(ctx, state, data) {
       const role = state.flow === 'add_fighter' ? 'fighter' : 'commander';
 
       const db = getDb();
-      await db.collection('users').doc(pin).set({
-        pin_code: pin,
-        pin_hash: pinHash,
-        role: role,
-        squad_id: state.data.squad_id,
-        tg_username: state.data.tg_username.toLowerCase().replace(/^@/, ''),
-        created_at: new Date().toISOString(),
-      });
+      await db
+        .collection('users')
+        .doc(pin)
+        .set({
+          pin_code: pin,
+          pin_hash: pinHash,
+          role: role,
+          squad_id: state.data.squad_id,
+          tg_username: state.data.tg_username.toLowerCase().replace(/^@/, ''),
+          created_at: new Date().toISOString(),
+        });
 
       const roleLabel = role.toUpperCase();
       await ctx.editMessageText(
@@ -265,8 +305,7 @@ async function handleRemoveUserCallback(ctx, state, data) {
       setConversationState(ctx.chat.id, state);
 
       return ctx.editMessageText(
-        `⚠️ *Delete @${u.tg_username} from ${u.squad_id}?*\n` +
-          `PIN: \`${pin}\` will be revoked.`,
+        `⚠️ *Delete @${u.tg_username} from ${u.squad_id}?*\n` + `PIN: \`${pin}\` will be revoked.`,
         {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -305,7 +344,9 @@ async function handleListUsersCallback(ctx, state, data) {
       if (squad === '__all__') {
         snapshot = await db.collection('users').get();
       } else {
-        const squadsToQuery = Array.from(new Set([squad, squad.toLowerCase(), squad.toUpperCase()]));
+        const squadsToQuery = Array.from(
+          new Set([squad, squad.toLowerCase(), squad.toUpperCase()])
+        );
         snapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
       }
 
@@ -410,7 +451,8 @@ async function handleAddRotationCallback(ctx, state, data) {
       state.step = 'confirm';
       setConversationState(ctx.chat.id, state);
 
-      let confirmMsg = `📅 *Create rotation?*\n\n` +
+      let confirmMsg =
+        `📅 *Create rotation?*\n\n` +
         `• *Period:* ${state.data.formattedRange}\n` +
         `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
         `• 🔵 *Standby:* \`${state.data.standby}\``;
@@ -468,20 +510,24 @@ async function handleAddRotationCallback(ctx, state, data) {
 
 async function saveRotation(ctx, state) {
   const db = getDb();
-  await db.collection('rotations').doc(state.data.start_date).set({
-    start_date: state.data.start_date,
-    end_date: state.data.end_date,
-    squads: {
-      alert: state.data.alert,
-      standby: state.data.standby,
-      rest: state.data.rest || null,
-    },
-    created_by: ctx.from?.username || 'unknown',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  });
+  await db
+    .collection('rotations')
+    .doc(state.data.start_date)
+    .set({
+      start_date: state.data.start_date,
+      end_date: state.data.end_date,
+      squads: {
+        alert: state.data.alert,
+        standby: state.data.standby,
+        rest: state.data.rest || null,
+      },
+      created_by: ctx.from?.username || 'unknown',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
 
-  let successMsg = `✅ *ROTATION SUCCESSFULLY CREATED*\n\n` +
+  let successMsg =
+    `✅ *ROTATION SUCCESSFULLY CREATED*\n\n` +
     `• *Period:* ${state.data.formattedRange}\n` +
     `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
     `• 🔵 *Standby:* \`${state.data.standby}\``;
@@ -516,8 +562,8 @@ async function handleSetMeetingCallback(ctx, state, data) {
       for (let i = 0; i < days.length; i += 2) {
         const row = [];
         row.push({ text: days[i].label, callback_data: `day:${days[i].dateStr}` });
-        if (days[i+1]) {
-          row.push({ text: days[i+1].label, callback_data: `day:${days[i+1].dateStr}` });
+        if (days[i + 1]) {
+          row.push({ text: days[i + 1].label, callback_data: `day:${days[i + 1].dateStr}` });
         }
         buttons.push(row);
       }
@@ -531,7 +577,7 @@ async function handleSetMeetingCallback(ctx, state, data) {
 
       return ctx.editMessageText(
         `📅 Rotation: *${formatWeekRangeEN(monday, sunday)}*\n\n` +
-        `Select day to configure mission time:`,
+          `Select day to configure mission time:`,
         {
           parse_mode: 'Markdown',
           reply_markup: { inline_keyboard: buttons },
@@ -550,8 +596,8 @@ async function handleSetMeetingCallback(ctx, state, data) {
 
       return ctx.editMessageText(
         `🕒 *SET MISSION TIME*\n` +
-        `Day: *${formattedDay}*\n\n` +
-        `Enter mission time in *HH:MM* format (e.g., \`17:00\`) or type \`clear\` to remove:`,
+          `Day: *${formattedDay}*\n\n` +
+          `Enter mission time in *HH:MM* format (e.g., \`17:00\`) or type \`clear\` to remove:`,
         {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -574,12 +620,15 @@ async function handleSetMeetingText(ctx, state) {
     if (!isClear) {
       const match = text.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/);
       if (!match) {
-        return ctx.reply('⚠️ *INVALID FORMAT*. Enter time in HH:MM format (e.g., 17:00) or type `clear`:', {
-          parse_mode: 'Markdown',
-          reply_markup: {
-            inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]],
-          },
-        });
+        return ctx.reply(
+          '⚠️ *INVALID FORMAT*. Enter time in HH:MM format (e.g., 17:00) or type `clear`:',
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]],
+            },
+          }
+        );
       }
       timeVal = text;
     }
@@ -600,10 +649,13 @@ async function handleSetMeetingText(ctx, state) {
       meetingTimes[state.data.dateStr] = timeVal;
     }
 
-    await docRef.set({
-      meeting_times: meetingTimes,
-      updated_at: new Date().toISOString(),
-    }, { merge: true });
+    await docRef.set(
+      {
+        meeting_times: meetingTimes,
+        updated_at: new Date().toISOString(),
+      },
+      { merge: true }
+    );
 
     const formattedDay = formatShortDate(parseISODate(state.data.dateStr));
     const successMsg = isClear
@@ -663,27 +715,25 @@ async function handleRemoveRotationCallback(ctx, state, data) {
       state.step = 'confirm';
       setConversationState(ctx.chat.id, state);
 
-      let msg = `⚠️ *Delete rotation for the period ${state.data.formattedRange}?*\n` +
+      let msg =
+        `⚠️ *Delete rotation for the period ${state.data.formattedRange}?*\n` +
         `• 🔴 Alert: \`${state.data.alert}\`\n` +
         `• 🔵 Standby: \`${state.data.standby}\``;
       if (state.data.rest) {
         msg += `\n• ⬜ Rest: \`${state.data.rest}\``;
       }
 
-      return ctx.editMessageText(
-        msg,
-        {
-          parse_mode: 'Markdown',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: '✅ Delete', callback_data: 'confirm_remove_rotation' },
-                { text: '❌ Cancel', callback_data: 'cancel' },
-              ],
+      return ctx.editMessageText(msg, {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '✅ Delete', callback_data: 'confirm_remove_rotation' },
+              { text: '❌ Cancel', callback_data: 'cancel' },
             ],
-          },
-        }
-      );
+          ],
+        },
+      });
     }
   } else if (state.step === 'confirm') {
     if (data === 'confirm_remove_rotation') {
@@ -749,10 +799,13 @@ async function handleAddRotationText(ctx, state) {
   if (state.step === 'date') {
     const date = parseDate(text);
     if (!date) {
-      return ctx.reply('⚠️ *INVALID FORMAT*. Enter the start date in DD.MM.YYYY format (e.g., 15.06.2026):', {
-        parse_mode: 'Markdown',
-        reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
-      });
+      return ctx.reply(
+        '⚠️ *INVALID FORMAT*. Enter the start date in DD.MM.YYYY format (e.g., 15.06.2026):',
+        {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
+        }
+      );
     }
 
     const { monday, sunday } = getWeekRange(date);
@@ -760,10 +813,13 @@ async function handleAddRotationText(ctx, state) {
     const { monday: currentMonday } = getWeekRange(today);
 
     if (monday < currentMonday) {
-      return ctx.reply('⚠️ *PAST PERIOD*. Cannot create rotations for past weeks. Please enter another date:', {
-        parse_mode: 'Markdown',
-        reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
-      });
+      return ctx.reply(
+        '⚠️ *PAST PERIOD*. Cannot create rotations for past weeks. Please enter another date:',
+        {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
+        }
+      );
     }
 
     state.data.start_date = formatDateISO(monday);
@@ -775,15 +831,16 @@ async function handleAddRotationText(ctx, state) {
 
     if (squads.length < 3) {
       setConversationState(ctx.chat.id, null);
-      return ctx.reply('⚠️ *ERROR*: At least 3 squads must exist in the system to create a rotation. Please add fighters to other squads first.');
+      return ctx.reply(
+        '⚠️ *ERROR*: At least 3 squads must exist in the system to create a rotation. Please add fighters to other squads first.'
+      );
     }
 
     state.step = 'alert';
     setConversationState(ctx.chat.id, state);
 
     return ctx.reply(
-      `📅 Period: *${state.data.formattedRange}*\n\n` +
-        `Select *ALERT* (Duty) squad:`,
+      `📅 Period: *${state.data.formattedRange}*\n\n` + `Select *ALERT* (Duty) squad:`,
       {
         parse_mode: 'Markdown',
         reply_markup: buildSquadKeyboard(squads),
@@ -869,9 +926,12 @@ if (bot) {
         step: 'squad_text',
         data: {},
       });
-      return ctx.reply('No squads exist in the system yet. Enter the name of the new squad (e.g., ALPHA):', {
-        reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
-      });
+      return ctx.reply(
+        'No squads exist in the system yet. Enter the name of the new squad (e.g., ALPHA):',
+        {
+          reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
+        }
+      );
     }
 
     setConversationState(ctx.chat.id, {
@@ -900,9 +960,12 @@ if (bot) {
         step: 'squad_text',
         data: {},
       });
-      return ctx.reply('No squads exist in the system yet. Enter the name of the new squad (e.g., ALPHA):', {
-        reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
-      });
+      return ctx.reply(
+        'No squads exist in the system yet. Enter the name of the new squad (e.g., ALPHA):',
+        {
+          reply_markup: { inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]] },
+        }
+      );
     }
 
     setConversationState(ctx.chat.id, {
@@ -1182,7 +1245,8 @@ if (bot) {
       const db = getDb();
       const todayStr = formatDateISO(getWeekRange(new Date()).monday);
 
-      const snapshot = await db.collection('rotations')
+      const snapshot = await db
+        .collection('rotations')
         .where('start_date', '>=', todayStr)
         .orderBy('start_date')
         .limit(8)
@@ -1197,7 +1261,9 @@ if (bot) {
         const r = doc.data();
         const monday = parseISODate(r.start_date);
         const sunday = parseISODate(r.end_date);
-        const label = `📅 ${formatWeekRangeEN(monday, sunday)}: ${r.squads.alert}/${r.squads.standby}` + (r.squads.rest ? `/${r.squads.rest}` : '');
+        const label =
+          `📅 ${formatWeekRangeEN(monday, sunday)}: ${r.squads.alert}/${r.squads.standby}` +
+          (r.squads.rest ? `/${r.squads.rest}` : '');
         buttons.push([{ text: label, callback_data: `rotation:${doc.id}` }]);
       });
       buttons.push([{ text: '❌ Cancel', callback_data: 'cancel' }]);
@@ -1228,7 +1294,8 @@ if (bot) {
       const db = getDb();
       const todayStr = formatDateISO(getWeekRange(new Date()).monday);
 
-      const snapshot = await db.collection('rotations')
+      const snapshot = await db
+        .collection('rotations')
         .where('start_date', '>=', todayStr)
         .orderBy('start_date')
         .limit(4)
@@ -1243,9 +1310,10 @@ if (bot) {
         const r = doc.data();
         const monday = parseISODate(r.start_date);
         const sunday = parseISODate(r.end_date);
-        response += `• *${formatWeekRangeEN(monday, sunday)}*:\n` +
-                    `  🔴 Alert: *${r.squads.alert}*\n` +
-                    `  🔵 Standby: *${r.squads.standby}*\n`;
+        response +=
+          `• *${formatWeekRangeEN(monday, sunday)}*:\n` +
+          `  🔴 Alert: *${r.squads.alert}*\n` +
+          `  🔵 Standby: *${r.squads.standby}*\n`;
         if (r.squads.rest) {
           response += `  ⬜ Rest: *${r.squads.rest}*\n`;
         }
@@ -1255,8 +1323,8 @@ if (bot) {
       return ctx.reply(response, {
         parse_mode: 'Markdown',
         reply_markup: {
-          inline_keyboard: [[{ text: '❌ Close', callback_data: 'cancel' }]]
-        }
+          inline_keyboard: [[{ text: '❌ Close', callback_data: 'cancel' }]],
+        },
       });
     } catch (err) {
       console.error('[Bot] List rotations error:', err.message);
@@ -1275,7 +1343,8 @@ if (bot) {
       const db = getDb();
       const todayStr = formatDateISO(getWeekRange(new Date()).monday);
 
-      const snapshot = await db.collection('rotations')
+      const snapshot = await db
+        .collection('rotations')
         .where('start_date', '>=', todayStr)
         .orderBy('start_date')
         .limit(8)

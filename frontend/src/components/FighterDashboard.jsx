@@ -23,7 +23,7 @@ export default function FighterDashboard({
   const [reportText, setReportText] = useState('');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => alarmActive ? 'readiness' : 'rotation');
+  const [activeTab, setActiveTab] = useState(() => (alarmActive ? 'readiness' : 'rotation'));
 
   useEffect(() => {
     if (alarmActive) {
@@ -159,7 +159,9 @@ export default function FighterDashboard({
           type="button"
           onClick={() => setActiveTab('rotation')}
           className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
-            activeTab === 'rotation' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
+            activeTab === 'rotation'
+              ? 'bg-bf-cyan text-bf-dark font-black'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           {lang === 'en' ? '// ROTATIONS' : '// סבבים'}
@@ -168,7 +170,9 @@ export default function FighterDashboard({
           type="button"
           onClick={() => setActiveTab('readiness')}
           className={`flex-1 py-1 text-[10px] font-bold uppercase tracking-wider clip-btn transition-all cursor-pointer ${
-            activeTab === 'readiness' ? 'bg-bf-cyan text-bf-dark font-black' : 'text-slate-400 hover:text-white'
+            activeTab === 'readiness'
+              ? 'bg-bf-cyan text-bf-dark font-black'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           {lang === 'en' ? '// READINESS' : '// מוכנות'}
@@ -186,8 +190,6 @@ export default function FighterDashboard({
       {/* TAB 2: READINESS */}
       {activeTab === 'readiness' && (
         <div className="space-y-4 animate-fade-in">
-
-
           {/* Checklist Toggles */}
           <ChecklistToggleGrid
             checklist={checklist}

@@ -5,6 +5,7 @@ import CommanderDashboard from './components/CommanderDashboard.jsx';
 import Onboarding from './components/Onboarding.jsx';
 import { parseWeaponry, parseCommaList } from './utils/loadout.js';
 import { gearsList, medsList } from '@shared/loadout-data.js';
+import { useTheme } from './hooks/useTheme.js';
 
 const i18n = {
   en: {
@@ -201,6 +202,7 @@ const getCategoryItems = (key, user, lang) => {
 };
 
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const [lang, setLang] = useState('en');
   const [isLocked, setIsLocked] = useState(true);
   const [role, setRole] = useState('soldier');
@@ -473,27 +475,22 @@ function App() {
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
-
-      const updateTelegramThemeColors = () => {
-        // Check if light mode is active (prefers-color-scheme: light)
-        const isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-        const themeColor = isLight ? '#e8dcc4' : '#050b0e'; // Desert sand vs Dark tactical
-
-        try {
-          window.Telegram.WebApp.setHeaderColor(themeColor);
-          window.Telegram.WebApp.setBackgroundColor(themeColor);
-        } catch (e) {
-          console.error('[TG WebApp] Failed to update theme colors:', e);
-        }
-      };
-
-      updateTelegramThemeColors();
-
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-      mediaQuery.addEventListener('change', updateTelegramThemeColors);
-      return () => mediaQuery.removeEventListener('change', updateTelegramThemeColors);
     }
   }, []);
+
+  // Sync Telegram header/background color with effective theme (auto + manual override)
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (!tg) return;
+
+    const themeColor = theme === 'light' ? '#e8dcc4' : '#050b0e';
+    try {
+      tg.setHeaderColor(themeColor);
+      tg.setBackgroundColor(themeColor);
+    } catch (e) {
+      console.error('[TG WebApp] Failed to update theme colors:', e);
+    }
+  }, [theme]);
 
   // 1. Initial Load: Check token
   useEffect(() => {
@@ -598,14 +595,67 @@ function App() {
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-bf-cyan to-transparent opacity-50"></div>
 
-      <header className="max-w-md mx-auto mb-6 flex justify-between items-center gap-4 border-b border-bf-border/60 pb-4 glass-panel p-4 clip-hud">
-        <div>
+      <header className="max-w-md mx-auto mb-6 flex items-center gap-3 border-b border-bf-border/60 pb-4 glass-panel p-4 clip-hud">
+        {/* Left: logo */}
+        <div className="flex-1">
           <h1 className="text-xl font-black text-white tracking-widest">
             DVORA <span className="text-bf-orange animate-pulse">HQ</span>
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Center: theme toggle */}
+        <div className="flex-shrink-0">
+          <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase border border-bf-cyan text-bf-cyan clip-btn transition-all cursor-pointer bg-transparent"
+          >
+            {theme === 'dark' ? (
+              <>
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+                {lang === 'en' ? 'LIGHT' : 'בהיר'}
+              </>
+            ) : (
+              <>
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+                {lang === 'en' ? 'DARK' : 'כהה'}
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Right: lang switcher + lock */}
+        <div className="flex-1 flex items-center justify-end gap-2">
           <div className="flex p-0.5 bg-bf-dark border border-bf-border clip-btn">
             <button
               onClick={() => setLang('en')}

@@ -17,32 +17,35 @@ export default function OperatorCard({
   const isLong = specializationLabel.length > 16;
   const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
 
-  const labels = useMemo(() => ({
-    en: {
-      alert: 'ACTIVE DUTY ALERT',
-      standby: 'STANDBY RESERVE',
-      rest: 'TACTICAL REST',
-      none: 'ASSIGNMENT PENDING',
-      daysLeft: (count) => {
-        if (count === 0) return 'Last day';
-        return `${count} ${count === 1 ? 'day' : 'days'} left`;
+  const labels = useMemo(
+    () => ({
+      en: {
+        alert: 'ACTIVE DUTY ALERT',
+        standby: 'STANDBY RESERVE',
+        rest: 'TACTICAL REST',
+        none: 'ASSIGNMENT PENDING',
+        daysLeft: (count) => {
+          if (count === 0) return 'Last day';
+          return `${count} ${count === 1 ? 'day' : 'days'} left`;
+        },
+        alarmStandby: 'STATUS // NETWORK_STANDBY',
+        alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
       },
-      alarmStandby: 'STATUS // NETWORK_STANDBY',
-      alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
-    },
-    he: {
-      alert: 'כוננות מבצעית פעילה',
-      standby: 'כוננות גיבוי ועתודה',
-      rest: 'מנוחה טקטית מאושרת',
-      none: 'ממתין לעדכון סבב',
-      daysLeft: (count) => {
-        if (count === 0) return 'יום אחרון';
-        return `נותרו ${count} ימים`;
+      he: {
+        alert: 'כוננות מבצעית פעילה',
+        standby: 'כוננות גיבוי ועתודה',
+        rest: 'מנוחה טקטית מאושרת',
+        none: 'ממתין לעדכון סבב',
+        daysLeft: (count) => {
+          if (count === 0) return 'יום אחרון';
+          return `נותרו ${count} ימים`;
+        },
+        alarmStandby: 'סטאטוס // רשת_בהמתנה',
+        alarmActive: '!! התרעת פריסה קרבית !!',
       },
-      alarmStandby: 'סטאטוס // רשת_בהמתנה',
-      alarmActive: '!! התרעת פריסה קרבית !!',
-    },
-  }), []);
+    }),
+    []
+  );
 
   const t = labels[lang] || labels.en;
 
@@ -113,7 +116,10 @@ export default function OperatorCard({
             <div className="text-[10px] text-slate-400 truncate">
               SQUAD:{' '}
               {user ? (
-                <span style={{ color: getSquadColor(user.squad_id, isLightMode).color }} className="font-bold">
+                <span
+                  style={{ color: getSquadColor(user.squad_id, isLightMode).color }}
+                  className="font-bold"
+                >
                   {user.squad_id.toUpperCase()}
                 </span>
               ) : (
@@ -155,20 +161,29 @@ export default function OperatorCard({
           <div className="flex justify-between text-[10px] gap-2">
             <div>
               <span className="text-slate-400 font-black">ACTIVE:</span>{' '}
-              <span style={{ color: getSquadColor(currentRotation.squads.alert, isLightMode).color }} className="font-bold">
+              <span
+                style={{ color: getSquadColor(currentRotation.squads.alert, isLightMode).color }}
+                className="font-bold"
+              >
                 {currentRotation.squads.alert}
               </span>
             </div>
             <div>
               <span className="text-slate-400 font-black">STANDBY:</span>{' '}
-              <span style={{ color: getSquadColor(currentRotation.squads.standby, isLightMode).color }} className="font-bold">
+              <span
+                style={{ color: getSquadColor(currentRotation.squads.standby, isLightMode).color }}
+                className="font-bold"
+              >
                 {currentRotation.squads.standby}
               </span>
             </div>
             {currentRotation.squads.rest && (
               <div>
                 <span className="text-slate-400 font-black">REST:</span>{' '}
-                <span style={{ color: getSquadColor(currentRotation.squads.rest, isLightMode).color }} className="font-bold">
+                <span
+                  style={{ color: getSquadColor(currentRotation.squads.rest, isLightMode).color }}
+                  className="font-bold"
+                >
                   {currentRotation.squads.rest}
                 </span>
               </div>

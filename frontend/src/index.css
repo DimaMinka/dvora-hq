@@ -20,6 +20,25 @@
   }
 }
 
+/* Manual theme overrides — take precedence over prefers-color-scheme */
+html.theme-dark {
+  --color-bf-dark: #050b0e;
+  --color-bf-slate: #0d181e;
+  --color-bf-cyan: #00f0ff;
+  --color-bf-orange: #ff5400;
+  --color-bf-border: #162b35;
+  --color-text-main: #cbd5e1;
+}
+
+html.theme-light {
+  --color-bf-dark: #e8dcc4;
+  --color-bf-slate: #f4ebdb;
+  --color-bf-cyan: #705335;
+  --color-bf-orange: #b24900;
+  --color-bf-border: #d2c0a0;
+  --color-text-main: #4a3728;
+}
+
 @theme {
   --color-bf-dark: var(--color-bf-dark);
   --color-bf-slate: var(--color-bf-slate);
@@ -185,6 +204,159 @@
     background-color: rgba(232, 220, 196, 0.5) !important;
   }
 }
+
+/* ── Manual light override ── applies when html.theme-light class is set */
+html.theme-light .hud-grid {
+  background:
+    linear-gradient(rgba(232, 220, 196, 0.85) 50%, rgba(232, 220, 196, 0.92) 50%),
+    linear-gradient(90deg, rgba(112, 83, 53, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(112, 83, 53, 0.03) 1px, transparent 1px) !important;
+  background-size:
+    100% 4px,
+    20px 20px,
+    20px 20px !important;
+}
+html.theme-light .glass-panel {
+  background: rgba(244, 235, 219, 0.75) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important;
+}
+html.theme-light .min-h-screen,
+html.theme-light body {
+  color: var(--color-text-main) !important;
+}
+html.theme-light .text-white {
+  color: #271a10 !important;
+}
+html.theme-light .text-slate-300 {
+  color: #4a3728 !important;
+}
+html.theme-light .text-slate-400 {
+  color: #634d3b !important;
+}
+html.theme-light .text-slate-500 {
+  color: #836e59 !important;
+}
+html.theme-light .text-slate-600 {
+  color: #9c8a77 !important;
+}
+html.theme-light .border-bf-border\/40 {
+  border-color: rgba(112, 83, 53, 0.25) !important;
+}
+html.theme-light .border-bf-cyan\/40 {
+  border-color: rgba(112, 83, 53, 0.4) !important;
+}
+html.theme-light .border-bf-orange\/60 {
+  border-color: rgba(178, 73, 0, 0.6) !important;
+}
+html.theme-light .border-bf-border\/60 {
+  border-color: rgba(112, 83, 53, 0.35) !important;
+}
+html.theme-light input[type='text'],
+html.theme-light input[type='password'],
+html.theme-light input[type='tel'] {
+  background-color: #f4ebdb !important;
+  color: #271a10 !important;
+  border-color: #d2c0a0 !important;
+}
+html.theme-light input::placeholder {
+  color: #836e59 !important;
+  opacity: 0.7;
+}
+html.theme-light .bg-bf-cyan\/10 {
+  background-color: rgba(112, 83, 53, 0.1) !important;
+}
+html.theme-light .hover\:bg-bf-cyan\/20:hover {
+  background-color: rgba(112, 83, 53, 0.18) !important;
+}
+html.theme-light .disabled\:bg-bf-slate\/40 {
+  background-color: rgba(244, 235, 219, 0.4) !important;
+}
+html.theme-light .disabled\:text-slate-500 {
+  color: #9c8a77 !important;
+}
+html.theme-light .hover\:text-white:hover {
+  color: #1e1b18 !important;
+}
+html.theme-light .bg-bf-dark\/50 {
+  background-color: rgba(232, 220, 196, 0.5) !important;
+}
+
+/* ── Manual dark override ── forces dark even when system prefers light */
+html.theme-dark .hud-grid {
+  background:
+    linear-gradient(rgba(5, 11, 14, 0.82) 50%, rgba(5, 11, 14, 0.9) 50%),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(rgba(0, 240, 255, 0.015) 1px, transparent 1px) !important;
+  background-size:
+    100% 4px,
+    20px 20px,
+    20px 20px !important;
+}
+html.theme-dark .glass-panel {
+  background: rgba(13, 24, 30, 0.75) !important;
+  box-shadow: none !important;
+}
+html.theme-dark .min-h-screen,
+html.theme-dark body {
+  color: #cbd5e1 !important;
+}
+html.theme-dark .text-white {
+  color: #ffffff !important;
+}
+html.theme-dark .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+html.theme-dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+html.theme-dark .text-slate-500 {
+  color: #64748b !important;
+}
+html.theme-dark .text-slate-600 {
+  color: #475569 !important;
+}
+html.theme-dark .border-bf-border\/40 {
+  border-color: rgba(22, 43, 53, 0.4) !important;
+}
+html.theme-dark .border-bf-cyan\/40 {
+  border-color: rgba(0, 240, 255, 0.4) !important;
+}
+html.theme-dark .border-bf-orange\/60 {
+  border-color: rgba(255, 84, 0, 0.6) !important;
+}
+html.theme-dark .border-bf-border\/60 {
+  border-color: rgba(22, 43, 53, 0.6) !important;
+}
+html.theme-dark input[type='text'],
+html.theme-dark input[type='password'],
+html.theme-dark input[type='tel'] {
+  background-color: #0d181e !important;
+  color: #cbd5e1 !important;
+  border-color: #162b35 !important;
+}
+html.theme-dark input::placeholder {
+  color: #64748b !important;
+  opacity: 0.7;
+}
+html.theme-dark .bg-bf-cyan\/10 {
+  background-color: rgba(0, 240, 255, 0.1) !important;
+}
+html.theme-dark .hover\:bg-bf-cyan\/20:hover {
+  background-color: rgba(0, 240, 255, 0.18) !important;
+}
+html.theme-dark .disabled\:bg-bf-slate\/40 {
+  background-color: rgba(13, 24, 30, 0.4) !important;
+}
+html.theme-dark .disabled\:text-slate-500 {
+  color: #64748b !important;
+}
+html.theme-dark .hover\:text-white:hover {
+  color: #ffffff !important;
+}
+html.theme-dark .bg-bf-dark\/50 {
+  background-color: rgba(5, 11, 14, 0.5) !important;
+}
+
 .scroll-container {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
@@ -266,4 +438,3 @@
 .animate-scale-in {
   animation: scale-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-

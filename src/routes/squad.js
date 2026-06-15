@@ -17,11 +17,10 @@ router.get('/status', authenticateToken, async (req, res) => {
   try {
     const db = getDb();
     const squadId = req.user.squadId;
-    const squadsToQuery = Array.from(new Set([squadId, squadId.toLowerCase(), squadId.toUpperCase()]));
-    const usersSnapshot = await db
-      .collection('users')
-      .where('squad_id', 'in', squadsToQuery)
-      .get();
+    const squadsToQuery = Array.from(
+      new Set([squadId, squadId.toLowerCase(), squadId.toUpperCase()])
+    );
+    const usersSnapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
 
     const rows = [];
     for (const userDoc of usersSnapshot.docs) {
@@ -123,18 +122,17 @@ router.get('/:squadId/members', authenticateToken, async (req, res) => {
 
   try {
     const db = getDb();
-    const squadsToQuery = Array.from(new Set([squadId, squadId.toLowerCase(), squadId.toUpperCase()]));
-    const usersSnapshot = await db
-      .collection('users')
-      .where('squad_id', 'in', squadsToQuery)
-      .get();
+    const squadsToQuery = Array.from(
+      new Set([squadId, squadId.toLowerCase(), squadId.toUpperCase()])
+    );
+    const usersSnapshot = await db.collection('users').where('squad_id', 'in', squadsToQuery).get();
 
     const rows = [];
     for (const userDoc of usersSnapshot.docs) {
       const userData = userDoc.data();
       const readinessDoc = await db.collection('readiness_status').doc(userDoc.id).get();
       const readiness = readinessDoc.exists ? readinessDoc.data() : {};
-      
+
       rows.push({
         id: userDoc.id,
         role: userData.role,

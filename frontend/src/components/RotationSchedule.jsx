@@ -28,8 +28,18 @@ const i18n = {
     },
     daysOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     months: [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ],
   },
   he: {
@@ -57,10 +67,20 @@ const i18n = {
     },
     daysOfWeek: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'],
     months: [
-      'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
-      'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'
+      'ינואר',
+      'פברואר',
+      'מרץ',
+      'אפריל',
+      'מאי',
+      'יוני',
+      'יולי',
+      'אוגוסט',
+      'ספטמבר',
+      'אוקטובר',
+      'נובמבר',
+      'דצמבר',
     ],
-  }
+  },
 };
 
 // Date helper: Format to YYYY-MM-DD
@@ -88,7 +108,7 @@ export default function RotationSchedule({ lang = 'en' }) {
   const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' or 'calendar'
   const [weekOffset, setWeekOffset] = useState(0); // -1, 0, 1, 2 etc.
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
-  
+
   // Selected day for the Calendar view overlay
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(null);
   // Cache for loaded squad members
@@ -133,40 +153,46 @@ export default function RotationSchedule({ lang = 'en' }) {
   const [expandedDayStr, setExpandedDayStr] = useState(null);
 
   // Load squad members helper
-  const fetchSquadMembers = useCallback(async (squadId) => {
-    if (!squadId) return;
-    const key = squadId.toUpperCase();
-    if (squadMembersCache[key]) {
-      return squadMembersCache[key];
-    }
+  const fetchSquadMembers = useCallback(
+    async (squadId) => {
+      if (!squadId) return;
+      const key = squadId.toUpperCase();
+      if (squadMembersCache[key]) {
+        return squadMembersCache[key];
+      }
 
-    const token = localStorage.getItem('dvora_token');
-    if (!token) return [];
+      const token = localStorage.getItem('dvora_token');
+      if (!token) return [];
 
-    setLoadingMembers(true);
-    try {
-      const res = await fetch(`/api/squad/${key}/members`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('Failed to fetch squad members');
-      const data = await res.json();
-      setSquadMembersCache(prev => ({ ...prev, [key]: data }));
-      return data;
-    } catch (err) {
-      console.error('[RotationSchedule] Squad members fetch failed:', err.message);
-      return [];
-    } finally {
-      setLoadingMembers(false);
-    }
-  }, [squadMembersCache]);
+      setLoadingMembers(true);
+      try {
+        const res = await fetch(`/api/squad/${key}/members`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Failed to fetch squad members');
+        const data = await res.json();
+        setSquadMembersCache((prev) => ({ ...prev, [key]: data }));
+        return data;
+      } catch (err) {
+        console.error('[RotationSchedule] Squad members fetch failed:', err.message);
+        return [];
+      } finally {
+        setLoadingMembers(false);
+      }
+    },
+    [squadMembersCache]
+  );
 
   // Look up active rotation for a specific day string
-  const getRotationForDay = useCallback((dayStr) => {
-    const date = new Date(dayStr);
-    const sunday = getSunday(date);
-    const sundayStr = formatDateISO(sunday);
-    return rotations.find((r) => r.start_date === sundayStr);
-  }, [rotations]);
+  const getRotationForDay = useCallback(
+    (dayStr) => {
+      const date = new Date(dayStr);
+      const sunday = getSunday(date);
+      const sundayStr = formatDateISO(sunday);
+      return rotations.find((r) => r.start_date === sundayStr);
+    },
+    [rotations]
+  );
 
   // Handle timeline day click (accordion toggle)
   const handleTimelineDayClick = async (dayStr, rotation) => {
@@ -185,7 +211,7 @@ export default function RotationSchedule({ lang = 'en' }) {
   const calendarDays = useMemo(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
-    
+
     // First day index (0 = Sun, 1 = Mon...)
     const firstDayIndex = new Date(year, month, 1).getDay();
     const numberOfDays = new Date(year, month + 1, 0).getDate();
@@ -216,7 +242,7 @@ export default function RotationSchedule({ lang = 'en' }) {
   // Handle Calendar Day click
   const handleCalendarDayClick = async (day) => {
     if (day.empty || !day.rotation) return;
-    
+
     setSelectedCalendarDay(day);
     setActiveOverlaySquad(day.rotation.squads.alert);
     await fetchSquadMembers(day.rotation.squads.alert);
@@ -252,14 +278,23 @@ export default function RotationSchedule({ lang = 'en' }) {
         <button
           onClick={() => {
             if (activeTab === 'timeline') {
-              setWeekOffset(prev => prev - 1);
+              setWeekOffset((prev) => prev - 1);
             } else {
-              setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+              setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
             }
           }}
           className="nav-btn bg-bf-slate border border-bf-border/40 text-bf-cyan w-7 h-7 flex items-center justify-center clip-btn cursor-pointer hover:bg-bf-cyan/10 hover:text-white transition-all"
         >
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
@@ -269,7 +304,9 @@ export default function RotationSchedule({ lang = 'en' }) {
           <button
             onClick={() => setActiveTab('timeline')}
             className={`flex-1 py-0.5 text-[9px] font-bold uppercase tracking-wider clip-btn transition-all ${
-              activeTab === 'timeline' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'
+              activeTab === 'timeline'
+                ? 'bg-bf-cyan text-bf-dark'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             {d.timeline}
@@ -277,7 +314,9 @@ export default function RotationSchedule({ lang = 'en' }) {
           <button
             onClick={() => setActiveTab('calendar')}
             className={`flex-1 py-0.5 text-[9px] font-bold uppercase tracking-wider clip-btn transition-all ${
-              activeTab === 'calendar' ? 'bg-bf-cyan text-bf-dark' : 'text-slate-400 hover:text-white'
+              activeTab === 'calendar'
+                ? 'bg-bf-cyan text-bf-dark'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             {d.calendar}
@@ -288,14 +327,23 @@ export default function RotationSchedule({ lang = 'en' }) {
         <button
           onClick={() => {
             if (activeTab === 'timeline') {
-              setWeekOffset(prev => prev + 1);
+              setWeekOffset((prev) => prev + 1);
             } else {
-              setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+              setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
             }
           }}
           className="nav-btn bg-bf-slate border border-bf-border/40 text-bf-cyan w-7 h-7 flex items-center justify-center clip-btn cursor-pointer hover:bg-bf-cyan/10 hover:text-white transition-all"
         >
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </button>
@@ -320,8 +368,8 @@ export default function RotationSchedule({ lang = 'en' }) {
               <div
                 key={day.dateStr}
                 className={`border transition-all duration-200 clip-hud p-2 flex flex-col ${
-                  isToday 
-                    ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]' 
+                  isToday
+                    ? 'bg-bf-cyan/5 border-bf-cyan/60 shadow-[0_0_8px_rgba(0,240,255,0.1)]'
                     : isPast
                       ? 'bg-bf-slate/50 border-bf-border/30 opacity-60'
                       : 'bg-bf-slate/85 border-bf-border/60'
@@ -334,15 +382,20 @@ export default function RotationSchedule({ lang = 'en' }) {
                   <div className="flex items-center gap-3">
                     {/* Date Block */}
                     <div className="w-9 h-11 bg-bf-dark border border-bf-border/50 clip-btn flex flex-col items-center justify-center">
-                      <span className="text-xs font-black text-white leading-none">{day.dayNum}</span>
-                      <span className="text-[7px] text-slate-500 uppercase tracking-widest mt-0.5">{dayOfWeekName}</span>
+                      <span className="text-xs font-black text-white leading-none">
+                        {day.dayNum}
+                      </span>
+                      <span className="text-[7px] text-slate-500 uppercase tracking-widest mt-0.5">
+                        {dayOfWeekName}
+                      </span>
                     </div>
 
                     <div className="flex flex-col">
                       <span className="text-[11px] font-bold text-white uppercase">
                         {rot ? (
                           <>
-                            ACTIVE SQUAD: <span style={{ color: squadColor?.color }}>{alertSquad}</span>
+                            ACTIVE SQUAD:{' '}
+                            <span style={{ color: squadColor?.color }}>{alertSquad}</span>
                           </>
                         ) : (
                           <span className="text-slate-600">// DEPLOY_STANDBY</span>
@@ -350,12 +403,19 @@ export default function RotationSchedule({ lang = 'en' }) {
                       </span>
                       {rot && (
                         <span className="text-[9px] text-slate-500">
-                          STANDBY: {rot.squads.standby}{rot.squads.rest ? ` | REST: ${rot.squads.rest}` : ''}
+                          STANDBY: {rot.squads.standby}
+                          {rot.squads.rest ? ` | REST: ${rot.squads.rest}` : ''}
                         </span>
                       )}
                       {meetingTime && (
                         <div className="mt-1 text-[9px] text-bf-orange font-bold flex items-center gap-1">
-                          <svg className="w-2.5 h-2.5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                          <svg
+                            className="w-2.5 h-2.5 animate-pulse"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          >
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                           </svg>
@@ -368,11 +428,11 @@ export default function RotationSchedule({ lang = 'en' }) {
                   {/* Right indicators */}
                   {rot && (
                     <div className="flex items-center gap-2">
-                      <div 
-                        className="w-2.5 h-2.5 rounded-full" 
-                        style={{ 
+                      <div
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{
                           backgroundColor: squadColor?.color || '#cbd5e1',
-                          boxShadow: squadColor ? `0 0 6px ${squadColor.color}` : 'none'
+                          boxShadow: squadColor ? `0 0 6px ${squadColor.color}` : 'none',
                         }}
                       />
                       <svg
@@ -399,8 +459,8 @@ export default function RotationSchedule({ lang = 'en' }) {
                     {loadingMembers ? (
                       <div className="grid grid-cols-2 gap-1.5 animate-pulse">
                         {[1, 2, 3, 4].map((i) => (
-                          <div 
-                            key={i} 
+                          <div
+                            key={i}
                             className="flex items-center gap-2 p-1.5 bg-bf-dark/40 border border-bf-border/20 clip-btn text-[10px]"
                           >
                             <div className="w-5 h-5 rounded-full bg-bf-slate/50 shrink-0" />
@@ -413,33 +473,47 @@ export default function RotationSchedule({ lang = 'en' }) {
                         ))}
                       </div>
                     ) : (squadMembersCache[alertSquad] || []).length === 0 ? (
-                      <div className="text-[10px] text-slate-600 py-1">// NO OPERATORS WHitelisted</div>
+                      <div className="text-[10px] text-slate-600 py-1">
+                        // NO OPERATORS WHitelisted
+                      </div>
                     ) : (
                       <div className="grid grid-cols-2 gap-1.5">
                         {(squadMembersCache[alertSquad] || []).map((m) => {
                           const isOperatorReady = m.weapons_ready === 1 && m.comms_ready === 1;
-                          const specLabel = m.specialization ? m.specialization.split(',')[0].toUpperCase() : 'FIGHTER';
+                          const specLabel = m.specialization
+                            ? m.specialization.split(',')[0].toUpperCase()
+                            : 'FIGHTER';
                           return (
-                            <div 
-                              key={m.id} 
+                            <div
+                              key={m.id}
                               className="flex items-center gap-2 p-1.5 bg-bf-dark/60 border border-bf-border/40 clip-btn text-[10px]"
                             >
-                              <div 
-                                className="w-5 h-5 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-slate select-none text-[8px] font-black text-bf-cyan uppercase"
-                              >
+                              <div className="w-5 h-5 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-slate select-none text-[8px] font-black text-bf-cyan uppercase">
                                 {m.avatar_url ? (
-                                  <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
+                                  <img
+                                    src={m.avatar_url}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
                                 ) : (
                                   m.tg_username?.slice(0, 2) || 'OP'
                                 )}
                               </div>
                               <div className="flex flex-col flex-1 min-w-0">
-                                <span className="text-white font-bold truncate">@{m.tg_username}</span>
-                                <span className="text-[8px] text-slate-500 truncate">{specLabel}</span>
+                                <span className="text-white font-bold truncate">
+                                  @{m.tg_username}
+                                </span>
+                                <span className="text-[8px] text-slate-500 truncate">
+                                  {specLabel}
+                                </span>
                               </div>
-                              <div 
+                              <div
                                 className={`w-1.5 h-1.5 rounded-full ${isOperatorReady ? 'bg-[#2ed573]' : 'bg-bf-orange animate-pulse'}`}
-                                style={{ boxShadow: isOperatorReady ? '0 0 5px #2ed573' : '0 0 5px #ff5400' }}
+                                style={{
+                                  boxShadow: isOperatorReady
+                                    ? '0 0 5px #2ed573'
+                                    : '0 0 5px #ff5400',
+                                }}
                               />
                             </div>
                           );
@@ -462,7 +536,9 @@ export default function RotationSchedule({ lang = 'en' }) {
             <span className="text-[11px] font-bold text-white uppercase">
               {d.months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
             </span>
-            <span className="text-[9px] text-bf-cyan select-none tracking-widest">// CALENDAR_GRID</span>
+            <span className="text-[9px] text-bf-cyan select-none tracking-widest">
+              // CALENDAR_GRID
+            </span>
           </div>
 
           {/* Weekday headers */}
@@ -476,7 +552,9 @@ export default function RotationSchedule({ lang = 'en' }) {
           <div className="grid grid-cols-7 gap-1.5">
             {calendarDays.map((day) => {
               if (day.empty) {
-                return <div key={day.key} className="aspect-square opacity-0 pointer-events-none" />;
+                return (
+                  <div key={day.key} className="aspect-square opacity-0 pointer-events-none" />
+                );
               }
 
               const isToday = formatDateISO(new Date()) === day.dateStr;
@@ -487,15 +565,18 @@ export default function RotationSchedule({ lang = 'en' }) {
               const isSelected = selectedCalendarDay?.dateStr === day.dateStr;
 
               // Build day cell styling
-              const customStyle = hasRot && colorInfo ? {
-                backgroundColor: colorInfo.bg,
-                borderColor: colorInfo.border,
-                color: colorInfo.color,
-                borderWidth: '1px'
-              } : {
-                borderColor: 'transparent',
-                color: isLightMode ? '#4a3728' : '#cbd5e1'
-              };
+              const customStyle =
+                hasRot && colorInfo
+                  ? {
+                      backgroundColor: colorInfo.bg,
+                      borderColor: colorInfo.border,
+                      color: colorInfo.color,
+                      borderWidth: '1px',
+                    }
+                  : {
+                      borderColor: 'transparent',
+                      color: isLightMode ? '#4a3728' : '#cbd5e1',
+                    };
 
               return (
                 <div
@@ -504,134 +585,160 @@ export default function RotationSchedule({ lang = 'en' }) {
                   style={customStyle}
                   className={`aspect-square clip-btn flex flex-col items-center justify-center text-[10px] font-black cursor-pointer transition-all duration-200 border relative select-none hover:scale-105 ${
                     isToday ? 'outline-2 outline-bf-cyan outline-offset-1' : ''
-                  } ${
-                    isSelected ? 'shadow-[0_0_10px_rgba(255,255,255,0.4)] border-white!' : ''
-                  }`}
+                  } ${isSelected ? 'shadow-[0_0_10px_rgba(255,255,255,0.4)] border-white!' : ''}`}
                 >
                   <span>{day.day}</span>
-                  {isToday && (
-                    <div className="w-1 h-1 bg-white rounded-full absolute bottom-1" />
-                  )}
+                  {isToday && <div className="w-1 h-1 bg-white rounded-full absolute bottom-1" />}
                 </div>
               );
             })}
           </div>
 
           {/* Dynamic Members Overlay Modal inside Calendar Card */}
-          {selectedCalendarDay && activeOverlaySquad && (() => {
-            const overlayMeetingTime = selectedCalendarDay.rotation && selectedCalendarDay.rotation.meeting_times ? selectedCalendarDay.rotation.meeting_times[selectedCalendarDay.dateStr] : null;
-            return (
-              <div className="absolute inset-0 bg-bf-dark/95 z-20 p-3 flex flex-col animate-fade-in">
-                <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-black text-white uppercase">
-                    {d.membersTitle}
-                  </span>
-                  <span className="text-[9px] text-slate-500 mt-0.5">
-                    {selectedCalendarDay.day} {d.months[selectedCalendarDay.date.getMonth()]}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span 
-                    className="text-[8px] font-bold px-2 py-0.5 clip-btn uppercase border"
-                    style={{
-                      color: getSquadColor(activeOverlaySquad, isLightMode).color,
-                      backgroundColor: getSquadColor(activeOverlaySquad, isLightMode).bg,
-                      borderColor: getSquadColor(activeOverlaySquad, isLightMode).border
-                    }}
-                  >
-                    {activeOverlaySquad}
-                  </span>
-                  <button
-                    onClick={closeCalendarOverlay}
-                    className="bg-bf-slate border border-bf-border text-bf-cyan rounded-full w-5 h-5 flex items-center justify-center cursor-pointer hover:bg-bf-cyan/10 transition-colors"
-                  >
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                  </div>
-                </div>
-
-                {overlayMeetingTime && (
-                  <div className="mb-3 p-2 bg-bf-orange/10 border border-bf-orange/30 clip-btn flex items-center justify-between text-[10px] text-white">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-3.5 h-3.5 text-bf-orange animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                      </svg>
-                      <span className="font-bold text-slate-300 uppercase">
-                        {lang === 'en' ? 'Mission Time:' : 'שעת משימה:'}
+          {selectedCalendarDay &&
+            activeOverlaySquad &&
+            (() => {
+              const overlayMeetingTime =
+                selectedCalendarDay.rotation && selectedCalendarDay.rotation.meeting_times
+                  ? selectedCalendarDay.rotation.meeting_times[selectedCalendarDay.dateStr]
+                  : null;
+              return (
+                <div className="absolute inset-0 bg-bf-dark/95 z-20 p-3 flex flex-col animate-fade-in">
+                  <div className="flex justify-between items-center border-b border-bf-border/40 pb-2 mb-3">
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-black text-white uppercase">
+                        {d.membersTitle}
+                      </span>
+                      <span className="text-[9px] text-slate-500 mt-0.5">
+                        {selectedCalendarDay.day} {d.months[selectedCalendarDay.date.getMonth()]}
                       </span>
                     </div>
-                    <span className="font-black text-bf-orange text-xs">{overlayMeetingTime}</span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="text-[8px] font-bold px-2 py-0.5 clip-btn uppercase border"
+                        style={{
+                          color: getSquadColor(activeOverlaySquad, isLightMode).color,
+                          backgroundColor: getSquadColor(activeOverlaySquad, isLightMode).bg,
+                          borderColor: getSquadColor(activeOverlaySquad, isLightMode).border,
+                        }}
+                      >
+                        {activeOverlaySquad}
+                      </span>
+                      <button
+                        onClick={closeCalendarOverlay}
+                        className="bg-bf-slate border border-bf-border text-bf-cyan rounded-full w-5 h-5 flex items-center justify-center cursor-pointer hover:bg-bf-cyan/10 transition-colors"
+                      >
+                        <svg
+                          width="8"
+                          height="8"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                )}
 
-                {/* Members List Container */}
-                <div className="flex-1 overflow-y-auto space-y-1.5 scroll-container">
-                {loadingMembers ? (
-                  <div className="space-y-1.5 animate-pulse">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between p-2 bg-bf-slate/40 border border-bf-border/20 clip-btn text-[10px]"
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-bf-dark/60 shrink-0" />
-                          <div className="flex flex-col gap-1">
-                            <div className="h-2.5 w-16 bg-bf-dark/80 rounded" />
-                            <div className="h-1.5 w-10 bg-bf-dark/40 rounded" />
-                          </div>
-                        </div>
-                        <div className="w-2 h-2 rounded-full bg-bf-dark/50" />
+                  {overlayMeetingTime && (
+                    <div className="mb-3 p-2 bg-bf-orange/10 border border-bf-orange/30 clip-btn flex items-center justify-between text-[10px] text-white">
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="w-3.5 h-3.5 text-bf-orange animate-pulse"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span className="font-bold text-slate-300 uppercase">
+                          {lang === 'en' ? 'Mission Time:' : 'שעת משימה:'}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                ) : (squadMembersCache[activeOverlaySquad] || []).length === 0 ? (
-                  <div className="text-[10px] text-slate-600 text-center py-4">
-                    // NO OPERATORS WHitelisted
-                  </div>
-                ) : (
-                  (squadMembersCache[activeOverlaySquad] || []).map((m) => {
-                    const isOperatorReady = m.weapons_ready === 1 && m.comms_ready === 1;
-                    const specLabel = m.specialization ? m.specialization.split(',')[0].toUpperCase() : 'FIGHTER';
-                    return (
-                      <div
-                        key={m.id}
-                        className="flex items-center justify-between p-2 bg-bf-slate/80 border border-bf-border/40 clip-btn text-[10px]"
-                      >
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-6 h-6 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-dark text-[8px] font-black text-bf-cyan"
-                          >
-                            {m.avatar_url ? (
-                              <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              m.tg_username?.slice(0, 2).toUpperCase() || 'OP'
-                            )}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-white font-bold">@{m.tg_username}</span>
-                            <span className="text-[8px] text-slate-500">{specLabel}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[8px] text-slate-400 capitalize">{m.role}</span>
+                      <span className="font-black text-bf-orange text-xs">
+                        {overlayMeetingTime}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Members List Container */}
+                  <div className="flex-1 overflow-y-auto space-y-1.5 scroll-container">
+                    {loadingMembers ? (
+                      <div className="space-y-1.5 animate-pulse">
+                        {[1, 2, 3, 4].map((i) => (
                           <div
-                            className={`w-2 h-2 rounded-full ${isOperatorReady ? 'bg-[#2ed573]' : 'bg-bf-orange animate-pulse'}`}
-                            style={{ boxShadow: isOperatorReady ? '0 0 5px #2ed573' : '0 0 5px #ff5400' }}
-                          />
-                        </div>
+                            key={i}
+                            className="flex items-center justify-between p-2 bg-bf-slate/40 border border-bf-border/20 clip-btn text-[10px]"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-full bg-bf-dark/60 shrink-0" />
+                              <div className="flex flex-col gap-1">
+                                <div className="h-2.5 w-16 bg-bf-dark/80 rounded" />
+                                <div className="h-1.5 w-10 bg-bf-dark/40 rounded" />
+                              </div>
+                            </div>
+                            <div className="w-2 h-2 rounded-full bg-bf-dark/50" />
+                          </div>
+                        ))}
                       </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          );
-        })()}
+                    ) : (squadMembersCache[activeOverlaySquad] || []).length === 0 ? (
+                      <div className="text-[10px] text-slate-600 text-center py-4">
+                        // NO OPERATORS WHitelisted
+                      </div>
+                    ) : (
+                      (squadMembersCache[activeOverlaySquad] || []).map((m) => {
+                        const isOperatorReady = m.weapons_ready === 1 && m.comms_ready === 1;
+                        const specLabel = m.specialization
+                          ? m.specialization.split(',')[0].toUpperCase()
+                          : 'FIGHTER';
+                        return (
+                          <div
+                            key={m.id}
+                            className="flex items-center justify-between p-2 bg-bf-slate/80 border border-bf-border/40 clip-btn text-[10px]"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-full overflow-hidden border border-bf-border flex items-center justify-center bg-bf-dark text-[8px] font-black text-bf-cyan">
+                                {m.avatar_url ? (
+                                  <img
+                                    src={m.avatar_url}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  m.tg_username?.slice(0, 2).toUpperCase() || 'OP'
+                                )}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-white font-bold">@{m.tg_username}</span>
+                                <span className="text-[8px] text-slate-500">{specLabel}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[8px] text-slate-400 capitalize">{m.role}</span>
+                              <div
+                                className={`w-2 h-2 rounded-full ${isOperatorReady ? 'bg-[#2ed573]' : 'bg-bf-orange animate-pulse'}`}
+                                style={{
+                                  boxShadow: isOperatorReady
+                                    ? '0 0 5px #2ed573'
+                                    : '0 0 5px #ff5400',
+                                }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
         </div>
       )}
     </div>
