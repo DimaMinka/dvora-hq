@@ -144,13 +144,6 @@ export default function OperatorCard({
                 </span>
               )}
             </div>
-            <div 
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ 
-                backgroundColor: statusConfig?.color || '#836e59', 
-                boxShadow: statusConfig?.color ? `0 0 6px ${statusConfig.color}` : 'none'
-              }}
-            />
           </div>
           <div className="flex justify-between text-[10px] gap-2">
             <div>
