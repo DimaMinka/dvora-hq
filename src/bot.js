@@ -352,24 +352,6 @@ async function handleAddRotationCallback(ctx, state, data) {
     if (data.startsWith('squad:')) {
       const squad = data.split(':')[1];
       state.data.standby = squad;
-      state.step = 'rest';
-      setConversationState(ctx.chat.id, state);
-
-      return ctx.editMessageText(
-        `📅 Period: *${state.data.formattedRange}*\n` +
-          `🔴 Alert: *${state.data.alert}*\n` +
-          `🔵 Standby: *${state.data.standby}*\n\n` +
-          `Select *REST* squad:`,
-        {
-          parse_mode: 'Markdown',
-          reply_markup: buildSquadKeyboard(squads, { disabledList: [state.data.alert, state.data.standby] }),
-        }
-      );
-    }
-  } else if (state.step === 'rest') {
-    if (data.startsWith('squad:')) {
-      const squad = data.split(':')[1];
-      state.data.rest = squad;
       state.step = 'confirm';
       setConversationState(ctx.chat.id, state);
 
@@ -377,8 +359,7 @@ async function handleAddRotationCallback(ctx, state, data) {
         `📅 *Create rotation?*\n\n` +
           `• *Period:* ${state.data.formattedRange}\n` +
           `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
-          `• 🔵 *Standby:* \`${state.data.standby}\`\n` +
-          `• ⬜ *Rest:* \`${state.data.rest}\`\n\n` +
+          `• 🔵 *Standby:* \`${state.data.standby}\`\n\n` +
           `Confirm creation:`,
         {
           parse_mode: 'Markdown',
@@ -434,21 +415,23 @@ async function saveRotation(ctx, state) {
     squads: {
       alert: state.data.alert,
       standby: state.data.standby,
-      rest: state.data.rest,
+      rest: state.data.rest || null,
     },
     created_by: ctx.from?.username || 'unknown',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   });
 
-  await ctx.editMessageText(
-    `✅ *ROTATION SUCCESSFULLY CREATED*\n\n` +
-      `• *Period:* ${state.data.formattedRange}\n` +
-      `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
-      `• 🔵 *Standby:* \`${state.data.standby}\`\n` +
-      `• ⬜ *Rest:* \`${state.data.rest}\``,
-    { parse_mode: 'Markdown' }
-  );
+  let successMsg = `✅ *ROTATION SUCCESSFULLY CREATED*\n\n` +
+    `• *Period:* ${state.data.formattedRange}\n` +
+    `• 🔴 *Alert:* \`${state.data.alert}\`\n` +
+    `• 🔵 *Standby:* \`${state.data.standby}\``;
+
+  if (state.data.rest) {
+    successMsg += `\n• ⬜ *Rest:* \`${state.data.rest}\``;
+  }
+
+  await ctx.editMessageText(successMsg, { parse_mode: 'Markdown' });
   setConversationState(ctx.chat.id, null);
 }
 
@@ -476,11 +459,15 @@ async function handleRemoveRotationCallback(ctx, state, data) {
       state.step = 'confirm';
       setConversationState(ctx.chat.id, state);
 
+      let msg = `⚠️ *Delete rotation for the period ${state.data.formattedRange}?*\n` +
+        `• 🔴 Alert: \`${state.data.alert}\`\n` +
+        `• 🔵 Standby: \`${state.data.standby}\``;
+      if (state.data.rest) {
+        msg += `\n• ⬜ Rest: \`${state.data.rest}\``;
+      }
+
       return ctx.editMessageText(
-        `⚠️ *Delete rotation for the period ${state.data.formattedRange}?*\n` +
-          `• 🔴 Alert: \`${state.data.alert}\`\n` +
-          `• 🔵 Standby: \`${state.data.standby}\`\n` +
-          `• ⬜ Rest: \`${state.data.rest}\``,
+        msg,
         {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -957,8 +944,8 @@ if (bot) {
     const db = getDb();
     const squads = await getSquads(db);
 
-    if (squads.length < 3) {
-      return ctx.reply('⚠️ *ERROR*: At least 3 registered squads are required to plan rotations.');
+    if (squads.length < 2) {
+      return ctx.reply('⚠️ *ERROR*: At least 2 registered squads are required to plan rotations.');
     }
 
     setConversationState(ctx.chat.id, {
@@ -1004,7 +991,7 @@ if (bot) {
         const r = doc.data();
         const monday = parseISODate(r.start_date);
         const sunday = parseISODate(r.end_date);
-        const label = `📅 ${formatWeekRangeEN(monday, sunday)}: ${r.squads.alert}/${r.squads.standby}/${r.squads.rest}`;
+        const label = `📅 ${formatWeekRangeEN(monday, sunday)}: ${r.squads.alert}/${r.squads.standby}` + (r.squads.rest ? `/${r.squads.rest}` : '');
         buttons.push([{ text: label, callback_data: `rotation:${doc.id}` }]);
       });
       buttons.push([{ text: '❌ Cancel', callback_data: 'cancel' }]);
@@ -1052,8 +1039,11 @@ if (bot) {
         const sunday = parseISODate(r.end_date);
         response += `• *${formatWeekRangeEN(monday, sunday)}*:\n` +
                     `  🔴 Alert: *${r.squads.alert}*\n` +
-                    `  🔵 Standby: *${r.squads.standby}*\n` +
-                    `  ⬜ Rest: *${r.squads.rest}*\n\n`;
+                    `  🔵 Standby: *${r.squads.standby}*\n`;
+        if (r.squads.rest) {
+          response += `  ⬜ Rest: *${r.squads.rest}*\n`;
+        }
+        response += `\n`;
       });
 
       return ctx.reply(response, {

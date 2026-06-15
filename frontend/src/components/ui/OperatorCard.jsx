@@ -162,10 +162,12 @@ export default function OperatorCard({
               <span className="text-bf-cyan font-black">STANDBY:</span>{' '}
               <span className="text-slate-300 font-bold">{currentRotation.squads.standby}</span>
             </div>
-            <div>
-              <span className="text-slate-500 font-black">REST:</span>{' '}
-              <span className="text-slate-400 font-bold">{currentRotation.squads.rest}</span>
-            </div>
+            {currentRotation.squads.rest && (
+              <div>
+                <span className="text-slate-500 font-black">REST:</span>{' '}
+                <span className="text-slate-400 font-bold">{currentRotation.squads.rest}</span>
+              </div>
+            )}
           </div>
         </div>
       )}

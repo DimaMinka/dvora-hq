@@ -350,7 +350,7 @@ export default function RotationSchedule({ lang = 'en' }) {
                       </span>
                       {rot && (
                         <span className="text-[9px] text-slate-500">
-                          STANDBY: {rot.squads.standby} | REST: {rot.squads.rest}
+                          STANDBY: {rot.squads.standby}{rot.squads.rest ? ` | REST: ${rot.squads.rest}` : ''}
                         </span>
                       )}
                     </div>
