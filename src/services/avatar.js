@@ -41,50 +41,60 @@ export async function generateAndSaveAvatar(userRef, userId, formattedSpecData) 
     // Build gear list description
     const gearDescriptions = [];
     if (hasVest) {
-      gearDescriptions.push("Ranger Green plate carrier vest");
+      gearDescriptions.push('Ranger Green plate carrier vest');
     } else {
-      gearDescriptions.push("no plate carrier, wearing a sleek tactical combat shirt");
+      gearDescriptions.push('no plate carrier, wearing a sleek tactical combat shirt');
     }
 
     if (hasHelmet) {
-      let helmetDesc = "Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud";
+      let helmetDesc = 'Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud';
       if (hasNVD) {
         const gearListLower = formattedGear.toLowerCase();
-        if (gearListLower.includes('oe-14') || gearListLower.includes('mouse') || gearListLower.includes('monocular')) {
-          helmetDesc += " with the monocular night vision device mounted over one eye";
+        if (
+          gearListLower.includes('oe-14') ||
+          gearListLower.includes('mouse') ||
+          gearListLower.includes('monocular')
+        ) {
+          helmetDesc += ' with the monocular night vision device mounted over one eye';
         } else {
-          helmetDesc += " and mounted night vision goggle device";
+          helmetDesc += ' and mounted night vision goggle device';
         }
       }
       gearDescriptions.push(helmetDesc);
     } else {
-      gearDescriptions.push("no helmet, head covered only by the black tactical balaclava");
+      gearDescriptions.push('no helmet, head covered only by the black tactical balaclava');
     }
 
     if (hasGoggles) {
-      gearDescriptions.push("tactical goggles worn over the eyes");
+      gearDescriptions.push('tactical goggles worn over the eyes');
     }
 
     if (hasHeadset) {
-      gearDescriptions.push("combat communication headset worn over the ears");
+      gearDescriptions.push('combat communication headset worn over the ears');
     }
 
     if (hasComms) {
-      gearDescriptions.push("tactical radio antenna protruding from the gear");
+      gearDescriptions.push('tactical radio antenna protruding from the gear');
     }
 
     // Always include these base features
-    gearDescriptions.push("black tactical balaclava face mask covering the head and face, showing only the eyes");
-    gearDescriptions.push("blue/white Israeli flag patch on the right shoulder");
-    gearDescriptions.push("low-profile belt rig");
+    gearDescriptions.push(
+      'black tactical balaclava face mask covering the head and face, showing only the eyes'
+    );
+    gearDescriptions.push('blue/white Israeli flag patch on the right shoulder');
+    gearDescriptions.push('low-profile belt rig');
 
     const gearPrompt = `Gear & Loadout: ${formattedGear} (${gearDescriptions.join(', ')}).`;
 
     // Weapon description
-    let weaponName = isDesertStyle ? "Colt M5 rifle in desert tan sand color (FDE - Flat Dark Earth)" : weaponryLabel;
+    let weaponName = isDesertStyle
+      ? 'Colt M5 rifle in desert tan sand color (FDE - Flat Dark Earth)'
+      : weaponryLabel;
     let weaponPrompt = `Primary weapon: ${weaponName}`;
     if (hasOptics) {
-      const opticDesc = isDesertStyle ? `${formattedOptics} in matching desert tan sand color` : formattedOptics;
+      const opticDesc = isDesertStyle
+        ? `${formattedOptics} in matching desert tan sand color`
+        : formattedOptics;
       weaponPrompt += ` equipped with ${opticDesc}`;
     } else {
       weaponPrompt += ` with no optics sight (plain iron sights)`;

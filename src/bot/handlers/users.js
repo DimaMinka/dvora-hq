@@ -118,7 +118,8 @@ export async function handleRemoveUserCallback(ctx, state, data) {
       setConversationState(ctx.chat.id, state);
 
       return ctx.editMessageText(
-        `⚠️ *Delete \`@${u.tg_username}\` from squad \`${u.squad_id}\`?*\n` + `PIN: \`${pin}\` will be revoked.`,
+        `⚠️ *Delete \`@${u.tg_username}\` from squad \`${u.squad_id}\`?*\n` +
+          `PIN: \`${pin}\` will be revoked.`,
         {
           parse_mode: 'Markdown',
           reply_markup: {

@@ -81,4 +81,3 @@ export const gendersList = [
   { id: 'male', en: 'Male', he: 'זכר' },
   { id: 'female', en: 'Female', he: 'נקבה' },
 ];
-

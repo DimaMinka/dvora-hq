@@ -36,7 +36,8 @@ const aiDescriptions = {
   tactical_glasses: 'tactical goggles',
   knee_pads: 'protective combat knee pads',
   tactical_gloves: 'tactical combat gloves',
-  shacham: 'OE-14 Mouse monocular night vision device mounted on the helmet over one eye, featuring a blue-coated optical lens',
+  shacham:
+    'OE-14 Mouse monocular night vision device mounted on the helmet over one eye, featuring a blue-coated optical lens',
   adi: 'Adi night vision device',
   nyx: 'Nyx thermal camera',
   desert_weapon: 'desert camo weapon style',
@@ -131,16 +132,23 @@ export function formatLoadoutForAIPrompt({
         .join(', ')
     : 'none';
 
-  const gearListLower = gear ? gear.split(',').map(x => x.trim().toLowerCase()) : [];
+  const gearListLower = gear ? gear.split(',').map((x) => x.trim().toLowerCase()) : [];
   const hasHelmet = gearListLower.includes('helmet');
   const hasVest = gearListLower.includes('vest');
   const hasGoggles = gearListLower.includes('tactical_glasses');
   const hasHeadset = gearListLower.includes('combat_headset');
   const hasComms = gearListLower.includes('comms_710') || gearListLower.includes('military_phone');
-  const hasNVD = gearListLower.includes('shacham') || gearListLower.includes('adi') || gearListLower.includes('nyx');
+  const hasNVD =
+    gearListLower.includes('shacham') ||
+    gearListLower.includes('adi') ||
+    gearListLower.includes('nyx');
   const hasOptics = optics && optics.trim().toLowerCase() !== 'none';
   const hasSecondary = secondaryIds.length > 0;
-  const isDronePilot = specialization ? (specialization.toLowerCase().includes('avata') || specialization.toLowerCase().includes('evo') || specialization.toLowerCase().includes('fpv')) : false;
+  const isDronePilot = specialization
+    ? specialization.toLowerCase().includes('avata') ||
+      specialization.toLowerCase().includes('evo') ||
+      specialization.toLowerCase().includes('fpv')
+    : false;
   const isDesertStyle = gearListLower.includes('desert_weapon');
 
   return {

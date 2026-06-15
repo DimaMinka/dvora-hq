@@ -41,7 +41,10 @@ export async function getSquads(db) {
 }
 
 // Helper: Build inline keyboard with squads
-export function buildSquadKeyboard(squads, { addNew = false, disabledList = [], skipBtn = false } = {}) {
+export function buildSquadKeyboard(
+  squads,
+  { addNew = false, disabledList = [], skipBtn = false } = {}
+) {
   const rows = [];
   const squadButtons = squads.map((squad) => {
     const isDisabled = disabledList.includes(squad);

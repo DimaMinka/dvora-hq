@@ -69,7 +69,7 @@ router.post('/onboarding', authenticateToken, async (req, res) => {
       meds,
       gender,
     });
-    const avatarUrl = await generateAndSaveAvatar(userRef, req.user.userId, formattedSpecData);
+    await generateAndSaveAvatar(userRef, req.user.userId, formattedSpecData);
 
     // Fetch complete updated user profile to return
     const userDoc = await userRef.get();
