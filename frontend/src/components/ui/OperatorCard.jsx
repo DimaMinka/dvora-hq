@@ -12,38 +12,44 @@ export default function OperatorCard({
   daysLeft = 0,
   showRotation = false,
   lang = 'en',
+  alarmActive = false,
 }) {
   const isLong = specializationLabel.length > 16;
+
+  const labels = useMemo(() => ({
+    en: {
+      alert: 'ACTIVE DUTY ALERT',
+      standby: 'STANDBY RESERVE',
+      rest: 'TACTICAL REST',
+      none: 'ASSIGNMENT PENDING',
+      daysLeft: (count) => {
+        if (count === 0) return 'Last day';
+        return `${count} ${count === 1 ? 'day' : 'days'} left`;
+      },
+      alarmStandby: 'STATUS // NETWORK_STANDBY',
+      alarmActive: '!! COMBAT DEPLOYMENT ALERT !!',
+    },
+    he: {
+      alert: 'כוננות מבצעית פעילה',
+      standby: 'כוננות גיבוי ועתודה',
+      rest: 'מנוחה טקטית מאושרת',
+      none: 'ממתין לעדכון סבב',
+      daysLeft: (count) => {
+        if (count === 0) return 'יום אחרון';
+        return `נותרו ${count} ימים`;
+      },
+      alarmStandby: 'סטאטוס // רשת_בהמתנה',
+      alarmActive: '!! התרעת פריסה קרבית !!',
+    },
+  }), []);
+
+  const t = labels[lang] || labels.en;
 
   // Compute status badge styling and labels
   const statusConfig = useMemo(() => {
     if (!user || !user.squad_id) return null;
     const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
     const squadColor = getSquadColor(user.squad_id, isLightMode);
-
-    const labels = {
-      en: {
-        alert: 'ACTIVE DUTY ALERT',
-        standby: 'STANDBY RESERVE',
-        rest: 'TACTICAL REST',
-        none: 'ASSIGNMENT PENDING',
-        daysLeft: (count) => {
-          if (count === 0) return 'Last day';
-          return `${count} ${count === 1 ? 'day' : 'days'} left`;
-        },
-      },
-      he: {
-        alert: 'כוננות מבצעית פעילה',
-        standby: 'כוננות גיבוי ועתודה',
-        rest: 'מנוחה טקטית מאושרת',
-        none: 'ממתין לעדכון סבב',
-        daysLeft: (count) => {
-          if (count === 0) return 'יום אחרון';
-          return `נותרו ${count} ימים`;
-        },
-      },
-    };
-    const t = labels[lang] || labels.en;
 
     if (userStatus === 'alert') {
       return {
@@ -84,7 +90,7 @@ export default function OperatorCard({
       color: isLightMode ? '#836e59' : '#cbd5e1',
       daysText: '',
     };
-  }, [userStatus, user, lang, daysLeft]);
+  }, [userStatus, user, t, daysLeft]);
 
   return (
     <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2">
@@ -168,6 +174,17 @@ export default function OperatorCard({
                 <span className="text-slate-400 font-bold">{currentRotation.squads.rest}</span>
               </div>
             )}
+          </div>
+
+          {/* Alarm / Combat Alert status */}
+          <div
+            className={`p-1.5 mt-1 text-center font-black border tracking-wider text-[9px] transition-all duration-300 clip-btn ${
+              alarmActive
+                ? 'bg-bf-orange/15 border-bf-orange/40 text-bf-orange animate-pulse'
+                : 'bg-bf-cyan/5 border-bf-cyan/20 text-bf-cyan/70'
+            }`}
+          >
+            {alarmActive ? t.alarmActive : t.alarmStandby}
           </div>
         </div>
       )}

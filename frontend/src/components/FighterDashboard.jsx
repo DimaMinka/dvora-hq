@@ -143,6 +143,7 @@ export default function FighterDashboard({
         daysLeft={daysLeft}
         showRotation={activeTab === 'rotation'}
         lang={lang}
+        alarmActive={alarmActive}
       />
 
       {/* Sub-navigation tabs */}
@@ -170,19 +171,8 @@ export default function FighterDashboard({
       {/* TAB 1: ROTATIONS */}
       {activeTab === 'rotation' && (
         <div className="space-y-4 animate-fade-in">
-          {/* Alarm Alert Box */}
-          <div
-            className={`p-2 text-center font-black border tracking-widest text-[10px] transition-all duration-300 ${
-              alarmActive
-                ? 'bg-bf-orange/20 border-bf-orange text-bf-orange animate-pulse'
-                : 'bg-bf-cyan/10 border-bf-cyan/30 text-bf-cyan'
-            }`}
-          >
-            {alarmActive ? d.alarmActive : d.alarmStandby}
-          </div>
-
           {/* Rotation Schedule Widget */}
-          <RotationSchedule lang={lang} user={user} />
+          <RotationSchedule lang={lang} />
         </div>
       )}
 

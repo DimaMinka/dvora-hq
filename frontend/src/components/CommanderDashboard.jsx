@@ -229,6 +229,7 @@ export default function CommanderDashboard({
         daysLeft={daysLeft}
         showRotation={activeTab === 'rotation'}
         lang={lang}
+        alarmActive={alarmActive}
       />
 
       {/* Sub-navigation tabs */}
