@@ -130,6 +130,17 @@ export function formatLoadoutForAIPrompt({
         .join(', ')
     : 'none';
 
+  const gearListLower = gear ? gear.split(',').map(x => x.trim().toLowerCase()) : [];
+  const hasHelmet = gearListLower.includes('helmet');
+  const hasVest = gearListLower.includes('vest');
+  const hasGoggles = gearListLower.includes('tactical_glasses');
+  const hasHeadset = gearListLower.includes('combat_headset');
+  const hasComms = gearListLower.includes('comms_710') || gearListLower.includes('military_phone');
+  const hasNVD = gearListLower.includes('shacham') || gearListLower.includes('adi') || gearListLower.includes('nyx');
+  const hasOptics = optics && optics.trim().toLowerCase() !== 'none';
+  const hasSecondary = secondaryIds.length > 0;
+  const isDronePilot = specialization ? (specialization.toLowerCase().includes('avata') || specialization.toLowerCase().includes('evo') || specialization.toLowerCase().includes('fpv')) : false;
+
   return {
     formattedSpec,
     weaponryLabel,
@@ -138,5 +149,14 @@ export function formatLoadoutForAIPrompt({
     formattedGear,
     formattedMeds,
     genderLabel,
+    hasHelmet,
+    hasVest,
+    hasGoggles,
+    hasHeadset,
+    hasComms,
+    hasNVD,
+    hasOptics,
+    hasSecondary,
+    isDronePilot,
   };
 }

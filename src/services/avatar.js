@@ -24,16 +24,93 @@ export async function generateAndSaveAvatar(userRef, userId, formattedSpecData) 
       formattedGear,
       formattedMeds,
       genderLabel,
+      hasHelmet,
+      hasVest,
+      hasGoggles,
+      hasHeadset,
+      hasComms,
+      hasNVD,
+      hasOptics,
+      hasSecondary,
+      isDronePilot,
     } = formattedSpecData;
 
     const genderWord = genderLabel ? genderLabel.toLowerCase() : 'soldier';
-    const prompt = `Ultra-realistic 3D render, photorealistic textures, diffuse soft overcast daylight. A high-fidelity tactical modern military special operations ${genderWord} avatar. The soldier is always wearing a black tactical balaclava face mask covering the head and face, showing only the eyes.
-Role/Specialization: ${formattedSpec}.
-Primary weapon: ${weaponryLabel} equipped with ${formattedOptics} (highly customized, tan collapsible stock, extended M-LOK handguard, suppressor).
+
+    // Build gear list description
+    const gearDescriptions = [];
+    if (hasVest) {
+      gearDescriptions.push("Ranger Green plate carrier vest");
+    } else {
+      gearDescriptions.push("no plate carrier, wearing a sleek tactical combat shirt");
+    }
+
+    if (hasHelmet) {
+      let helmetDesc = "Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud";
+      if (hasNVD) {
+        helmetDesc += " and mounted night vision goggle device";
+      }
+      gearDescriptions.push(helmetDesc);
+    } else {
+      gearDescriptions.push("no helmet, head covered only by the black tactical balaclava");
+    }
+
+    if (hasGoggles) {
+      gearDescriptions.push("tactical goggles worn over the eyes");
+    }
+
+    if (hasHeadset) {
+      gearDescriptions.push("combat communication headset worn over the ears");
+    }
+
+    if (hasComms) {
+      gearDescriptions.push("tactical radio antenna protruding from the gear");
+    }
+
+    // Always include these base features
+    gearDescriptions.push("black tactical balaclava face mask covering the head and face, showing only the eyes");
+    gearDescriptions.push("blue/white Israeli flag patch on the right shoulder");
+    gearDescriptions.push("low-profile belt rig");
+
+    const gearPrompt = `Gear & Loadout: ${formattedGear} (${gearDescriptions.join(', ')}).`;
+
+    // Weapon description
+    let weaponPrompt = `Primary weapon: ${weaponryLabel}`;
+    if (hasOptics) {
+      weaponPrompt += ` equipped with ${formattedOptics}`;
+    } else {
+      weaponPrompt += ` with no optics sight (plain iron sights)`;
+    }
+    weaponPrompt += ` (highly customized, suppressor).`;
+
+    // Secondary weapon
+    let secondaryPrompt = '';
+    if (hasSecondary) {
+      secondaryPrompt = `Secondary weapon is carried in a holster on the belt/thigh.`;
+    } else {
+      secondaryPrompt = `No pistol, empty holster or no holster on the thigh.`;
+    }
+
+    // Drone pilot details
+    let droneDetails = '';
+    if (isDronePilot) {
+      droneDetails = ` A small tactical quadcopter drone (military reconnaissance UAV) is hovering in the air next to the soldier.`;
+    }
+
+    // Specialization details (e.g. medic)
+    let specDetails = '';
+    if (formattedSpec.toLowerCase().includes('medic')) {
+      specDetails = ` Clearly visible medical aid kit/first aid pouch on the vest.`;
+    }
+
+    const prompt = `Ultra-realistic 3D render, photorealistic textures, diffuse soft overcast daylight. A high-fidelity tactical modern military special operations ${genderWord} avatar.
+Role/Specialization: ${formattedSpec}.${specDetails}
+${weaponPrompt}
+${secondaryPrompt}
 Tactical Accessories: ${formattedAccs}.
 Medical Equipment: ${formattedMeds}.
-Gear & Loadout: ${formattedGear} (Ranger Green plate carrier, Ops-Core style high-cut tactical helmet with Wilcox-style NVG shroud, balaclava face mask, blue/white Israeli flag patch on right shoulder, low-profile belt rig).
-Pose: Tactically standing on a rocky hill looking forward. Background: Distant damaged village on a hillside. Professional studio quality game asset.`;
+${gearPrompt}
+Pose: Tactically standing on a rocky hill looking forward.${droneDetails} Background: Distant damaged village on a hillside. Professional studio quality game asset.`;
 
     const aiResponse = await ai.models.generateImages({
       model: 'imagen-4.0-generate-001',
