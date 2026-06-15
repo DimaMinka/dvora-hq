@@ -1,5 +1,5 @@
-import { getDb } from '../../db.js';
-import { setConversationState } from '../state.js';
+import { getDb } from '../../../db.js';
+import { setConversationState } from '../../state.js';
 import {
   isAdmin,
   parseISODate,
@@ -8,16 +8,16 @@ import {
   getWeekRange,
   formatDateISO,
   getDaysOfRotationRange,
-} from '../helpers.js';
+} from '../../helpers.js';
+import { MISSION_STEPS } from '../constants/steps.js';
 
-export async function handleSetMissionCallback(ctx, state, data) {
-  const db = getDb();
-
-  if (state.step === 'select_rotation') {
+const callbackSteps = {
+  [MISSION_STEPS.SELECT_ROTATION]: async (ctx, state, data) => {
     if (data.startsWith('select_rotation:')) {
       const rotationId = data.split(':')[1];
       state.data.rotationId = rotationId;
 
+      const db = getDb();
       const doc = await db.collection('rotations').doc(rotationId).get();
       if (!doc.exists) {
         setConversationState(ctx.chat.id, null);
@@ -42,7 +42,7 @@ export async function handleSetMissionCallback(ctx, state, data) {
       }
       buttons.push([{ text: '❌ Cancel', callback_data: 'cancel' }]);
 
-      state.step = 'select_day';
+      state.step = MISSION_STEPS.SELECT_DAY;
       setConversationState(ctx.chat.id, state);
 
       const periodStr =
@@ -58,12 +58,13 @@ export async function handleSetMissionCallback(ctx, state, data) {
         }
       );
     }
-  } else if (state.step === 'select_day') {
+  },
+  [MISSION_STEPS.SELECT_DAY]: async (ctx, state, data) => {
     if (data.startsWith('day:')) {
       const dateStr = data.split(':')[1];
       state.data.dateStr = dateStr;
 
-      state.step = 'time_input';
+      state.step = MISSION_STEPS.TIME_INPUT;
       setConversationState(ctx.chat.id, state);
 
       const formattedDay = formatShortDate(parseISODate(dateStr));
@@ -80,14 +81,11 @@ export async function handleSetMissionCallback(ctx, state, data) {
         }
       );
     }
-  }
-}
+  },
+};
 
-export async function handleSetMissionText(ctx, state) {
-  const text = ctx.message.text ? ctx.message.text.trim() : '';
-  if (!text) return;
-
-  if (state.step === 'time_input') {
+const textSteps = {
+  [MISSION_STEPS.TIME_INPUT]: async (ctx, state, text) => {
     const isClear = text.toLowerCase() === 'clear';
     let timeVal = null;
 
@@ -138,7 +136,29 @@ export async function handleSetMissionText(ctx, state) {
 
     await ctx.reply(successMsg, { parse_mode: 'Markdown' });
     setConversationState(ctx.chat.id, null);
+  },
+};
+
+export async function handleSetMissionCallback(ctx, state, data) {
+  const handler = callbackSteps[state.step];
+  if (!handler) {
+    console.warn(`[Dispatcher] Unknown mission set callback step: ${state.step}`);
+    setConversationState(ctx.chat.id, null);
+    return ctx.reply('⚠️ Произошла ошибка состояния. Начните заново.');
   }
+  await handler(ctx, state, data);
+}
+
+export async function handleSetMissionText(ctx, state) {
+  const text = ctx.message.text ? ctx.message.text.trim() : '';
+  if (!text) return;
+  const handler = textSteps[state.step];
+  if (!handler) {
+    console.warn(`[Dispatcher] Unknown mission set text step: ${state.step}`);
+    setConversationState(ctx.chat.id, null);
+    return ctx.reply('⚠️ Произошла ошибка состояния. Начните заново.');
+  }
+  await handler(ctx, state, text);
 }
 
 export async function commandSetMission(ctx) {
@@ -176,7 +196,7 @@ export async function commandSetMission(ctx) {
 
     setConversationState(ctx.chat.id, {
       flow: 'set_mission',
-      step: 'select_rotation',
+      step: MISSION_STEPS.SELECT_ROTATION,
       data: {},
     });
 
