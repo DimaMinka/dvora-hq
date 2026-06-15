@@ -69,8 +69,8 @@ export default function CommanderDashboard({
     en: {
       title: '// STRATEGIC_DASHBOARD // COMMAND_NODE',
       squadTitle: 'SQUAD OVERVIEW',
-      alarmOn: 'FORCE ALARM STATE',
-      alarmOff: 'STANDBY MODE',
+      alarmOn: 'SYSTEM STANDBY // ACTIVATE ALARM',
+      alarmOff: 'ALARM ACTIVE // DEACTIVATE ALARM',
       logsTitle: 'INCIDENT LOGS',
       btnLogs: 'OPEN LIVE LOG DRAWER',
       closeLogs: 'CLOSE DRAWER',
@@ -97,8 +97,8 @@ export default function CommanderDashboard({
     he: {
       title: '// לוח_פיקוד_אסטרטגי // מפקד',
       squadTitle: 'סקירת צוות',
-      alarmOn: 'הפעל סירנת קרב',
-      alarmOff: 'חזרה לכוננות',
+      alarmOn: 'מערכת בהמתנה // הפעל אזעקה',
+      alarmOff: 'אזעקה פעילה // ביטול אזעקה',
       logsTitle: 'יומן אירועים',
       btnLogs: 'פתח מגירת יומן',
       closeLogs: 'סגור מגירה',
@@ -538,8 +538,8 @@ export default function CommanderDashboard({
         onClick={onToggleAlarm}
         className={`w-full py-2.5 font-black text-xs uppercase clip-btn transition-all duration-300 cursor-pointer ${
           alarmActive
-            ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400]'
-            : 'bg-bf-orange/20 border border-bf-orange text-bf-orange hover:bg-bf-orange/30'
+            ? 'bg-bf-orange text-bf-dark border border-bf-orange shadow-[0_0_15px_#ff5400] animate-pulse'
+            : 'bg-bf-slate/30 border border-bf-border text-slate-400 hover:bg-bf-cyan/10 hover:border-bf-cyan hover:text-bf-cyan'
         }`}
       >
         {alarmActive ? d.alarmOff : d.alarmOn}
