@@ -1,6 +1,6 @@
 import { bot } from './botInstance.js';
 import { conversationState, setConversationState } from './state.js';
-import { isAdmin } from './helpers.js';
+import { isCommanderOrAdmin } from './helpers.js';
 import { handleStartHelp, handleMyProfile } from './handlers/common/index.js';
 import {
   commandAddFighter,
@@ -26,6 +26,9 @@ import {
   commandSetMission,
   handleSetMissionCallback,
   handleSetMissionText,
+  commandCompleteMission,
+  handleCompleteMissionCallback,
+  handleCompleteMissionMedia,
 } from './handlers/missions/index.js';
 
 if (bot) {
@@ -47,10 +50,12 @@ if (bot) {
 
   // Mission Commands
   bot.command('set_mission', commandSetMission);
+  bot.command('complete_mission', commandCompleteMission);
 
   // Handle callback queries
   bot.on('callback_query:data', async (ctx) => {
-    if (!isAdmin(ctx)) {
+    const authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
       return ctx.answerCallbackQuery({ text: 'Access Denied', show_alert: true });
     }
 
@@ -102,6 +107,8 @@ if (bot) {
         await handleRemoveSquadCallback(ctx, state, data);
       } else if (state.flow === 'set_mission') {
         await handleSetMissionCallback(ctx, state, data);
+      } else if (state.flow === 'complete_mission') {
+        await handleCompleteMissionCallback(ctx, state, data);
       }
     } catch (err) {
       console.error('[Bot Callback Error]:', err.message);
@@ -112,7 +119,8 @@ if (bot) {
 
   // Handle text messages for active flows
   bot.on('message:text', async (ctx, next) => {
-    if (!isAdmin(ctx)) {
+    const authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
       return next();
     }
 
@@ -138,6 +146,32 @@ if (bot) {
       }
     } catch (err) {
       console.error('[Bot Message Error]:', err.message);
+      setConversationState(chatId, null);
+      await ctx.reply(`❌ *ERROR*: ${err.message}`, { parse_mode: 'Markdown' });
+    }
+  });
+
+  // Handle media uploads (photos/documents) for active flows
+  bot.on(['message:photo', 'message:document'], async (ctx, next) => {
+    const authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
+      return next();
+    }
+
+    const chatId = ctx.chat.id;
+    const state = conversationState.get(chatId);
+
+    if (!state || state.flow !== 'complete_mission') {
+      return next();
+    }
+
+    // Refresh timeout
+    setConversationState(chatId, state);
+
+    try {
+      await handleCompleteMissionMedia(ctx, state);
+    } catch (err) {
+      console.error('[Bot Media Error]:', err.message);
       setConversationState(chatId, null);
       await ctx.reply(`❌ *ERROR*: ${err.message}`, { parse_mode: 'Markdown' });
     }

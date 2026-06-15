@@ -12,6 +12,28 @@ export function isAdmin(ctx) {
   return username && adminUsernames.includes(username);
 }
 
+export async function isCommanderOrAdmin(ctx) {
+  if (isAdmin(ctx)) return true;
+  const username = ctx.from?.username;
+  if (!username) return false;
+  
+  try {
+    const { getDb } = await import('../db.js');
+    const db = getDb();
+    const cleaned = username.toLowerCase().replace(/^@/, '');
+    const snapshot = await db
+      .collection('users')
+      .where('tg_username', 'in', [cleaned, `@${cleaned}`])
+      .where('role', '==', 'commander')
+      .get();
+    return !snapshot.empty;
+  } catch (err) {
+    console.error('[Helper] Error checking commander role:', err.message);
+    return false;
+  }
+}
+
+
 // Helper to generate a secure PIN: 5 digits + 1 uppercase letter
 export function generateTacticalPin() {
   const digits = Array.from({ length: 5 }, () => Math.floor(Math.random() * 10)).join('');

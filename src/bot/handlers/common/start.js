@@ -1,23 +1,30 @@
 import { config } from '../../../config.js';
-import { isAdmin } from '../../helpers.js';
+import { isAdmin, isCommanderOrAdmin } from '../../helpers.js';
 
 export async function handleStartHelp(ctx) {
   const verDisplay = config.version ? ` \`[${config.version.substring(0, 7)}]\`` : '';
-  if (!isAdmin(ctx)) {
+  const isAdm = isAdmin(ctx);
+  const isCmdOrAdm = await isCommanderOrAdmin(ctx);
+
+  if (!isCmdOrAdm) {
     return ctx.reply(
       `⚡ *DVORA HQ // SECURE PROTOCOL* ${verDisplay} ⚡\n\n` +
-        `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
+      `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
       { parse_mode: 'Markdown' }
     );
   }
 
-  // Dynamically register full admin commands autocomplete scope for this admin user chat
+  // Dynamically register autocomplete scope depending on role
   try {
-    await ctx.api.setMyCommands(
-      [
-        { command: 'start', description: 'Show command help' },
-        { command: 'help', description: 'Show command help' },
-        { command: 'my_profile', description: 'Show profile and access PIN' },
+    const commands = [
+      { command: 'start', description: 'Show command help' },
+      { command: 'help', description: 'Show command help' },
+      { command: 'my_profile', description: 'Show profile and access PIN' },
+      { command: 'complete_mission', description: '🛰 Confirm mission completion with AI analysis' },
+    ];
+
+    if (isAdm) {
+      commands.push(
         { command: 'add_fighter', description: '➕ Add a fighter to squad' },
         { command: 'add_commander', description: '➕ Add a commander to squad' },
         { command: 'remove_user', description: '➖ Remove a user' },
@@ -26,28 +33,45 @@ export async function handleStartHelp(ctx) {
         { command: 'add_rotation', description: '📅 Schedule a weekly rotation' },
         { command: 'remove_rotation', description: '📅 Remove a scheduled rotation' },
         { command: 'list_rotations', description: '📅 View rotation schedule' },
-        { command: 'set_mission', description: '⏱ Set a mission time' },
-      ],
-      {
-        scope: { type: 'chat', chat_id: ctx.chat.id },
-      }
-    );
+        { command: 'set_mission', description: '⏱ Set a mission time' }
+      );
+    }
+
+    await ctx.api.setMyCommands(commands, {
+      scope: { type: 'chat', chat_id: ctx.chat.id },
+    });
   } catch (err) {
-    console.error('[Bot] Failed to dynamically set admin commands:', err.message);
+    console.error('[Bot] Failed to dynamically set commands:', err.message);
   }
 
-  const helpMessage =
-    `⚡ *DVORA HQ // INTEL BOT CLI* ${verDisplay} ⚡\n\n` +
-    `Available tactical protocols:\n` +
-    `• \`/add_fighter\` — Add fighter (wizard dialog)\n` +
-    `• \`/add_commander\` — Add commander (wizard dialog)\n` +
-    `• \`/remove_user\` — Remove operator from the database\n` +
-    `• \`/remove_squad\` — Delete a squad and all associated fighters\n` +
-    `• \`/list_users\` — Show list of registered operators\n` +
-    `• \`/add_rotation\` — Schedule a weekly rotation\n` +
-    `• \`/remove_rotation\` — Remove a scheduled rotation\n` +
-    `• \`/list_rotations\` — View rotation schedule for the next 4 weeks\n` +
-    `• \`/set_mission\` — Set a mission time for a specific day\n\n` +
-    `_Security protocols active. Management via inline keyboard buttons._`;
+  let helpMessage = `⚡ *DVORA HQ // INTEL BOT CLI* ${verDisplay} ⚡\n\n`;
+
+  if (isAdm) {
+    helpMessage +=
+      `👤 *USER MANAGEMENT*\n` +
+      `• \`/add_fighter\` — Add fighter (wizard dialog)\n` +
+      `• \`/add_commander\` — Add commander (wizard dialog)\n` +
+      `• \`/remove_user\` — Remove operator from database\n` +
+      `• \`/remove_squad\` — Delete squad and fighters\n` +
+      `• \`/list_users\` — Show list of registered operators\n\n` +
+      `📅 *ROTATION SCHEDULING*\n` +
+      `• \`/add_rotation\` — Schedule a weekly rotation\n` +
+      `• \`/remove_rotation\` — Remove a scheduled rotation\n` +
+      `• \`/list_rotations\` — View rotation schedule (4 weeks)\n\n` +
+      `🛰 *MISSION OPERATIONS*\n` +
+      `• \`/set_mission\` — Set mission time for a specific day\n` +
+      `• \`/complete_mission\` — Confirm mission completion with AI analysis\n\n` +
+      `⚙️ *GENERAL*\n` +
+      `• \`/my_profile\` — View your profile & access PIN\n\n` +
+      `_Security protocols active. Management via inline keyboards._`;
+  } else {
+    helpMessage +=
+      `🛰 *MISSION OPERATIONS*\n` +
+      `• \`/complete_mission\` — Confirm mission completion with AI analysis\n\n` +
+      `⚙️ *GENERAL*\n` +
+      `• \`/my_profile\` — View your profile & access PIN\n\n` +
+      `_Security protocols active._`;
+  }
+
   return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
 }
