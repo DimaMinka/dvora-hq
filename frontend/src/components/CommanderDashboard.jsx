@@ -396,7 +396,7 @@ export default function CommanderDashboard({
                       if (status === 1) return 'bg-bf-cyan shadow-[0_0_8px_#00f0ff]';
                       if (status === 2)
                         return 'bg-bf-orange animate-pulse shadow-[0_0_8px_#ff5400]';
-                      return 'bg-slate-700';
+                      return 'bg-slate-500';
                     };
                     return (
                       <>
