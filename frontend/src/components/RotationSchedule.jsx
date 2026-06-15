@@ -246,11 +246,6 @@ export default function RotationSchedule({ lang = 'en' }) {
 
   return (
     <div className="space-y-4 w-full">
-      {/* Title Header */}
-      <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">{d.title}</div>
-
-
-
       {/* Tabs and Week Selector Segment */}
       <div className="flex justify-between items-center bg-bf-dark border border-bf-border p-1 clip-btn h-10 relative">
         {/* Left selector */}

@@ -710,9 +710,10 @@ function App() {
       </main>
 
       <footer className="max-w-md mx-auto mt-8 text-center text-[8px] text-slate-600 tracking-widest uppercase space-y-1">
-        <div>{dict.footer}</div>
-        <div className="text-bf-cyan/60 font-mono">
-          SYS_VER: {(import.meta.env.VITE_APP_VERSION || 'local-dev').substring(0, 7)}
+        <div className="text-bf-cyan/60 font-mono flex justify-center gap-2 flex-wrap">
+          <span>SYS_VER: {(import.meta.env.VITE_APP_VERSION || 'local-dev').substring(0, 7)}</span>
+          <span>//</span>
+          <span>DEV: DIMA MINKA</span>
         </div>
       </footer>
     </div>
