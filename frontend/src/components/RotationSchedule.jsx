@@ -248,6 +248,20 @@ export default function RotationSchedule({ lang = 'en', user }) {
     const token = localStorage.getItem('dvora_token');
     if (!token) return;
 
+    // Build confirmation message
+    const opName = originalOp.tg_username ? `@${originalOp.tg_username}` : originalOp.phone_number;
+    const confirmMsg = subId
+      ? (lang === 'en' 
+          ? `Are you sure you want to substitute ${opName} on ${dateStr}?` 
+          : `האם אתה בטוח שברצונך להחליף את ${opName} בתאריך ${dateStr}?`)
+      : (lang === 'en'
+          ? `Are you sure you want to restore the original operator for ${dateStr}?`
+          : `האם אתה בטוח שברצונך להחזיר את הלוחם המקורי לתאריך ${dateStr}?`);
+
+    if (!window.confirm(confirmMsg)) {
+      return;
+    }
+
     try {
       const body = {
         dateStr,
