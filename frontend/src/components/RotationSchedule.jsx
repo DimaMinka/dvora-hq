@@ -342,7 +342,7 @@ export default function RotationSchedule({ lang = 'en' }) {
                       <span className="text-[11px] font-bold text-white uppercase">
                         {rot ? (
                           <>
-                            ALERT SQUAD: <span style={{ color: squadColor?.color }}>{alertSquad}</span>
+                            ACTIVE SQUAD: <span style={{ color: squadColor?.color }}>{alertSquad}</span>
                           </>
                         ) : (
                           <span className="text-slate-600">// DEPLOY_STANDBY</span>

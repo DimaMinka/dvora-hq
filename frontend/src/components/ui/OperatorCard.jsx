@@ -161,7 +161,7 @@ export default function OperatorCard({
           </div>
           <div className="flex justify-between text-[10px] gap-2">
             <div>
-              <span className="text-bf-orange font-black">ALERT:</span>{' '}
+              <span className="text-bf-orange font-black">ACTIVE:</span>{' '}
               <span className="text-white font-bold">{currentRotation.squads.alert}</span>
             </div>
             <div>
