@@ -2,6 +2,12 @@
 
 [![VibeTalent Badge](https://www.vibetalent.work/api/badge/dimaminka)](https://www.vibetalent.work/profile/dimaminka)
 
+[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Telegram](https://img.shields.io/badge/Telegram-2EA6D6?style=for-the-badge&logo=telegram&logoColor=white)](https://telegram.org)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
+
 > **Ultra-secure, invite-only tactical synchronization platform** integrated natively into the Telegram Mini App ecosystem.  
 > Built for field operations — real-time readiness tracking, squad rotation scheduling, and decentralized command visibility.
 
