@@ -1,5 +1,7 @@
 # DVORA HQ — Tactical Command & Readiness Network
 
+[![VibeTalent Badge](https://www.vibetalent.work/api/badge/dimaminka)](https://www.vibetalent.work/profile/dimaminka)
+
 > **Ultra-secure, invite-only tactical synchronization platform** integrated natively into the Telegram Mini App ecosystem.  
 > Built for field operations — real-time readiness tracking, squad rotation scheduling, and decentralized command visibility.
 
