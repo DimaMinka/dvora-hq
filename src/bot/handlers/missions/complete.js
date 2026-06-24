@@ -1,5 +1,4 @@
 import { getDb } from '../../../db.js';
-import { FieldValue } from '@google-cloud/firestore';
 import { setConversationState } from '../../state.js';
 import {
   isCommanderOrAdmin,
@@ -64,28 +63,6 @@ export async function commandCompleteMission(ctx) {
 
 export async function handleCompleteMissionCallback(ctx, state, data) {
   const db = getDb();
-
-  if (data.startsWith('delete_mission:')) {
-    const [, rotationId, dateStr] = data.split(':');
-    try {
-      const docRef = db.collection('rotations').doc(rotationId);
-      await docRef.update({
-        [`completed_missions.${dateStr}`]: FieldValue.delete(),
-      });
-      setConversationState(ctx.chat.id, null);
-      return ctx.editMessageText(
-        `🗑 *Mission for ${formatShortDate(parseISODate(dateStr))} has been reset/deleted.*`,
-        {
-          parse_mode: 'Markdown',
-        }
-      );
-    } catch (err) {
-      setConversationState(ctx.chat.id, null);
-      return ctx.editMessageText(`❌ *FAILED TO DELETE*: \`${err.message}\``, {
-        parse_mode: 'Markdown',
-      });
-    }
-  }
 
   if (data === 'skip_conclusion') {
     setConversationState(ctx.chat.id, null);
@@ -162,23 +139,10 @@ export async function handleCompleteMissionCallback(ctx, state, data) {
       if (doc.exists) {
         const r = doc.data();
         if (r.completed_missions && r.completed_missions[dateStr]) {
-          // Provide Reset/Delete button
-          const inline_keyboard = [
-            [
-              {
-                text: '🗑 Reset/Delete Mission',
-                callback_data: `delete_mission:${state.data.rotationId}:${dateStr}`,
-              },
-            ],
-            [{ text: '❌ Cancel', callback_data: 'cancel' }],
-          ];
+          setConversationState(ctx.chat.id, null);
           return ctx.editMessageText(
-            `⚠️ *SLOT OCCUPIED*: This slot is already filled with mission telemetry for *${formatShortDate(parseISODate(dateStr))}*.\n\n` +
-              `Would you like to reset/delete this completed mission?`,
-            {
-              parse_mode: 'Markdown',
-              reply_markup: { inline_keyboard },
-            }
+            `⚠️ *ERROR*: This slot is already filled with mission telemetry (${dateStr}). Overwrite locked.`,
+            { parse_mode: 'Markdown' }
           );
         }
       }

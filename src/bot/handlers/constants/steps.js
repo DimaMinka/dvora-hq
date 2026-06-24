@@ -29,3 +29,9 @@ export const MISSION_COMPLETE_STEPS = {
   PROCESSING: 'complete_processing',
   CONCLUSION_INPUT: 'complete_conclusion_input',
 };
+
+export const MISSION_RESET_STEPS = {
+  SELECT_ROTATION: 'reset_select_rotation',
+  SELECT_DAY: 'reset_select_day',
+  CONFIRM: 'reset_confirm',
+};

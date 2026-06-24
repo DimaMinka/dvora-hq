@@ -31,6 +31,8 @@ import {
   handleCompleteMissionMedia,
   handleCompleteMissionText,
   handleCompleteMissionVoice,
+  commandResetMission,
+  handleResetMissionCallback,
 } from './handlers/missions/index.js';
 
 if (bot) {
@@ -53,6 +55,7 @@ if (bot) {
   // Mission Commands
   bot.command('set_mission', commandSetMission);
   bot.command('complete_mission', commandCompleteMission);
+  bot.command('reset_mission', commandResetMission);
 
   // Handle callback queries
   bot.on('callback_query:data', async (ctx) => {
@@ -111,6 +114,8 @@ if (bot) {
         await handleSetMissionCallback(ctx, state, data);
       } else if (state.flow === 'complete_mission') {
         await handleCompleteMissionCallback(ctx, state, data);
+      } else if (state.flow === 'reset_mission') {
+        await handleResetMissionCallback(ctx, state, data);
       }
     } catch (err) {
       console.error('[Bot Callback Error]:', err.message);

@@ -2,6 +2,7 @@ import { commandSetMission, handleSetMissionCallback, handleSetMissionText } fro
 import { commandCompleteMission, handleCompleteMissionCallback } from './complete.js';
 import { handleCompleteMissionMedia } from './completeMedia.js';
 import { handleCompleteMissionText, handleCompleteMissionVoice } from './completeDebrief.js';
+import { commandResetMission, handleResetMissionCallback } from './reset.js';
 
 export {
   commandSetMission,
@@ -12,4 +13,6 @@ export {
   handleCompleteMissionMedia,
   handleCompleteMissionText,
   handleCompleteMissionVoice,
+  commandResetMission,
+  handleResetMissionCallback,
 };

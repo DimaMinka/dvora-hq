@@ -22,7 +22,11 @@ export async function handleStartHelp(ctx) {
       { command: 'my_profile', description: 'Show profile and access PIN' },
       {
         command: 'complete_mission',
-        description: '🛰 Confirm/reset mission & debrief',
+        description: '🛰 Confirm mission completion with AI analysis',
+      },
+      {
+        command: 'reset_mission',
+        description: '🗑 Reset/delete a completed mission',
       },
     ];
 
@@ -63,14 +67,16 @@ export async function handleStartHelp(ctx) {
       `• \`/list_rotations\` — View rotation schedule (4 weeks)\n\n` +
       `🛰 *MISSION OPERATIONS*\n` +
       `• \`/set_mission\` — Set mission time for a specific day\n` +
-      `• \`/complete_mission\` — Confirm mission with AI analysis, add debrief, or reset completed slots\n\n` +
+      `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
+      `• \`/reset_mission\` — Delete/reset a completed mission slot\n\n` +
       `⚙️ *GENERAL*\n` +
       `• \`/my_profile\` — View your profile & access PIN\n\n` +
       `_Security protocols active. Management via inline keyboards._`;
   } else {
     helpMessage +=
       `🛰 *MISSION OPERATIONS*\n` +
-      `• \`/complete_mission\` — Confirm mission with AI analysis, add debrief, or reset completed slots\n\n` +
+      `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
+      `• \`/reset_mission\` — Delete/reset a completed mission slot\n\n` +
       `⚙️ *GENERAL*\n` +
       `• \`/my_profile\` — View your profile & access PIN\n\n` +
       `_Security protocols active._`;
