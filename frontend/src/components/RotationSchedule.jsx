@@ -575,6 +575,33 @@ export default function RotationSchedule({ user }) {
                           telemetry={completedMission.telemetry}
                           isLightMode={isLightMode}
                         />
+                        {completedMission.conclusion && (
+                          <div className="mt-4">
+                            <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
+                              {t('rotation.debriefTitle')}
+                            </div>
+                            <div
+                              className="relative p-4 rounded bg-bf-slate border font-mono text-[11px] leading-relaxed select-none whitespace-pre-wrap"
+                              style={{
+                                borderColor: isLightMode
+                                  ? 'rgba(112, 83, 53, 0.45)'
+                                  : 'rgba(0, 240, 255, 0.12)',
+                                color: isLightMode ? '#271a10' : '#ffffff',
+                              }}
+                            >
+                              {/* HUD corner accents */}
+                              <div
+                                className="absolute top-[-1px] left-[-1px] w-2 h-2 border-t border-l"
+                                style={{ borderColor: isLightMode ? '#705335' : '#00f0ff' }}
+                              />
+                              <div
+                                className="absolute bottom-[-1px] right-[-1px] w-2 h-2 border-b border-r"
+                                style={{ borderColor: isLightMode ? '#705335' : '#00f0ff' }}
+                              />
+                              <span className="opacity-80">{completedMission.conclusion}</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                     <div className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">

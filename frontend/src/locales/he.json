@@ -224,6 +224,7 @@
     "selectSubFor": "בחר מחליף עבור: @",
     "currentSub": "מחליף נוכחי: @",
     "missionTelemetryBriefingLabel": "// סיכום טלמטריית משימה",
+    "debriefTitle": "// תחקור טקטי",
     "calendarGridLabel": "// לוח_השנה",
     "confirmRestore": "האם לאשר החזרת הלוחם המקורי לתאריך {date}?",
     "confirmSubstitute": "האם לאשר החלפת @{original} ב-@{sub} בתאריך {date}?",

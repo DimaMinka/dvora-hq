@@ -83,7 +83,7 @@ export async function transcribeVoice(audioBuffer, mimeType) {
         mimeType: mimeType || 'audio/ogg',
       },
     },
-    'Transcribe this voice message to text. Do not add any introduction, explanations, metadata, or corrections. Just transcribe what is said, in the speaker\'s original language (Russian, Hebrew, or English).',
+    "Transcribe this voice message to text. Do not add any introduction, explanations, metadata, or corrections. Just transcribe what is said, in the speaker's original language (Russian, Hebrew, or English).",
   ];
 
   const aiResponse = await ai.models.generateContent({

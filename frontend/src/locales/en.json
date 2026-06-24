@@ -224,6 +224,7 @@
     "selectSubFor": "Select Substitute for: @",
     "currentSub": "Current Substitute: @",
     "missionTelemetryBriefingLabel": "// MISSION TELEMETRY BRIEFING",
+    "debriefTitle": "// TACTICAL DEBRIEF",
     "calendarGridLabel": "// CALENDAR_GRID",
     "confirmRestore": "Confirm restoring the original operator for {date}?",
     "confirmSubstitute": "Confirm substituting @{original} with @{sub} on {date}?",
