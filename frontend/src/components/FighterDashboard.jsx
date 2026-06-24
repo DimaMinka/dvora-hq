@@ -166,6 +166,17 @@ export default function FighterDashboard({
     ? formatCommaLabel(user.specialization, specializationsList, lang)
     : '';
 
+  const todayMeetingTime = useMemo(() => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${y}-${m}-${d}`;
+    
+    if (!currentRotation || !currentRotation.meeting_times) return '18:30'; // Fallback for demo
+    return currentRotation.meeting_times[todayStr] || '18:30'; // Fallback for demo
+  }, [currentRotation]);
+
   return (
     <div className="space-y-4 w-full animate-fade-in">
       <div className="text-[9px] font-bold text-bf-cyan uppercase tracking-widest">
@@ -184,6 +195,7 @@ export default function FighterDashboard({
         daysLeft={daysLeft}
         showRotation={activeTab === 'rotation'}
         alarmActive={alarmActive}
+        meetingTime={todayMeetingTime}
       />
 
       {/* Sub-navigation tabs */}

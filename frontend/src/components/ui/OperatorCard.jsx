@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { getSquadColor } from '../../constants/squadColors.js';
 import { useTranslation } from '../../context/LanguageContext.jsx';
+import WeatherModal from './WeatherModal.jsx';
 
 export default function OperatorCard({
   user,
@@ -13,11 +14,12 @@ export default function OperatorCard({
   daysLeft = 0,
   showRotation = false,
   alarmActive = false,
+  meetingTime = null,
 }) {
   const isLong = specializationLabel.length > 16;
   const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
 
-  const { t } = useTranslation();
+  const { t, isRtl } = useTranslation();
 
   // Compute status badge styling and labels
   const statusConfig = useMemo(() => {
@@ -71,8 +73,105 @@ export default function OperatorCard({
     };
   }, [userStatus, user, t, daysLeft, isLightMode]);
 
+  const [weatherModalOpen, setWeatherModalOpen] = useState(false);
+
   return (
-    <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2">
+    <>
+      <div className="p-2.5 bg-bf-dark/90 border border-bf-border clip-btn flex flex-col gap-2 relative">
+      {/* Weather Tactical Badge */}
+      <button
+        onClick={() => setWeatherModalOpen(true)}
+        className={`absolute top-2.5 ${isRtl ? 'left-2.5' : 'right-2.5'} z-10 w-6 h-6 flex items-center justify-center bg-bf-slate/40 border border-bf-border/30 hover:border-bf-cyan/60 hover:bg-bf-cyan/10 rounded cursor-pointer transition-all group`}
+        title="Tactical Weather Forecast"
+      >
+        {(() => {
+          const startHour = (meetingTime && typeof meetingTime === 'string' && meetingTime.includes(':'))
+            ? parseInt(meetingTime.split(':')[0], 10)
+            : 12; // default to 12 (daytime)
+          
+          // Re-simulate initial conditions to select the correct icon
+          const temp = Math.round(23.5 + 6.5 * Math.cos(((startHour - 15) * Math.PI) / 12));
+          const windSpeed = 24; // simulated wind speed
+          const precipProb = 0; // simulated precip
+          
+          let condition = 'sunny';
+          if (precipProb > 50) {
+            condition = 'rainy';
+          } else if (windSpeed > 30) {
+            condition = 'windy';
+          } else if (precipProb > 10) {
+            condition = 'cloudy';
+          } else if (temp < 15) {
+            condition = 'cloudy'; // cold days are usually cloudy in our simulation
+          }
+          
+          switch (condition) {
+            case 'rainy':
+              return (
+                /* Rainy Icon */
+                <svg
+                  className="w-4 h-4 text-bf-cyan group-hover:scale-110 transition-transform"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 16.58A5 5 0 0018 7h-1.26A8 8 0 104 15.25M17 19l-1 2m-4-2l-1 2m-4-2l-1 2" />
+                </svg>
+              );
+            case 'windy':
+              return (
+                /* Windy Icon */
+                <svg
+                  className="w-4 h-4 text-slate-300 group-hover:scale-110 transition-transform"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
+                </svg>
+              );
+            case 'cloudy':
+              return (
+                /* Cloudy Icon */
+                <svg
+                  className="w-4 h-4 text-slate-400 group-hover:scale-110 transition-transform"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                </svg>
+              );
+            case 'sunny':
+            default:
+              return (
+                /* Sun SVG Icon for Daytime */
+                <svg
+                  className="w-4 h-4 text-bf-orange group-hover:scale-110 transition-transform animate-[spin_20s_linear_infinite]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2" />
+                  <path d="M12 20v2" />
+                  <path d="M4.93 4.93l1.41 1.41" />
+                  <path d="M17.66 17.66l1.41 1.41" />
+                  <path d="M2 12h2" />
+                  <path d="M20 12h2" />
+                  <path d="M6.34 17.66l-1.41 1.41" />
+                  <path d="M19.07 4.93l-1.41 1.41" />
+                </svg>
+              );
+          }
+        })()}
+      </button>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="w-12 h-12 bg-bf-slate border border-bf-cyan/40 relative flex items-center justify-center overflow-hidden shrink-0">
@@ -179,5 +278,12 @@ export default function OperatorCard({
         {alarmActive ? t('app.alarmActive') : t('app.alarmStandby')}
       </div>
     </div>
-  );
+
+    <WeatherModal
+      isOpen={weatherModalOpen}
+      onClose={() => setWeatherModalOpen(false)}
+      meetingTime={meetingTime}
+    />
+  </>
+);
 }
