@@ -66,7 +66,7 @@ export default function CommanderDashboard({
   }, [user, currentRotation]);
 
   const daysLeft = useMemo(() => {
-    if (!user || !user.squad_id || !rotations || rotations.length === 0) return 0;
+    if (!user || !user.squad_id || !rotations || rotations.length === 0 || userStatus === 'none') return 0;
 
     const userSquad = user.squad_id.toUpperCase();
     const today = new Date();
@@ -94,25 +94,30 @@ export default function CommanderDashboard({
       }
 
       // Check substitutions
-      let isActive;
       const daySubs = r.substitutions?.[dateStr] || {};
-
-      // 1. Is user substituted by someone else?
       const isSubbedOut = !!daySubs[user.id];
-      // 2. Is user substituting someone else?
       const isSubbedIn = Object.values(daySubs).some((sub) => sub.replaced_by === user.id);
 
+      let dayStatus = 'none';
       if (isSubbedOut) {
-        isActive = false;
+        dayStatus = 'none';
       } else if (isSubbedIn) {
-        isActive = true;
+        dayStatus = 'alert';
       } else {
-        // No substitution, check squad role
         const alertSquad = r.squads?.alert?.toUpperCase();
-        isActive = userSquad === alertSquad;
+        const standbySquad = r.squads?.standby?.toUpperCase();
+        const restSquad = r.squads?.rest?.toUpperCase();
+
+        if (userSquad === alertSquad) {
+          dayStatus = 'alert';
+        } else if (userSquad === standbySquad) {
+          dayStatus = 'standby';
+        } else if (userSquad === restSquad) {
+          dayStatus = 'rest';
+        }
       }
 
-      if (isActive) {
+      if (dayStatus === userStatus) {
         consecutiveDays++;
       } else {
         break;
@@ -122,7 +127,7 @@ export default function CommanderDashboard({
     }
 
     return consecutiveDays > 0 ? consecutiveDays - 1 : 0;
-  }, [user, rotations]);
+  }, [user, rotations, userStatus]);
 
   const { weaponItems, medItems, gearItems, handleToggleItem } = useLoadoutItems(
     user,

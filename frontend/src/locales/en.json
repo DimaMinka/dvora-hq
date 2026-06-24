@@ -219,7 +219,7 @@
     "restLabel": "REST:",
     "missionTimeLabel": "MISSION TIME:",
     "missionCompletedLabel": "MISSION COMPLETED",
-    "squadDeploymentLabel": "// CURRENT WEEK SQUAD DEPLOYMENT",
+    "squadDeploymentLabel": "// CURRENT ROTATION STATUS",
     "operatorDirectoryLabel": "// {squad} OPERATOR DIRECTORY",
     "selectSubFor": "Select Substitute for: @",
     "currentSub": "Current Substitute: @",

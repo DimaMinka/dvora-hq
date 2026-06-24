@@ -219,7 +219,7 @@
     "restLabel": "מנוחה:",
     "missionTimeLabel": "שעת פעילות:",
     "missionCompletedLabel": "משימה הושלמה",
-    "squadDeploymentLabel": "// פריסת כוחות שבועית",
+    "squadDeploymentLabel": "// סטטוס סבב נוכחי",
     "operatorDirectoryLabel": "// מצבת לוחמים - {squad}",
     "selectSubFor": "בחר מחליף עבור: @",
     "currentSub": "מחליף נוכחי: @",
