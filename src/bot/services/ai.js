@@ -1,6 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
 import { config } from '../../config.js';
 
+export const SUPPORTED_LANGUAGES = ['en', 'he'];
+
 let aiInstance = null;
 
 function getAiClient() {
@@ -101,18 +103,41 @@ export async function transcribeVoice(audioBuffer, mimeType) {
 
 export async function structureDebrief(text) {
   const ai = getAiClient();
+
+  const languageListStr = SUPPORTED_LANGUAGES.map((l) => `"${l}"`).join(', ');
   const prompt = `Analyze this commander's tactical debrief text. Extract and structure it into three categories:
 1. "to_preserve" (לשימור) - things that went well, were good, or should be maintained.
 2. "to_improve" (לשיפור) - things that went bad, need improvement, or should be changed.
 3. "equipment_issues" - any shortages, malfunctions, or bottlenecks in ammunition, cartridges, weapons, or other gear/equipment.
 
-You must provide two versions of the extracted structured data:
-- "en": Translated and written in English.
-- "he": Translated and written in Hebrew.
+You must provide versions of the extracted structured data translated into each of the following languages: ${languageListStr}.
+The response must use the language codes as keys (e.g. ${SUPPORTED_LANGUAGES.map((l) => `"${l}"`).join(' and ')}).
 
 Return ONLY JSON matching the requested schema. Do not output any other text.
 
 Text to analyze: "${text}"`;
+
+  const langProperties = {};
+  for (const lang of SUPPORTED_LANGUAGES) {
+    langProperties[lang] = {
+      type: 'OBJECT',
+      properties: {
+        to_preserve: {
+          type: 'ARRAY',
+          items: { type: 'STRING' },
+        },
+        to_improve: {
+          type: 'ARRAY',
+          items: { type: 'STRING' },
+        },
+        equipment_issues: {
+          type: 'ARRAY',
+          items: { type: 'STRING' },
+        },
+      },
+      required: ['to_preserve', 'to_improve', 'equipment_issues'],
+    };
+  }
 
   const aiResponse = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
@@ -121,45 +146,8 @@ Text to analyze: "${text}"`;
       responseMimeType: 'application/json',
       responseSchema: {
         type: 'OBJECT',
-        properties: {
-          en: {
-            type: 'OBJECT',
-            properties: {
-              to_preserve: {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
-              },
-              to_improve: {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
-              },
-              equipment_issues: {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
-              },
-            },
-            required: ['to_preserve', 'to_improve', 'equipment_issues'],
-          },
-          he: {
-            type: 'OBJECT',
-            properties: {
-              to_preserve: {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
-              },
-              to_improve: {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
-              },
-              equipment_issues: {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
-              },
-            },
-            required: ['to_preserve', 'to_improve', 'equipment_issues'],
-          },
-        },
-        required: ['en', 'he'],
+        properties: langProperties,
+        required: SUPPORTED_LANGUAGES,
       },
     },
   });
