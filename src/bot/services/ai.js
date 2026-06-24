@@ -32,7 +32,7 @@ export async function extractTelemetry(fileData) {
   }
 
   const prompt =
-    'Extract telemetry statistics from the provided workout screenshots. Do not generate text outside the schema format.';
+    "Extract telemetry statistics and analyze the route map from the provided workout screenshots. For `route_shape`, classify the visual shape of the track/route map shown in the screenshot into one of these categories: 'loop' (starts and ends in the same area, circular/closed loop), 'linear' (relatively straight line from A to B), 'zigzag' (winding, serpentine pattern back and forth), 'mountain_climb' (steep ascent/descent, up and down track), 'north_south' (vertical-oriented layout). Do not generate text outside the schema format.";
   modelContents.push(prompt);
 
   const aiResponse = await ai.models.generateContent({
@@ -52,6 +52,10 @@ export async function extractTelemetry(fileData) {
             type: 'ARRAY',
             items: { type: 'STRING' },
           },
+          route_shape: {
+            type: 'STRING',
+            enum: ['loop', 'linear', 'zigzag', 'mountain_climb', 'north_south'],
+          },
         },
         required: [
           'distance_km',
@@ -60,6 +64,7 @@ export async function extractTelemetry(fileData) {
           'total_ascent_m',
           'avg_hr_bpm',
           'route_waypoints',
+          'route_shape',
         ],
       },
     },

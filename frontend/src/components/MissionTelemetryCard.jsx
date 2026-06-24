@@ -9,6 +9,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
     total_ascent_m = 0,
     avg_hr_bpm = 0,
     route_waypoints = [],
+    route_shape = 'default',
   } = telemetry;
 
   const { t } = useTranslation();
@@ -40,12 +41,90 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
     }
   }, [isLightMode]);
 
-  // Coordinate mapping for up to 3 waypoints on the 400x320 SVG viewport
-  const waypointCoords = [
-    { x: 330, y: 50 }, // Start
-    { x: 125, y: 220 }, // Mid
-    { x: 45, y: 280 }, // End
-  ];
+  // Dynamic route shape configs
+  const routeConfig = useMemo(() => {
+    const configs = {
+      loop: {
+        waypointCoords: [
+          { x: 200, y: 50 },
+          { x: 320, y: 160 },
+          { x: 210, y: 65 },
+        ],
+        segments: [
+          "M 200 50 C 260 50, 320 100, 320 160",
+          "M 320 160 C 320 220, 260 270, 200 270",
+          "M 200 270 C 140 270, 80 220, 80 160 C 80 100, 140 50, 210 65",
+        ],
+        glow: "M 200 50 C 260 50, 320 100, 320 160 C 320 220, 260 270, 200 270 C 140 270, 80 220, 80 160 C 80 100, 140 50, 210 65"
+      },
+      linear: {
+        waypointCoords: [
+          { x: 50, y: 260 },
+          { x: 200, y: 160 },
+          { x: 350, y: 60 },
+        ],
+        segments: [
+          "M 50 260 Q 120 210, 200 160",
+          "M 200 160 Q 280 110, 350 60",
+          "M 350 60 L 350 60",
+        ],
+        glow: "M 50 260 Q 120 210, 200 160 Q 280 110, 350 60"
+      },
+      zigzag: {
+        waypointCoords: [
+          { x: 60, y: 60 },
+          { x: 340, y: 160 },
+          { x: 60, y: 260 },
+        ],
+        segments: [
+          "M 60 60 C 180 50, 280 80, 340 160",
+          "M 340 160 C 280 240, 180 270, 60 260",
+          "M 60 260 L 60 260",
+        ],
+        glow: "M 60 60 C 180 50, 280 80, 340 160 C 280 240, 180 270, 60 260"
+      },
+      mountain_climb: {
+        waypointCoords: [
+          { x: 50, y: 270 },
+          { x: 200, y: 60 },
+          { x: 350, y: 270 },
+        ],
+        segments: [
+          "M 50 270 C 100 200, 150 100, 200 60",
+          "M 200 60 C 250 100, 300 200, 350 270",
+          "M 350 270 L 350 270",
+        ],
+        glow: "M 50 270 C 100 200, 150 100, 200 60 C 250 100, 300 200, 350 270"
+      },
+      north_south: {
+        waypointCoords: [
+          { x: 200, y: 40 },
+          { x: 180, y: 160 },
+          { x: 220, y: 280 },
+        ],
+        segments: [
+          "M 200 40 Q 170 100, 180 160",
+          "M 180 160 Q 230 220, 220 280",
+          "M 220 280 L 220 280",
+        ],
+        glow: "M 200 40 Q 170 100, 180 160 Q 230 220, 220 280"
+      },
+      default: {
+        waypointCoords: [
+          { x: 330, y: 50 },
+          { x: 125, y: 220 },
+          { x: 45, y: 280 },
+        ],
+        segments: [
+          "M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145",
+          "M 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220",
+          "M 125 220 C 110 250, 90 270, 75 285 C 60 300, 50 310, 45 280",
+        ],
+        glow: "M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220 C 110 250, 90 270, 75 285 C 60 300, 50 310, 45 280"
+      }
+    };
+    return configs[route_shape] || configs.default;
+  }, [route_shape]);
 
   return (
     <div
@@ -91,7 +170,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
                 <>
                   {/* Segment 1 */}
                   <path
-                    d="M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145"
+                    d={routeConfig.segments[0]}
                     fill="none"
                     stroke={colors.green}
                     strokeWidth="5"
@@ -106,7 +185,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
                   {/* Segment 2 */}
                   {route_waypoints.length > 1 && (
                     <path
-                      d="M 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220"
+                      d={routeConfig.segments[1]}
                       fill="none"
                       stroke={colors.orange}
                       strokeWidth="5"
@@ -122,7 +201,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
                   {/* Segment 3 */}
                   {route_waypoints.length > 2 && (
                     <path
-                      d="M 125 220 C 110 250, 90 270, 75 285 C 60 300, 50 310, 45 280"
+                      d={routeConfig.segments[2]}
                       fill="none"
                       stroke={colors.cyan}
                       strokeWidth="5"
@@ -137,7 +216,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
 
                   {/* Glow overlay */}
                   <path
-                    d="M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220 C 110 250, 90 270, 75 285 C 60 300, 50 310, 45 280"
+                    d={routeConfig.glow}
                     fill="none"
                     stroke="#ffffff"
                     strokeWidth="1.2"
@@ -151,7 +230,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
 
                   {/* Waypoint Markers */}
                   {route_waypoints.slice(0, 3).map((wp, idx) => {
-                    const coord = waypointCoords[idx];
+                    const coord = routeConfig.waypointCoords[idx] || routeConfig.waypointCoords[0];
                     return (
                       <g key={wp}>
                         <circle
