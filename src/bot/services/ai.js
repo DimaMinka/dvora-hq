@@ -1,7 +1,28 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
 import { config } from '../../config.js';
 
-export const SUPPORTED_LANGUAGES = ['en', 'he'];
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+function getSupportedLanguages() {
+  try {
+    const localesDir = path.resolve(__dirname, '../../../frontend/src/locales');
+    if (fs.existsSync(localesDir)) {
+      const files = fs.readdirSync(localesDir);
+      return files
+        .filter((f) => f.endsWith('.json'))
+        .map((f) => f.replace('.json', ''));
+    }
+  } catch (err) {
+    console.error('[AI Service] Failed to read locales directory dynamically:', err.message);
+  }
+  return ['en', 'he'];
+}
+
+export const SUPPORTED_LANGUAGES = getSupportedLanguages();
 
 let aiInstance = null;
 
