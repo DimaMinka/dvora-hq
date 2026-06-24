@@ -115,6 +115,8 @@ dvora-hq/
 | `/remove_rotation`         | Admin | Remove a rotation                                                |
 | `/set_mission`             | Admin | Set a mission time (HH:MM) for a specific date within a rotation |
 | `/alarm_on` / `/alarm_off` | Admin | Toggle global combat alert state for a squad                     |
+| `/complete_mission`        | Cmdr  | Confirm a completed mission by uploading Garmin screenshots      |
+| `/reset_mission`           | Cmdr  | Reset/delete completed mission telemetry for a specific day      |
 
 ### Fighter Mini App
 
@@ -225,6 +227,7 @@ The Telegram bot always opens the URL configured in @BotFather (production URL).
 | `GCS_AVATAR_BUCKET`        | ✅       | GCS bucket name for avatar storage               |
 | `CLOUDTASKS_QUEUE_NAME`    | ✅       | Cloud Tasks queue for avatar generation jobs     |
 | `ALLOWED_ORIGINS`          | ✅       | Comma-separated CORS allowlist                   |
+| `DAILY_AI_LIMIT`           | —        | Daily limit of Gemini AI calls for the squad (default: `5`)      |
 | `PORT`                     | —        | Server port (default: `8080`)                    |
 | `NODE_ENV`                 | —        | `development` or `production`                    |
 | `GCP_REGION`               | —        | GCP region (default: `europe-west1`)             |
