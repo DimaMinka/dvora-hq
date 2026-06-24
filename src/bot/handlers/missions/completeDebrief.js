@@ -1,7 +1,7 @@
 import { getDb } from '../../../db.js';
 import { setConversationState } from '../../state.js';
 import { config } from '../../../config.js';
-import { transcribeVoice } from '../../services/ai.js';
+import { transcribeVoice, structureDebrief } from '../../services/ai.js';
 
 /**
  * Handles text debrief message.
@@ -18,10 +18,16 @@ export async function handleCompleteMissionText(ctx, state) {
       const doc = await transaction.get(docRef);
       if (!doc.exists) throw new Error('Rotation not found.');
 
+      const structuredData = await structureDebrief(text);
+      const conclusionObj = {
+        original: text,
+        structured: structuredData,
+      };
+
       const rotationData = doc.data();
       const completedMissions = rotationData.completed_missions || {};
       if (completedMissions[state.data.dateStr]) {
-        completedMissions[state.data.dateStr].conclusion = text;
+        completedMissions[state.data.dateStr].conclusion = conclusionObj;
       }
 
       transaction.set(docRef, { completed_missions: completedMissions }, { merge: true });
@@ -69,10 +75,16 @@ export async function handleCompleteMissionVoice(ctx, state) {
       const doc = await transaction.get(docRef);
       if (!doc.exists) throw new Error('Rotation not found.');
 
+      const structuredData = await structureDebrief(transcription);
+      const conclusionObj = {
+        original: transcription,
+        structured: structuredData,
+      };
+
       const rotationData = doc.data();
       const completedMissions = rotationData.completed_missions || {};
       if (completedMissions[state.data.dateStr]) {
-        completedMissions[state.data.dateStr].conclusion = transcription;
+        completedMissions[state.data.dateStr].conclusion = conclusionObj;
       }
 
       transaction.set(docRef, { completed_missions: completedMissions }, { merge: true });

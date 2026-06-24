@@ -93,3 +93,49 @@ export async function transcribeVoice(audioBuffer, mimeType) {
 
   return aiResponse.text.trim();
 }
+
+/**
+ * Categorizes and structures a tactical debrief text.
+ * @param {string} text
+ * @returns {Promise<object>}
+ */
+export async function structureDebrief(text) {
+  const ai = getAiClient();
+  const prompt = `Analyze this commander's tactical debrief text. Extract and structure it into three categories:
+1. "to_preserve" (לשימור) - things that went well, were good, or should be maintained.
+2. "to_improve" (לשיפור) - things that went bad, need improvement, or should be changed.
+3. "equipment_issues" - any shortages, malfunctions, or bottlenecks in ammunition, cartridges, weapons, or other gear/equipment.
+
+Translate and output all points in the speaker's language (maintain Russian if input is Russian, Hebrew if Hebrew, English if English).
+Return ONLY JSON matching the requested schema. Do not output any other text.
+
+Text to analyze: "${text}"`;
+
+  const aiResponse = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: prompt,
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'OBJECT',
+        properties: {
+          to_preserve: {
+            type: 'ARRAY',
+            items: { type: 'STRING' },
+          },
+          to_improve: {
+            type: 'ARRAY',
+            items: { type: 'STRING' },
+          },
+          equipment_issues: {
+            type: 'ARRAY',
+            items: { type: 'STRING' },
+          },
+        },
+        required: ['to_preserve', 'to_improve', 'equipment_issues'],
+      },
+    },
+  });
+
+  return JSON.parse(aiResponse.text);
+}
