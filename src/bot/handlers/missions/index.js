@@ -1,9 +1,10 @@
 import { commandSetMission, handleSetMissionCallback, handleSetMissionText } from './set.js';
+import { commandCompleteMission, handleCompleteMissionCallback } from './complete.js';
+import { handleCompleteMissionMedia } from './completeMedia.js';
 import {
-  commandCompleteMission,
-  handleCompleteMissionCallback,
-  handleCompleteMissionMedia,
-} from './complete.js';
+  handleCompleteMissionText,
+  handleCompleteMissionVoice,
+} from './completeDebrief.js';
 
 export {
   commandSetMission,
@@ -12,4 +13,6 @@ export {
   commandCompleteMission,
   handleCompleteMissionCallback,
   handleCompleteMissionMedia,
+  handleCompleteMissionText,
+  handleCompleteMissionVoice,
 };

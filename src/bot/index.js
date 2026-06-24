@@ -29,6 +29,8 @@ import {
   commandCompleteMission,
   handleCompleteMissionCallback,
   handleCompleteMissionMedia,
+  handleCompleteMissionText,
+  handleCompleteMissionVoice,
 } from './handlers/missions/index.js';
 
 if (bot) {
@@ -141,11 +143,39 @@ if (bot) {
         await handleAddRotationText(ctx, state);
       } else if (state.flow === 'set_mission') {
         await handleSetMissionText(ctx, state);
+      } else if (state.flow === 'complete_mission') {
+        await handleCompleteMissionText(ctx, state);
       } else {
         return next();
       }
     } catch (err) {
       console.error('[Bot Message Error]:', err.message);
+      setConversationState(chatId, null);
+      await ctx.reply(`❌ *ERROR*: ${err.message}`, { parse_mode: 'Markdown' });
+    }
+  });
+
+  // Handle voice messages (debrief) for active flows
+  bot.on('message:voice', async (ctx, next) => {
+    const authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
+      return next();
+    }
+
+    const chatId = ctx.chat.id;
+    const state = conversationState.get(chatId);
+
+    if (!state || state.flow !== 'complete_mission') {
+      return next();
+    }
+
+    // Refresh timeout
+    setConversationState(chatId, state);
+
+    try {
+      await handleCompleteMissionVoice(ctx, state);
+    } catch (err) {
+      console.error('[Bot Voice Error]:', err.message);
       setConversationState(chatId, null);
       await ctx.reply(`❌ *ERROR*: ${err.message}`, { parse_mode: 'Markdown' });
     }

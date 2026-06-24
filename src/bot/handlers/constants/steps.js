@@ -27,4 +27,5 @@ export const MISSION_COMPLETE_STEPS = {
   SELECT_DAY: 'complete_select_day',
   MEDIA_INPUT: 'complete_media_input',
   PROCESSING: 'complete_processing',
+  CONCLUSION_INPUT: 'complete_conclusion_input',
 };
