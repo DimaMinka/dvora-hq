@@ -11,12 +11,13 @@ async function checkAndIncrementAiLimit() {
   const db = getDb();
   const todayStr = new Date().toISOString().split('T')[0];
   const counterRef = db.collection('system_counters').doc(`ai_usage_${todayStr}`);
+  const limit = config.dailyAiLimit;
 
   return db.runTransaction(async (transaction) => {
     const doc = await transaction.get(counterRef);
     const count = doc.exists ? doc.data().count || 0 : 0;
-    if (count >= 5) {
-      throw new Error('⚠️ Daily AI request limit exceeded for the squad (maximum 5 per day).');
+    if (count >= limit) {
+      throw new Error(`⚠️ Daily AI request limit exceeded for the squad (maximum ${limit} per day).`);
     }
     transaction.set(counterRef, { count: count + 1 }, { merge: true });
     return count + 1;

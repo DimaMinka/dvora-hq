@@ -15,6 +15,7 @@ export const config = {
   gcsAvatarBucket: process.env.GCS_AVATAR_BUCKET,
   cloudTasksQueueName: process.env.CLOUDTASKS_QUEUE_NAME || 'avatar-generation',
   cloudSqlInstanceName: process.env.CLOUDSQL_INSTANCE_NAME || 'dvora-db',
+  dailyAiLimit: parseInt(process.env.DAILY_AI_LIMIT || '5', 10),
 };
 
 console.log(`[System] Booting ${config.appName} in ${config.env} mode...`);
