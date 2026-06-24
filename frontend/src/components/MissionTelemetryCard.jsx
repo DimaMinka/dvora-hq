@@ -55,7 +55,11 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
           "M 320 160 C 320 220, 260 270, 200 270",
           "M 200 270 C 140 270, 80 220, 80 160 C 80 100, 140 50, 210 65",
         ],
-        glow: "M 200 50 C 260 50, 320 100, 320 160 C 320 220, 260 270, 200 270 C 140 270, 80 220, 80 160 C 80 100, 140 50, 210 65"
+        glows: {
+          2: "M 200 50 C 260 50, 320 100, 320 160",
+          3: "M 200 50 C 260 50, 320 100, 320 160 C 320 220, 260 270, 200 270",
+          full: "M 200 50 C 260 50, 320 100, 320 160 C 320 220, 260 270, 200 270 C 140 270, 80 220, 80 160 C 80 100, 140 50, 210 65"
+        }
       },
       linear: {
         waypointCoords: [
@@ -68,7 +72,11 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
           "M 200 160 Q 280 110, 350 60",
           "M 350 60 L 350 60",
         ],
-        glow: "M 50 260 Q 120 210, 200 160 Q 280 110, 350 60"
+        glows: {
+          2: "M 50 260 Q 120 210, 200 160",
+          3: "M 50 260 Q 120 210, 200 160 Q 280 110, 350 60",
+          full: "M 50 260 Q 120 210, 200 160 Q 280 110, 350 60"
+        }
       },
       zigzag: {
         waypointCoords: [
@@ -81,7 +89,11 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
           "M 340 160 C 280 240, 180 270, 60 260",
           "M 60 260 L 60 260",
         ],
-        glow: "M 60 60 C 180 50, 280 80, 340 160 C 280 240, 180 270, 60 260"
+        glows: {
+          2: "M 60 60 C 180 50, 280 80, 340 160",
+          3: "M 60 60 C 180 50, 280 80, 340 160 C 280 240, 180 270, 60 260",
+          full: "M 60 60 C 180 50, 280 80, 340 160 C 280 240, 180 270, 60 260"
+        }
       },
       mountain_climb: {
         waypointCoords: [
@@ -94,7 +106,11 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
           "M 200 60 C 250 100, 300 200, 350 270",
           "M 350 270 L 350 270",
         ],
-        glow: "M 50 270 C 100 200, 150 100, 200 60 C 250 100, 300 200, 350 270"
+        glows: {
+          2: "M 50 270 C 100 200, 150 100, 200 60",
+          3: "M 50 270 C 100 200, 150 100, 200 60 C 250 100, 300 200, 350 270",
+          full: "M 50 270 C 100 200, 150 100, 200 60 C 250 100, 300 200, 350 270"
+        }
       },
       north_south: {
         waypointCoords: [
@@ -107,7 +123,11 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
           "M 180 160 Q 230 220, 220 280",
           "M 220 280 L 220 280",
         ],
-        glow: "M 200 40 Q 170 100, 180 160 Q 230 220, 220 280"
+        glows: {
+          2: "M 200 40 Q 170 100, 180 160",
+          3: "M 200 40 Q 170 100, 180 160 Q 230 220, 220 280",
+          full: "M 200 40 Q 170 100, 180 160 Q 230 220, 220 280"
+        }
       },
       default: {
         waypointCoords: [
@@ -120,11 +140,19 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
           "M 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220",
           "M 125 220 C 110 250, 90 270, 75 285 C 60 300, 50 310, 45 280",
         ],
-        glow: "M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220 C 110 250, 90 270, 75 285 C 60 300, 50 310, 45 280"
+        glows: {
+          2: "M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145",
+          3: "M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220",
+          full: "M 330 50 C 340 80, 335 110, 305 130 C 290 140, 270 142, 250 145 C 220 148, 190 145, 165 160 C 140 175, 135 200, 125 220 C 110 250, 90 270, 75 285 C 60 300, 50 310, 45 280"
+        }
       }
     };
     return configs[route_shape] || configs.default;
   }, [route_shape]);
+
+  const activeGlowPath = useMemo(() => {
+    return routeConfig.glows[route_waypoints.length] || routeConfig.glows.full;
+  }, [route_waypoints.length, routeConfig]);
 
   return (
     <div
@@ -216,7 +244,7 @@ export default function MissionTelemetryCard({ telemetry, isLightMode }) {
 
                   {/* Glow overlay */}
                   <path
-                    d={routeConfig.glow}
+                    d={activeGlowPath}
                     fill="none"
                     stroke="#ffffff"
                     strokeWidth="1.2"
