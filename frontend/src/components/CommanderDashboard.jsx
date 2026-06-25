@@ -9,6 +9,7 @@ import RotationSchedule from './RotationSchedule.jsx';
 import { formatCommaLabel, parseWeaponry, parseCommaList } from '../utils/loadout.js';
 import { specializationsList, gearsList, medsList } from '@shared/loadout-data.js';
 import { useTranslation } from '../context/LanguageContext.jsx';
+import ReportsPanel from './ReportsPanel.jsx';
 
 export default function CommanderDashboard({
   alarmActive = false,
@@ -28,6 +29,7 @@ export default function CommanderDashboard({
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [activeTab, setActiveTab] = useState(() => (alarmActive ? 'readiness' : 'rotation'));
+  const [showWeeklyReport, setShowWeeklyReport] = useState(false);
 
   useEffect(() => {
     if (alarmActive) {
@@ -593,6 +595,21 @@ export default function CommanderDashboard({
           >
             {t('commander.btnLogs')}
           </button>
+
+          <div className="border-t border-bf-border/60 my-2"></div>
+
+          <button
+            type="button"
+            onClick={() => setShowWeeklyReport(!showWeeklyReport)}
+            className={`w-full py-2 border font-bold text-xs uppercase clip-btn transition-all duration-200 cursor-pointer ${
+              showWeeklyReport
+                ? 'bg-bf-cyan text-bf-dark border-bf-cyan'
+                : 'bg-bf-dark/40 border-bf-border text-slate-400 hover:border-slate-600 hover:text-white'
+            }`}
+          >
+            {showWeeklyReport ? 'Hide Weekly Report' : 'Weekly Equipment Report'}
+          </button>
+          {showWeeklyReport && <ReportsPanel />}
 
           {/* Drawer Overlay & Panel */}
           {drawerOpen && (
