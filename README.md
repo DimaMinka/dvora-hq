@@ -117,6 +117,8 @@ dvora-hq/
 | `/alarm_on` / `/alarm_off` | Admin | Toggle global combat alert state for a squad                     |
 | `/complete_mission`        | Cmdr  | Confirm a completed mission by uploading Garmin screenshots      |
 | `/reset_mission`           | Cmdr  | Reset/delete completed mission telemetry for a specific day      |
+| `/report`                  | Ftr   | Submit a weekly status/equipment report (via text, voice, or mixed photo+caption) |
+| `/reset_report`            | Ftr   | Reset/delete your active weekly equipment report                 |
 
 ### Fighter Mini App
 
@@ -134,6 +136,7 @@ dvora-hq/
 - Force alarm state (globally activates alert for the squad)
 - **Rotations tab** — same timeline/calendar view shared with fighters
 - **Squad Status tab** — auto-activated during active alerts
+- **Reports tab** — view weekly equipment status & readiness reports parsed and grouped by Gemini AI from operator inputs. Includes status indicators (operational `V` or issue `X`) and item-level details.
 
 ### Rotation Scheduler
 
