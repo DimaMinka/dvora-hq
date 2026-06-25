@@ -82,7 +82,8 @@ export async function handleStartHelp(ctx) {
       `🛰 *MISSION OPERATIONS*\n` +
       `• \`/set_mission\` — Set mission time for a specific day\n` +
       `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
-      `• \`/reset_mission\` — Delete/reset a completed mission slot\n` +
+      `• \`/reset_mission\` — Delete/reset a completed mission slot\n\n` +
+      `📋 *EQUIPMENT REPORTS*\n` +
       `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n` +
       `• \`/reset_report\` — Delete/reset squad weekly equipment report\n\n` +
       `⚙️ *GENERAL*\n` +
@@ -92,7 +93,8 @@ export async function handleStartHelp(ctx) {
     helpMessage +=
       `🛰 *MISSION OPERATIONS*\n` +
       `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
-      `• \`/reset_mission\` — Delete/reset a completed mission slot\n` +
+      `• \`/reset_mission\` — Delete/reset a completed mission slot\n\n` +
+      `📋 *EQUIPMENT REPORTS*\n` +
       `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n` +
       `• \`/reset_report\` — Delete/reset squad weekly equipment report\n\n` +
       `⚙️ *GENERAL*\n` +
@@ -101,7 +103,7 @@ export async function handleStartHelp(ctx) {
   } else {
     // Fighter with canReport
     helpMessage +=
-      `🛰 *MISSION OPERATIONS*\n` +
+      `📋 *EQUIPMENT REPORTS*\n` +
       `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n\n` +
       `⚙️ *GENERAL*\n` +
       `• \`/my_profile\` — View your profile & access PIN\n\n` +
