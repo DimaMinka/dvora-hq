@@ -270,5 +270,34 @@
     "logCorrupted": "// Log corrupted // Missing language keys",
     "syncing": "// Syncing equipment database...",
     "syncError": "// Sync error: {error}"
+  },
+  "inventory": {
+    "items": [
+      "24 batteries for comms 710.",
+      "Red Phone 1 - SN: 543441. Includes 2 batteries.",
+      "Moshi Moshi GPS transponder - SN: 563841. Includes 2 batteries.",
+      "Red Phone 2 - SN: 547252. Includes 2 batteries.",
+      "Pocket Knife 1 - SN: 8047.",
+      "Pocket Knife 2 - SN: 8243.",
+      "Comms 710 - 1 - SN: 498069.",
+      "Comms 710 - 2 - SN: 491435.",
+      "Comms 710 - 3 - SN: 582703.",
+      "Comms 710 - 4 - SN: 491466.",
+      "Comms 710 - 5 - SN: 803171.",
+      "Comms 710 - 6 - SN: 494709.",
+      "6 flexible antennas + adapters.",
+      "Madonna Headsets: 6.",
+      "Headset spares: 7",
+      "Shahm NVD - 1 - SN: 240836.",
+      "Adi NVD - 1 - SN: 906601.",
+      "Adi NVD - 2 - SN: 98120268.",
+      "Adi NVD - 3 - SN: 2081713",
+      "Nyx NVD - 1 - SN: 36B242759.",
+      "Nyx NVD - 2 - SN: 36B242766.",
+      "2 split ammunition magazines. Each mag x20 bullets. Total: x40 bullets.",
+      "Fragmentation grenades - x14.",
+      "Smoke grenades - x8.",
+      "Negev drums - x2."
+    ]
   }
 }
