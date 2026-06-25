@@ -254,5 +254,21 @@
     "operatorLabel": "מפעיל:",
     "squadLabel": "צוות:",
     "roleLabel": "תפקיד:"
+  },
+  "reports": {
+    "btnShow": "דו\"ח ציוד שבועי",
+    "btnHide": "הסתר דו\"ח שבועי",
+    "title": "// יומן_ציוד_שבועי",
+    "summaryTitle": "// סיכום_מודיעין",
+    "by": "ע\"י: @{user}",
+    "at": "בתאריך: {date}",
+    "thItemName": "שם הפריט",
+    "thQty": "כמות",
+    "thSerials": "מספרים סידוריים",
+    "thStatus": "סטטוס",
+    "awaitingReport": "// ממתין לדו\"ח צוות שבועי // לא נמצא יומן",
+    "logCorrupted": "// יומן פגום // מפתחות שפה חסרים",
+    "syncing": "// מסנכרן מסד נתוני ציוד...",
+    "syncError": "// שגיאת סנכרון: {error}"
   }
 }

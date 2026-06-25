@@ -254,5 +254,21 @@
     "operatorLabel": "OPERATOR:",
     "squadLabel": "SQUAD:",
     "roleLabel": "ROLE:"
+  },
+  "reports": {
+    "btnShow": "Weekly Equipment Report",
+    "btnHide": "Hide Weekly Report",
+    "title": "// WEEKLY_EQUIPMENT_LOG",
+    "summaryTitle": "// INTEL_SUMMARY",
+    "by": "BY: @{user}",
+    "at": "AT: {date}",
+    "thItemName": "Item Name",
+    "thQty": "Qty",
+    "thSerials": "Serial Numbers",
+    "thStatus": "Status",
+    "awaitingReport": "// Awaiting weekly squad report // No log found",
+    "logCorrupted": "// Log corrupted // Missing language keys",
+    "syncing": "// Syncing equipment database...",
+    "syncError": "// Sync error: {error}"
   }
 }

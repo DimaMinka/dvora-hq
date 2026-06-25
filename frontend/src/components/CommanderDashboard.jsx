@@ -607,7 +607,7 @@ export default function CommanderDashboard({
                 : 'bg-bf-dark/40 border-bf-border text-slate-400 hover:border-slate-600 hover:text-white'
             }`}
           >
-            {showWeeklyReport ? 'Hide Weekly Report' : 'Weekly Equipment Report'}
+            {showWeeklyReport ? t('reports.btnHide') : t('reports.btnShow')}
           </button>
           {showWeeklyReport && <ReportsPanel />}
 

@@ -58,15 +58,20 @@ export async function handleReportCallback(ctx, state, data) {
       week_start_date: weekStartDate,
       submitted_by: state.data.username,
       submitted_at: new Date().toISOString(),
-      report_title: result.report_title,
       asset_category: result.asset_category,
-      general_summary: result.general_summary,
-      items: result.items,
     };
+
+    for (const key of Object.keys(result)) {
+      if (key !== 'is_security_threat' && key !== 'asset_category') {
+        reportData[key] = result[key];
+      }
+    }
 
     await db.collection('reports').doc(docId).set(reportData);
 
-    const itemsSummary = result.items
+    const enReport = result.en || result[Object.keys(result).find(k => k !== 'is_security_threat' && k !== 'asset_category')];
+
+    const itemsSummary = enReport.items
       .map(
         (it) =>
           `• *${it.name}:* \`${it.quantity}\` pcs\n` +
@@ -77,9 +82,9 @@ export async function handleReportCallback(ctx, state, data) {
 
     const briefing =
       `✅ *REPORT GENERATED & TRANSMITTED*\n\n` +
-      `Title: *${result.report_title}*\n` +
+      `Title: *${enReport.report_title}*\n` +
       `Category: \`${result.asset_category.toUpperCase()}\`\n\n` +
-      `📊 *SUMMARY*:\n${result.general_summary}\n\n` +
+      `📊 *SUMMARY*:\n${enReport.general_summary}\n\n` +
       `🛠 *INVENTORY DETAILS*:\n${itemsSummary}`;
 
     await ctx.api.editMessageText(ctx.chat.id, statusMsg.message_id, briefing, {
