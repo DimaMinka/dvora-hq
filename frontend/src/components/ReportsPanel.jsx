@@ -92,9 +92,9 @@ export default function ReportsPanel() {
           <table className="w-full text-start border-collapse text-[10px] font-mono">
             <thead>
               <tr className="border-b border-bf-border text-slate-400 uppercase text-[9px]">
-                <th className="py-1.5 px-2">{t('reports.thItemName')}</th>
+                <th className="py-1.5 px-2 text-start">{t('reports.thItemName')}</th>
                 <th className="py-1.5 px-2 text-center">{t('reports.thQty')}</th>
-                <th className="py-1.5 px-2">{t('reports.thSerials')}</th>
+                <th className="py-1.5 px-2 text-start">{t('reports.thSerials')}</th>
                 <th className="py-1.5 px-2 text-center">{t('reports.thStatus')}</th>
               </tr>
             </thead>
