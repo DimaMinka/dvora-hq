@@ -90,6 +90,13 @@ export async function handleReportMedia(ctx, state) {
   if (!photo) return;
   const sorted = photo.sort((a, b) => b.file_size - a.file_size);
   state.data.photos.push({ fileId: sorted[0].file_id, mimeType: 'image/jpeg' });
+
+  // Handle caption if photo is sent with text/caption
+  const caption = ctx.message.caption ? ctx.message.caption.trim() : '';
+  if (caption) {
+    state.data.texts.push(caption);
+  }
+
   setConversationState(ctx.chat.id, state);
 
   return ctx.reply(`📸 Photo attached. (Total: ${state.data.photos.length} photos, ${state.data.texts.length} notes, ${state.data.voices.length} voice notes)`, {
