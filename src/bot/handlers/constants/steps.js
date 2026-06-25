@@ -35,3 +35,8 @@ export const MISSION_RESET_STEPS = {
   SELECT_DAY: 'reset_select_day',
   CONFIRM: 'reset_confirm',
 };
+
+export const REPORT_STEPS = {
+  COLLECT_INPUTS: 'report_collect_inputs',
+  PROCESSING: 'report_processing',
+};
