@@ -239,6 +239,7 @@ When mapping items:
 - Use the exact standard name (and default details/quantities) from these reference lists when matching.
 - Identify the correct serial numbers from standard items (e.g. if the standard item shows "צ': 498069" / "SN: 498069" for a device, use it as default).
 - If the operator's message specifies a different or updated serial number (for instance, a device replacement like "קשר 710- חדש 495971 במקום קשר תקול 803171"), use the newly specified serial number (in this case "495971" for that device, and you may mark the old device as replaced/removed or not OK if asked).
+- IMPORTANT AGGREGATION RULE: Group multiple individual instances of the same equipment type (for example: 'קשר 710 - 1', 'קשר 710 - 2'..., or 'עדי - 1', 'עדי - 2'..., or 'אול"ר 1', 'אול"ר 2', or 'טלפון אדום 1', 'טלפון אדום 2', or 'ניקס - 1', 'ניקס - 2') into a single consolidated item. Set its name to the base type (e.g. 'קשר 710', 'עדי', 'ניקס', 'אול"ר', 'טלפון אדום'), set the quantity to the total count, and merge all of their serial numbers into a single serial_numbers array.
 - Use the language code keys at the top level of the returned JSON as requested.
 
 You must provide versions of the extracted structured data translated into each of the following languages: ${languageListStr}.
