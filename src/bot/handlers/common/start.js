@@ -6,7 +6,17 @@ export async function handleStartHelp(ctx) {
   const isAdm = isAdmin(ctx);
   const isCmdOrAdm = await isCommanderOrAdmin(ctx);
 
-  if (!isCmdOrAdm) {
+  let canReport = isCmdOrAdm;
+  if (!canReport) {
+    try {
+      const { isUserAuthorizedForReport } = await import('../reports/report.js');
+      canReport = await isUserAuthorizedForReport(ctx);
+    } catch {
+      canReport = false;
+    }
+  }
+
+  if (!isCmdOrAdm && !canReport) {
     return ctx.reply(
       `⚡ *DVORA HQ // SECURE PROTOCOL* ${verDisplay} ⚡\n\n` +
         `Authorized access detected. Launch the Web App via the menu command or link to sync readiness status.`,
@@ -20,15 +30,18 @@ export async function handleStartHelp(ctx) {
       { command: 'start', description: 'Show command help' },
       { command: 'help', description: 'Show command help' },
       { command: 'my_profile', description: 'Show profile and access PIN' },
-      {
-        command: 'complete_mission',
-        description: '🛰 Confirm mission completion with AI analysis',
-      },
-      {
-        command: 'reset_mission',
-        description: '🗑 Reset/delete a completed mission',
-      },
     ];
+
+    if (isCmdOrAdm) {
+      commands.push(
+        { command: 'complete_mission', description: '🛰 Confirm mission completion with AI analysis' },
+        { command: 'reset_mission', description: '🗑 Reset/delete a completed mission' }
+      );
+    }
+
+    if (canReport) {
+      commands.push({ command: 'report', description: '📋 Submit weekly equipment inventory report' });
+    }
 
     if (isAdm) {
       commands.push(
@@ -68,15 +81,25 @@ export async function handleStartHelp(ctx) {
       `🛰 *MISSION OPERATIONS*\n` +
       `• \`/set_mission\` — Set mission time for a specific day\n` +
       `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
-      `• \`/reset_mission\` — Delete/reset a completed mission slot\n\n` +
+      `• \`/reset_mission\` — Delete/reset a completed mission slot\n` +
+      `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n\n` +
       `⚙️ *GENERAL*\n` +
       `• \`/my_profile\` — View your profile & access PIN\n\n` +
       `_Security protocols active. Management via inline keyboards._`;
-  } else {
+  } else if (isCmdOrAdm) {
     helpMessage +=
       `🛰 *MISSION OPERATIONS*\n` +
       `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
-      `• \`/reset_mission\` — Delete/reset a completed mission slot\n\n` +
+      `• \`/reset_mission\` — Delete/reset a completed mission slot\n` +
+      `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n\n` +
+      `⚙️ *GENERAL*\n` +
+      `• \`/my_profile\` — View your profile & access PIN\n\n` +
+      `_Security protocols active._`;
+  } else {
+    // Fighter with canReport
+    helpMessage +=
+      `🛰 *MISSION OPERATIONS*\n` +
+      `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n\n` +
       `⚙️ *GENERAL*\n` +
       `• \`/my_profile\` — View your profile & access PIN\n\n` +
       `_Security protocols active._`;
@@ -84,3 +107,4 @@ export async function handleStartHelp(ctx) {
 
   return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
 }
+
