@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import squadRoutes from './routes/squad.js';
 import rotationRoutes from './routes/rotations.js';
+import reportRoutes from './routes/reports.js';
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/squad', squadRoutes);
 app.use('/api/rotations', rotationRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Start Express Server
 const port = config.port;
