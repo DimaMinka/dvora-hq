@@ -40,3 +40,9 @@ export const REPORT_STEPS = {
   COLLECT_INPUTS: 'report_collect_inputs',
   PROCESSING: 'report_processing',
 };
+
+export const REPORT_RESET_STEPS = {
+  SELECT_SQUAD: 'report_reset_select_squad',
+  CONFIRM: 'report_reset_confirm',
+};
+

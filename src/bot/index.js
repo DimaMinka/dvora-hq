@@ -41,6 +41,8 @@ import {
   handleReportText,
   handleReportCallback,
   isUserAuthorizedForReport,
+  commandResetReport,
+  handleResetReportCallback,
 } from './handlers/reports/index.js';
 
 if (bot) {
@@ -65,6 +67,7 @@ if (bot) {
   bot.command('complete_mission', commandCompleteMission);
   bot.command('reset_mission', commandResetMission);
   bot.command('report', commandReport);
+  bot.command('reset_report', commandResetReport);
 
   // Handle callback queries
   bot.on('callback_query:data', async (ctx) => {
@@ -130,6 +133,8 @@ if (bot) {
         await handleResetMissionCallback(ctx, state, data);
       } else if (state.flow === 'report') {
         await handleReportCallback(ctx, state, data);
+      } else if (state.flow === 'reset_report') {
+        await handleResetReportCallback(ctx, state, data);
       }
     } catch (err) {
       console.error('[Bot Callback Error]:', err.message);
@@ -263,6 +268,7 @@ export async function startBot() {
         { command: 'help', description: 'Show help and available commands' },
         { command: 'my_profile', description: 'Display your tactical profile and access PIN' },
         { command: 'report', description: 'Submit weekly equipment inventory report' },
+        { command: 'reset_report', description: 'Delete/reset squad weekly equipment report' },
       ]);
       console.log('[Bot] Commands registered with Telegram successfully.');
     } catch (err) {

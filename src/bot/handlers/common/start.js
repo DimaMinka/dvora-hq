@@ -35,7 +35,8 @@ export async function handleStartHelp(ctx) {
     if (isCmdOrAdm) {
       commands.push(
         { command: 'complete_mission', description: '🛰 Confirm mission completion with AI analysis' },
-        { command: 'reset_mission', description: '🗑 Reset/delete a completed mission' }
+        { command: 'reset_mission', description: '🗑 Reset/delete a completed mission' },
+        { command: 'reset_report', description: '🗑 Delete/reset weekly equipment report' }
       );
     }
 
@@ -82,7 +83,8 @@ export async function handleStartHelp(ctx) {
       `• \`/set_mission\` — Set mission time for a specific day\n` +
       `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
       `• \`/reset_mission\` — Delete/reset a completed mission slot\n` +
-      `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n\n` +
+      `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n` +
+      `• \`/reset_report\` — Delete/reset squad weekly equipment report\n\n` +
       `⚙️ *GENERAL*\n` +
       `• \`/my_profile\` — View your profile & access PIN\n\n` +
       `_Security protocols active. Management via inline keyboards._`;
@@ -91,7 +93,8 @@ export async function handleStartHelp(ctx) {
       `🛰 *MISSION OPERATIONS*\n` +
       `• \`/complete_mission\` — Confirm mission completion with AI analysis & debrief\n` +
       `• \`/reset_mission\` — Delete/reset a completed mission slot\n` +
-      `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n\n` +
+      `• \`/report\` — Submit weekly equipment inventory report (texts, voices, photos)\n` +
+      `• \`/reset_report\` — Delete/reset squad weekly equipment report\n\n` +
       `⚙️ *GENERAL*\n` +
       `• \`/my_profile\` — View your profile & access PIN\n\n` +
       `_Security protocols active._`;

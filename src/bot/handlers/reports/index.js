@@ -6,6 +6,7 @@ import {
   handleReportCallback,
   isUserAuthorizedForReport,
 } from './report.js';
+import { commandResetReport, handleResetReportCallback } from './resetReport.js';
 
 export {
   commandReport,
@@ -14,4 +15,6 @@ export {
   handleReportText,
   handleReportCallback,
   isUserAuthorizedForReport,
+  commandResetReport,
+  handleResetReportCallback,
 };
