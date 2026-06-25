@@ -1,4 +1,5 @@
 import { getDb } from '../../../db.js';
+import { FieldValue } from '@google-cloud/firestore';
 import { setConversationState } from '../../state.js';
 import {
   isAdmin,
@@ -108,26 +109,17 @@ const textSteps = {
     const db = getDb();
     const docRef = db.collection('rotations').doc(state.data.rotationId);
 
-    const doc = await docRef.get();
-    let meetingTimes = {};
-    if (doc.exists) {
-      const r = doc.data();
-      meetingTimes = r.meeting_times || {};
-    }
-
     if (isClear) {
-      delete meetingTimes[state.data.dateStr];
-    } else {
-      meetingTimes[state.data.dateStr] = timeVal;
-    }
-
-    await docRef.set(
-      {
-        meeting_times: meetingTimes,
+      await docRef.update({
+        [`meeting_times.${state.data.dateStr}`]: FieldValue.delete(),
         updated_at: new Date().toISOString(),
-      },
-      { merge: true }
-    );
+      });
+    } else {
+      await docRef.update({
+        [`meeting_times.${state.data.dateStr}`]: timeVal,
+        updated_at: new Date().toISOString(),
+      });
+    }
 
     const formattedDay = formatShortDate(parseISODate(state.data.dateStr));
     const successMsg = isClear
