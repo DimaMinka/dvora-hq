@@ -95,7 +95,7 @@ export default function ReportsPanel() {
                 <th className="py-1.5 px-2">{t('reports.thItemName')}</th>
                 <th className="py-1.5 px-2 text-center">{t('reports.thQty')}</th>
                 <th className="py-1.5 px-2">{t('reports.thSerials')}</th>
-                <th className="py-1.5 px-2">{t('reports.thStatus')}</th>
+                <th className="py-1.5 px-2 text-center">{t('reports.thStatus')}</th>
               </tr>
             </thead>
             <tbody>
@@ -116,7 +116,7 @@ export default function ReportsPanel() {
                       <span className="text-slate-600">—</span>
                     )}
                   </td>
-                  <td className="py-2 px-2">
+                  <td className="py-2 px-2 text-center">
                     {(() => {
                       const isOk = item.status.toLowerCase().includes('ok') ||
                                    item.status.toLowerCase().includes('operat') ||
