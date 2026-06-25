@@ -34,6 +34,14 @@ import {
   commandResetMission,
   handleResetMissionCallback,
 } from './handlers/missions/index.js';
+import {
+  commandReport,
+  handleReportMedia,
+  handleReportVoice,
+  handleReportText,
+  handleReportCallback,
+  isUserAuthorizedForReport,
+} from './handlers/reports/index.js';
 
 if (bot) {
   // Common Commands
@@ -56,10 +64,14 @@ if (bot) {
   bot.command('set_mission', commandSetMission);
   bot.command('complete_mission', commandCompleteMission);
   bot.command('reset_mission', commandResetMission);
+  bot.command('report', commandReport);
 
   // Handle callback queries
   bot.on('callback_query:data', async (ctx) => {
-    const authorized = await isCommanderOrAdmin(ctx);
+    let authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
+      authorized = await isUserAuthorizedForReport(ctx);
+    }
     if (!authorized) {
       return ctx.answerCallbackQuery({ text: 'Access Denied', show_alert: true });
     }
@@ -116,6 +128,8 @@ if (bot) {
         await handleCompleteMissionCallback(ctx, state, data);
       } else if (state.flow === 'reset_mission') {
         await handleResetMissionCallback(ctx, state, data);
+      } else if (state.flow === 'report') {
+        await handleReportCallback(ctx, state, data);
       }
     } catch (err) {
       console.error('[Bot Callback Error]:', err.message);
@@ -126,7 +140,10 @@ if (bot) {
 
   // Handle text messages for active flows
   bot.on('message:text', async (ctx, next) => {
-    const authorized = await isCommanderOrAdmin(ctx);
+    let authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
+      authorized = await isUserAuthorizedForReport(ctx);
+    }
     if (!authorized) {
       return next();
     }
@@ -150,6 +167,8 @@ if (bot) {
         await handleSetMissionText(ctx, state);
       } else if (state.flow === 'complete_mission') {
         await handleCompleteMissionText(ctx, state);
+      } else if (state.flow === 'report') {
+        await handleReportText(ctx, state);
       } else {
         return next();
       }
@@ -162,7 +181,10 @@ if (bot) {
 
   // Handle voice messages (debrief) for active flows
   bot.on('message:voice', async (ctx, next) => {
-    const authorized = await isCommanderOrAdmin(ctx);
+    let authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
+      authorized = await isUserAuthorizedForReport(ctx);
+    }
     if (!authorized) {
       return next();
     }
@@ -170,7 +192,7 @@ if (bot) {
     const chatId = ctx.chat.id;
     const state = conversationState.get(chatId);
 
-    if (!state || state.flow !== 'complete_mission') {
+    if (!state || (state.flow !== 'complete_mission' && state.flow !== 'report')) {
       return next();
     }
 
@@ -178,7 +200,13 @@ if (bot) {
     setConversationState(chatId, state);
 
     try {
-      await handleCompleteMissionVoice(ctx, state);
+      if (state.flow === 'complete_mission') {
+        await handleCompleteMissionVoice(ctx, state);
+      } else if (state.flow === 'report') {
+        await handleReportVoice(ctx, state);
+      } else {
+        return next();
+      }
     } catch (err) {
       console.error('[Bot Voice Error]:', err.message);
       setConversationState(chatId, null);
@@ -188,7 +216,10 @@ if (bot) {
 
   // Handle media uploads (photos/documents) for active flows
   bot.on(['message:photo', 'message:document'], async (ctx, next) => {
-    const authorized = await isCommanderOrAdmin(ctx);
+    let authorized = await isCommanderOrAdmin(ctx);
+    if (!authorized) {
+      authorized = await isUserAuthorizedForReport(ctx);
+    }
     if (!authorized) {
       return next();
     }
@@ -196,7 +227,7 @@ if (bot) {
     const chatId = ctx.chat.id;
     const state = conversationState.get(chatId);
 
-    if (!state || state.flow !== 'complete_mission') {
+    if (!state || (state.flow !== 'complete_mission' && state.flow !== 'report')) {
       return next();
     }
 
@@ -204,7 +235,13 @@ if (bot) {
     setConversationState(chatId, state);
 
     try {
-      await handleCompleteMissionMedia(ctx, state);
+      if (state.flow === 'complete_mission') {
+        await handleCompleteMissionMedia(ctx, state);
+      } else if (state.flow === 'report') {
+        await handleReportMedia(ctx, state);
+      } else {
+        return next();
+      }
     } catch (err) {
       console.error('[Bot Media Error]:', err.message);
       setConversationState(chatId, null);
@@ -225,6 +262,7 @@ export async function startBot() {
         { command: 'start', description: 'Show help and available commands' },
         { command: 'help', description: 'Show help and available commands' },
         { command: 'my_profile', description: 'Display your tactical profile and access PIN' },
+        { command: 'report', description: 'Submit weekly equipment inventory report' },
       ]);
       console.log('[Bot] Commands registered with Telegram successfully.');
     } catch (err) {
