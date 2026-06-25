@@ -76,7 +76,7 @@ export default function ReportsPanel() {
           <div className="text-[8px] text-bf-cyan/60 font-bold uppercase tracking-wider">{t('reports.title')}</div>
           <h4 className="text-xs font-black text-white uppercase tracking-widest">{activeReport.report_title}</h4>
         </div>
-        <div className="text-right text-[8px] font-mono text-slate-500">
+        <div className="text-end text-[8px] font-mono text-slate-500">
           <div>{t('reports.by', { user: reportData.submitted_by })}</div>
           <div>{t('reports.at', { date: new Date(reportData.submitted_at).toLocaleDateString() })}</div>
         </div>
@@ -89,7 +89,7 @@ export default function ReportsPanel() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[10px] font-mono">
+          <table className="w-full text-start border-collapse text-[10px] font-mono">
             <thead>
               <tr className="border-b border-bf-border text-slate-400 uppercase text-[9px]">
                 <th className="py-1.5 px-2">{t('reports.thItemName')}</th>
