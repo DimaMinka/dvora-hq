@@ -9,6 +9,7 @@ import RotationSchedule from './RotationSchedule.jsx';
 import { formatCommaLabel } from '../utils/loadout.js';
 import { specializationsList } from '@shared/loadout-data.js';
 import { useTranslation } from '../context/LanguageContext.jsx';
+import ReportsPanel from './ReportsPanel.jsx';
 
 export default function FighterDashboard({
   checklist = { wpn: true, trsp: true, com: true, med: true },
@@ -25,6 +26,7 @@ export default function FighterDashboard({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [activeTab, setActiveTab] = useState(() => (alarmActive ? 'readiness' : 'rotation'));
+  const [showWeeklyReport, setShowWeeklyReport] = useState(false);
 
   useEffect(() => {
     if (alarmActive) {
@@ -312,6 +314,23 @@ export default function FighterDashboard({
               {isSending ? t('fighter.transmitting') : t('fighter.btnSend')}
             </button>
           </form>
+
+          {user?.can_report === true && (
+            <div className="space-y-2 pt-2 border-t border-bf-border">
+              <button
+                type="button"
+                onClick={() => setShowWeeklyReport(!showWeeklyReport)}
+                className={`w-full py-2 border font-bold text-xs uppercase clip-btn transition-all duration-200 cursor-pointer ${
+                  showWeeklyReport
+                    ? 'bg-bf-cyan text-bf-dark border-bf-cyan'
+                    : 'bg-bf-dark/40 border-bf-border text-slate-400 hover:border-slate-600 hover:text-white'
+                }`}
+              >
+                {showWeeklyReport ? 'Hide Weekly Report' : 'Weekly Equipment Report'}
+              </button>
+              {showWeeklyReport && <ReportsPanel />}
+            </div>
+          )}
         </div>
       )}
 
