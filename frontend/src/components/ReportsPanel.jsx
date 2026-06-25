@@ -57,9 +57,11 @@ export default function ReportsPanel() {
     );
   }
 
-  const activeReport = reportData[lang] || reportData.en || reportData[Object.keys(reportData).find(k => !['squad_id', 'week_start_date', 'submitted_by', 'submitted_at', 'asset_category'].includes(k))];
+  const activeReport = (reportData.items && Array.isArray(reportData.items))
+    ? reportData
+    : (reportData[lang] || reportData.en || reportData[Object.keys(reportData).find(k => !['squad_id', 'week_start_date', 'submitted_by', 'submitted_at', 'asset_category'].includes(k))]);
 
-  if (!activeReport) {
+  if (!activeReport || !activeReport.items) {
     return (
       <div className="p-6 border border-bf-border bg-bf-slate/30 text-slate-500 text-[10px] font-mono uppercase tracking-widest text-center clip-btn select-none">
         {t('reports.logCorrupted')}
