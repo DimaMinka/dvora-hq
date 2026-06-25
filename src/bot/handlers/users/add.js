@@ -2,6 +2,7 @@ import { getDb } from '../../../db.js';
 import { setConversationState } from '../../state.js';
 import {
   isAdmin,
+  isCommanderOrAdmin,
   getSquads,
   buildSquadKeyboard,
   generateTacticalPin,
@@ -47,6 +48,7 @@ const callbackSteps = {
           role: role,
           squad_id: state.data.squad_id,
           tg_username: state.data.tg_username.toLowerCase().replace(/^@/, ''),
+          can_report: true,
           created_at: new Date().toISOString(),
         });
 
@@ -125,7 +127,8 @@ export async function handleAddUserText(ctx, state) {
 }
 
 export async function commandAddFighter(ctx) {
-  if (!isAdmin(ctx)) {
+  const authorized = await isCommanderOrAdmin(ctx);
+  if (!authorized) {
     return ctx.reply('❌ *ACCESS DENIED*: Unauthorized operator signature.', {
       parse_mode: 'Markdown',
     });
