@@ -7,7 +7,8 @@ import { parseWeaponry, parseCommaList } from './utils/loadout.js';
 import { gearsList, medsList } from '@shared/loadout-data.js';
 import { useTheme } from './hooks/useTheme.js';
 import { registerSquads } from './constants/squadColors.js';
-import { LanguageProvider, useTranslation } from './context/LanguageContext.jsx';
+import { LanguageProvider } from './context/LanguageProvider.jsx';
+import { useTranslation } from './context/LanguageContext.jsx';
 
 const getCategoryItems = (key, user, lang) => {
   if (!user) return [];
