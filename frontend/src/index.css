@@ -526,3 +526,27 @@ html[dir='rtl'] footer * {
 html[dir='rtl'] .animate-marquee {
   animation: marquee-rtl 12s linear infinite;
 }
+
+/* ── Reports Status Badges ── */
+.status-badge-ok {
+  color: #34d399 !important; /* emerald-400 */
+  background-color: rgba(6, 78, 59, 0.2) !important; /* emerald-950/20 */
+  border: 1px solid rgba(4, 120, 87, 0.35) !important; /* emerald-900/35 */
+}
+.status-badge-issue {
+  color: #f87171 !important; /* red-400 */
+  background-color: rgba(127, 29, 29, 0.2) !important; /* red-950/20 */
+  border: 1px solid rgba(185, 28, 28, 0.35) !important; /* red-900/35 */
+}
+
+html.theme-light .status-badge-ok {
+  color: #065f46 !important; /* emerald-800 */
+  background-color: #d1fae5 !important; /* emerald-100 */
+  border: 1px solid #a7f3d0 !important; /* emerald-300 */
+}
+html.theme-light .status-badge-issue {
+  color: #991b1b !important; /* red-800 */
+  background-color: #fee2e2 !important; /* red-100 */
+  border: 1px solid #fca5a5 !important; /* red-300 */
+}
+
