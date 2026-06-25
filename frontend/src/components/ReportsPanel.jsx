@@ -118,9 +118,19 @@ export default function ReportsPanel() {
                   </td>
                   <td className="py-2 px-2 text-center">
                     {(() => {
-                      const isOk = item.status.toLowerCase().includes('ok') ||
-                                   item.status.toLowerCase().includes('operat') ||
-                                   item.status.toLowerCase().includes('func');
+                      const statusLower = (item.status || '').toLowerCase();
+                      const notesLower = (item.notes || '').toLowerCase();
+                      
+                      const negativeKeywords = [
+                        'missing', 'broken', 'damage', 'fault', 'malfunc', 'issue', 'lost', 'repair', 'not operational', 'not functional', 'not ok',
+                        'חסר', 'תקול', 'שבור', 'תקלה', 'מקולקל', 'בעיה'
+                      ];
+                      
+                      const hasIssue = negativeKeywords.some(kw => 
+                        statusLower.includes(kw) || notesLower.includes(kw)
+                      );
+                      
+                      const isOk = !hasIssue;
                       return (
                         <span className={`inline-flex items-center justify-center w-5 h-5 text-[10px] font-black rounded clip-btn ${
                           isOk ? 'status-badge-ok' : 'status-badge-issue'
