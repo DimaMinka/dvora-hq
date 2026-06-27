@@ -1,5 +1,4 @@
 import { getDb } from '../../../db.js';
-import { FieldValue } from '@google-cloud/firestore';
 import { setConversationState } from '../../state.js';
 import {
   isAdmin,
@@ -73,7 +72,7 @@ const callbackSteps = {
       return ctx.editMessageText(
         `🕒 *SET MISSION TIME*\n` +
           `Day: *${formattedDay}*\n\n` +
-          `Enter mission time in *HH:MM* format (e.g., \`17:00\`) or type \`clear\` to remove:`,
+          `Enter mission time in *HH:MM* format (e.g., \`17:00\`):`,
         {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -87,44 +86,27 @@ const callbackSteps = {
 
 const textSteps = {
   [MISSION_STEPS.TIME_INPUT]: async (ctx, state, text) => {
-    const isClear = text.toLowerCase() === 'clear';
-    let timeVal = null;
-
-    if (!isClear) {
-      const match = text.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/);
-      if (!match) {
-        return ctx.reply(
-          '⚠️ *INVALID FORMAT*. Enter time in HH:MM format (e.g., 17:00) or type `clear`:',
-          {
-            parse_mode: 'Markdown',
-            reply_markup: {
-              inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]],
-            },
-          }
-        );
-      }
-      timeVal = text;
+    const match = text.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/);
+    if (!match) {
+      return ctx.reply('⚠️ *INVALID FORMAT*. Enter time in HH:MM format (e.g., 17:00):', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [[{ text: '❌ Cancel', callback_data: 'cancel' }]],
+        },
+      });
     }
+    const timeVal = text;
 
     const db = getDb();
     const docRef = db.collection('rotations').doc(state.data.rotationId);
 
-    if (isClear) {
-      await docRef.update({
-        [`meeting_times.${state.data.dateStr}`]: FieldValue.delete(),
-        updated_at: new Date().toISOString(),
-      });
-    } else {
-      await docRef.update({
-        [`meeting_times.${state.data.dateStr}`]: timeVal,
-        updated_at: new Date().toISOString(),
-      });
-    }
+    await docRef.update({
+      [`meeting_times.${state.data.dateStr}`]: timeVal,
+      updated_at: new Date().toISOString(),
+    });
 
     const formattedDay = formatShortDate(parseISODate(state.data.dateStr));
-    const successMsg = isClear
-      ? `✅ *MISSION TIME REMOVED* for *${formattedDay}*.`
-      : `✅ *MISSION TIME SET* to \`${timeVal}\` for *${formattedDay}*.`;
+    const successMsg = `✅ *MISSION TIME SET* to \`${timeVal}\` for *${formattedDay}*.`;
 
     await ctx.reply(successMsg, { parse_mode: 'Markdown' });
     setConversationState(ctx.chat.id, null);
