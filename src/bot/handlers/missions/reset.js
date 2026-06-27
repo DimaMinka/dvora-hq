@@ -76,22 +76,27 @@ export async function handleResetMissionCallback(ctx, state, data) {
       }
       const r = doc.data();
       const completed = r.completed_missions || {};
-      const completedDates = Object.keys(completed).sort();
+      const times = r.meeting_times || {};
 
-      if (completedDates.length === 0) {
+      const allDatesSet = new Set([...Object.keys(completed), ...Object.keys(times)]);
+      const allDates = Array.from(allDatesSet).sort();
+
+      if (allDates.length === 0) {
         setConversationState(ctx.chat.id, null);
-        return ctx.editMessageText('⚠️ *NO COMPLETED MISSIONS*: There are no completed missions to reset in this rotation.');
+        return ctx.editMessageText(
+          '⚠️ *NO MISSIONS*: There are no scheduled times or completed missions to reset in this rotation.'
+        );
       }
 
       const buttons = [];
-      for (let i = 0; i < completedDates.length; i += 2) {
+      for (let i = 0; i < allDates.length; i += 2) {
         const row = [];
-        const dateStr = completedDates[i];
+        const dateStr = allDates[i];
         const formatted = formatShortDate(parseISODate(dateStr));
         row.push({ text: formatted, callback_data: `reset_day:${dateStr}` });
 
-        if (completedDates[i + 1]) {
-          const nextDateStr = completedDates[i + 1];
+        if (allDates[i + 1]) {
+          const nextDateStr = allDates[i + 1];
           const nextFormatted = formatShortDate(parseISODate(nextDateStr));
           row.push({ text: nextFormatted, callback_data: `reset_day:${nextDateStr}` });
         }
@@ -102,12 +107,9 @@ export async function handleResetMissionCallback(ctx, state, data) {
       state.step = MISSION_RESET_STEPS.SELECT_DAY;
       setConversationState(ctx.chat.id, state);
 
-      return ctx.editMessageText(
-        `Select completed mission day to delete/reset:`,
-        {
-          reply_markup: { inline_keyboard: buttons },
-        }
-      );
+      return ctx.editMessageText(`Select day to delete/reset:`, {
+        reply_markup: { inline_keyboard: buttons },
+      });
     }
   }
 
@@ -116,9 +118,21 @@ export async function handleResetMissionCallback(ctx, state, data) {
       const dateStr = data.split(':')[1];
       state.data.dateStr = dateStr;
 
-      state.step = MISSION_RESET_STEPS.CONFIRM;
-      setConversationState(ctx.chat.id, state);
+      const doc = await db.collection('rotations').doc(state.data.rotationId).get();
+      if (!doc.exists) {
+        setConversationState(ctx.chat.id, null);
+        return ctx.editMessageText('⚠️ Rotation not found.');
+      }
+      const r = doc.data();
+      const hasCompleted = !!(r.completed_missions && r.completed_missions[dateStr]);
+      const hasTime = !!(r.meeting_times && r.meeting_times[dateStr]);
 
+      if (!hasCompleted && !hasTime) {
+        setConversationState(ctx.chat.id, null);
+        return ctx.editMessageText('⚠️ Nothing to reset for this day.');
+      }
+
+      state.step = MISSION_RESET_STEPS.CONFIRM;
       const formattedDay = formatShortDate(parseISODate(dateStr));
       const buttons = [
         [
@@ -127,15 +141,30 @@ export async function handleResetMissionCallback(ctx, state, data) {
         ],
       ];
 
-      return ctx.editMessageText(
-        `⚠️ *WARNING: RESET MISSION*\n` +
-          `Are you sure you want to delete all telemetry and structured debrief for *${formattedDay}*?\n\n` +
-          `This action is permanent and cannot be undone.`,
-        {
-          parse_mode: 'Markdown',
-          reply_markup: { inline_keyboard: buttons },
-        }
-      );
+      if (hasCompleted) {
+        state.data.mode = 'completed';
+        setConversationState(ctx.chat.id, state);
+        return ctx.editMessageText(
+          `⚠️ *WARNING: RESET COMPLETED MISSION*\n` +
+            `Are you sure you want to delete all telemetry and structured debrief for *${formattedDay}*?\n\n` +
+            `_Note: The scheduled time will be kept. You can clear it afterward by running this command again._`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: { inline_keyboard: buttons },
+          }
+        );
+      } else {
+        state.data.mode = 'time';
+        setConversationState(ctx.chat.id, state);
+        return ctx.editMessageText(
+          `⚠️ *WARNING: CLEAR PLANNED TIME*\n` +
+            `Are you sure you want to delete the scheduled mission time for *${formattedDay}*?`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: { inline_keyboard: buttons },
+          }
+        );
+      }
     }
   }
 
@@ -143,14 +172,27 @@ export async function handleResetMissionCallback(ctx, state, data) {
     if (data === 'confirm_reset') {
       try {
         const docRef = db.collection('rotations').doc(state.data.rotationId);
-        await docRef.update({
-          [`completed_missions.${state.data.dateStr}`]: FieldValue.delete(),
-        });
-        setConversationState(ctx.chat.id, null);
-        return ctx.editMessageText(
-          `🗑 *Mission for ${formatShortDate(parseISODate(state.data.dateStr))} has been successfully reset/deleted.*`,
-          { parse_mode: 'Markdown' }
-        );
+        const formattedDay = formatShortDate(parseISODate(state.data.dateStr));
+
+        if (state.data.mode === 'completed') {
+          await docRef.update({
+            [`completed_missions.${state.data.dateStr}`]: FieldValue.delete(),
+          });
+          setConversationState(ctx.chat.id, null);
+          return ctx.editMessageText(
+            `🗑 *Completed mission data for ${formattedDay} has been successfully deleted.*`,
+            { parse_mode: 'Markdown' }
+          );
+        } else {
+          await docRef.update({
+            [`meeting_times.${state.data.dateStr}`]: FieldValue.delete(),
+          });
+          setConversationState(ctx.chat.id, null);
+          return ctx.editMessageText(
+            `🗑 *Scheduled mission time for ${formattedDay} has been successfully cleared.*`,
+            { parse_mode: 'Markdown' }
+          );
+        }
       } catch (err) {
         setConversationState(ctx.chat.id, null);
         return ctx.editMessageText(`❌ *RESET FAILED*: \`${err.message}\``, {

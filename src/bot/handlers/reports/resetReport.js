@@ -39,7 +39,9 @@ export async function commandResetReport(ctx) {
       const doc = await db.collection('reports').doc(docId).get();
 
       if (!doc.exists) {
-        return ctx.reply(`⚠️ *NO REPORT*: There is no weekly report submitted for squad *${squadId.toUpperCase()}* on this week.`);
+        return ctx.reply(
+          `⚠️ *NO REPORT*: There is no weekly report submitted for squad *${squadId.toUpperCase()}* on this week.`
+        );
       }
 
       setConversationState(ctx.chat.id, {

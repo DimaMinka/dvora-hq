@@ -34,14 +34,20 @@ export async function handleStartHelp(ctx) {
 
     if (isCmdOrAdm) {
       commands.push(
-        { command: 'complete_mission', description: '🛰 Confirm mission completion with AI analysis' },
+        {
+          command: 'complete_mission',
+          description: '🛰 Confirm mission completion with AI analysis',
+        },
         { command: 'reset_mission', description: '🗑 Reset/delete a completed mission' },
         { command: 'reset_report', description: '🗑 Delete/reset weekly equipment report' }
       );
     }
 
     if (canReport) {
-      commands.push({ command: 'report', description: '📋 Submit weekly equipment inventory report' });
+      commands.push({
+        command: 'report',
+        description: '📋 Submit weekly equipment inventory report',
+      });
     }
 
     if (isAdm) {
@@ -112,4 +118,3 @@ export async function handleStartHelp(ctx) {
 
   return ctx.reply(helpMessage, { parse_mode: 'Markdown' });
 }
-

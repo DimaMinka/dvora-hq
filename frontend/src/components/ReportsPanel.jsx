@@ -57,9 +57,23 @@ export default function ReportsPanel() {
     );
   }
 
-  const activeReport = (reportData.items && Array.isArray(reportData.items))
-    ? reportData
-    : (reportData[lang] || reportData.en || reportData[Object.keys(reportData).find(k => !['squad_id', 'week_start_date', 'submitted_by', 'submitted_at', 'asset_category'].includes(k))]);
+  const activeReport =
+    reportData.items && Array.isArray(reportData.items)
+      ? reportData
+      : reportData[lang] ||
+        reportData.en ||
+        reportData[
+          Object.keys(reportData).find(
+            (k) =>
+              ![
+                'squad_id',
+                'week_start_date',
+                'submitted_by',
+                'submitted_at',
+                'asset_category',
+              ].includes(k)
+          )
+        ];
 
   if (!activeReport || !activeReport.items) {
     return (
@@ -73,19 +87,29 @@ export default function ReportsPanel() {
     <div className="border border-bf-cyan/30 bg-bf-slate/40 p-4 clip-hud relative w-full space-y-4 animate-fade-in text-start">
       <div className="flex justify-between items-start border-b border-bf-cyan/20 pb-2">
         <div>
-          <div className="text-[8px] text-bf-cyan/60 font-bold uppercase tracking-wider">{t('reports.title')}</div>
-          <h4 className="text-xs font-black text-white uppercase tracking-widest">{activeReport.report_title}</h4>
+          <div className="text-[8px] text-bf-cyan/60 font-bold uppercase tracking-wider">
+            {t('reports.title')}
+          </div>
+          <h4 className="text-xs font-black text-white uppercase tracking-widest">
+            {activeReport.report_title}
+          </h4>
         </div>
         <div className="text-end text-[8px] font-mono text-slate-500">
           <div>{t('reports.by', { user: reportData.submitted_by })}</div>
-          <div>{t('reports.at', { date: new Date(reportData.submitted_at).toLocaleDateString() })}</div>
+          <div>
+            {t('reports.at', { date: new Date(reportData.submitted_at).toLocaleDateString() })}
+          </div>
         </div>
       </div>
 
       <div className="space-y-3">
         <div className="p-2.5 bg-bf-dark/50 border border-bf-border clip-btn">
-          <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('reports.summaryTitle')}</div>
-          <p className="text-[10px] text-slate-300 leading-relaxed font-mono">{activeReport.general_summary}</p>
+          <div className="text-[8px] text-slate-500 font-bold uppercase tracking-wider mb-1">
+            {t('reports.summaryTitle')}
+          </div>
+          <p className="text-[10px] text-slate-300 leading-relaxed font-mono">
+            {activeReport.general_summary}
+          </p>
         </div>
 
         <div className="overflow-x-auto">
@@ -107,7 +131,10 @@ export default function ReportsPanel() {
                     {item.serial_numbers.length > 0 ? (
                       <span className="flex flex-wrap gap-1">
                         {item.serial_numbers.map((s, sIdx) => (
-                          <span key={sIdx} className="px-1 py-0.5 bg-bf-border border border-slate-700/50 text-[9px] text-slate-300 rounded">
+                          <span
+                            key={sIdx}
+                            className="px-1 py-0.5 bg-bf-border border border-slate-700/50 text-[9px] text-slate-300 rounded"
+                          >
                             {s}
                           </span>
                         ))}
@@ -120,21 +147,38 @@ export default function ReportsPanel() {
                     {(() => {
                       const statusLower = (item.status || '').toLowerCase();
                       const notesLower = (item.notes || '').toLowerCase();
-                      
+
                       const negativeKeywords = [
-                        'missing', 'broken', 'damage', 'fault', 'malfunc', 'issue', 'lost', 'repair', 'not operational', 'not functional', 'not ok',
-                        'חסר', 'תקול', 'שבור', 'תקלה', 'מקולקל', 'בעיה'
+                        'missing',
+                        'broken',
+                        'damage',
+                        'fault',
+                        'malfunc',
+                        'issue',
+                        'lost',
+                        'repair',
+                        'not operational',
+                        'not functional',
+                        'not ok',
+                        'חסר',
+                        'תקול',
+                        'שבור',
+                        'תקלה',
+                        'מקולקל',
+                        'בעיה',
                       ];
-                      
-                      const hasIssue = negativeKeywords.some(kw => 
-                        statusLower.includes(kw) || notesLower.includes(kw)
+
+                      const hasIssue = negativeKeywords.some(
+                        (kw) => statusLower.includes(kw) || notesLower.includes(kw)
                       );
-                      
+
                       const isOk = !hasIssue;
                       return (
-                        <span className={`inline-flex items-center justify-center w-5 h-5 text-[10px] font-black rounded clip-btn ${
-                          isOk ? 'status-badge-ok' : 'status-badge-issue'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center justify-center w-5 h-5 text-[10px] font-black rounded clip-btn ${
+                            isOk ? 'status-badge-ok' : 'status-badge-issue'
+                          }`}
+                        >
                           {isOk ? 'V' : 'X'}
                         </span>
                       );

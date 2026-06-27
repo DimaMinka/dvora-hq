@@ -68,7 +68,8 @@ export default function CommanderDashboard({
   }, [user, currentRotation]);
 
   const daysLeft = useMemo(() => {
-    if (!user || !user.squad_id || !rotations || rotations.length === 0 || userStatus === 'none') return 0;
+    if (!user || !user.squad_id || !rotations || rotations.length === 0 || userStatus === 'none')
+      return 0;
 
     const userSquad = user.squad_id.toUpperCase();
     const today = new Date();
@@ -238,7 +239,7 @@ export default function CommanderDashboard({
     const m = String(today.getMonth() + 1).padStart(2, '0');
     const d = String(today.getDate()).padStart(2, '0');
     const todayStr = `${y}-${m}-${d}`;
-    
+
     if (!currentRotation || !currentRotation.meeting_times) return '18:30'; // Fallback for demo
     return currentRotation.meeting_times[todayStr] || '18:30'; // Fallback for demo
   }, [currentRotation]);

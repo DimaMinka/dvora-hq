@@ -19,13 +19,12 @@ router.get('/current', authenticateToken, async (req, res) => {
     }
 
     const userData = userDoc.data();
-    const isAuthorized =
-      role === 'commander' ||
-      role === 'admin' ||
-      userData.can_report === true;
+    const isAuthorized = role === 'commander' || role === 'admin' || userData.can_report === true;
 
     if (!isAuthorized) {
-      return res.status(403).json({ error: 'Access denied: operator lacks report view signature.' });
+      return res
+        .status(403)
+        .json({ error: 'Access denied: operator lacks report view signature.' });
     }
 
     // 2. Fetch current week's report

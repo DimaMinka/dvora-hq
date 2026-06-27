@@ -100,25 +100,25 @@ dvora-hq/
 
 ### Telegram Bot Commands
 
-| Command                    | Role  | Description                                                      |
-| -------------------------- | ----- | ---------------------------------------------------------------- |
-| `/start`                   | Admin | Welcome message and command reference                            |
-| `/add_fighter`             | Admin | Register a new fighter (whitelist by username)                   |
-| `/list_fighters`           | Admin | List all registered fighters with PIN status                     |
-| `/gen_pin`                 | Admin | Generate unique 5-digit+1-letter encrypted PIN for a fighter     |
-| `/delete_fighter`          | Admin | Remove a fighter from the system                                 |
-| `/create_squad`            | Admin | Create a new squad                                               |
-| `/list_squads`             | Admin | List all squads                                                  |
-| `/add_to_squad`            | Admin | Assign a fighter to a squad                                      |
-| `/add_rotation`            | Admin | Schedule a weekly rotation (Sunday–Saturday cycle)               |
-| `/list_rotations`          | Admin | View all scheduled rotations                                     |
-| `/remove_rotation`         | Admin | Remove a rotation                                                |
-| `/set_mission`             | Admin | Set a mission time (HH:MM) for a specific date within a rotation |
-| `/alarm_on` / `/alarm_off` | Admin | Toggle global combat alert state for a squad                     |
-| `/complete_mission`        | Cmdr  | Confirm a completed mission by uploading Garmin screenshots      |
-| `/reset_mission`           | Cmdr  | Reset/delete completed mission telemetry for a specific day      |
+| Command                    | Role  | Description                                                                       |
+| -------------------------- | ----- | --------------------------------------------------------------------------------- |
+| `/start`                   | Admin | Welcome message and command reference                                             |
+| `/add_fighter`             | Admin | Register a new fighter (whitelist by username)                                    |
+| `/list_fighters`           | Admin | List all registered fighters with PIN status                                      |
+| `/gen_pin`                 | Admin | Generate unique 5-digit+1-letter encrypted PIN for a fighter                      |
+| `/delete_fighter`          | Admin | Remove a fighter from the system                                                  |
+| `/create_squad`            | Admin | Create a new squad                                                                |
+| `/list_squads`             | Admin | List all squads                                                                   |
+| `/add_to_squad`            | Admin | Assign a fighter to a squad                                                       |
+| `/add_rotation`            | Admin | Schedule a weekly rotation (Sunday–Saturday cycle)                                |
+| `/list_rotations`          | Admin | View all scheduled rotations                                                      |
+| `/remove_rotation`         | Admin | Remove a rotation                                                                 |
+| `/set_mission`             | Admin | Set a mission time (HH:MM) for a specific date within a rotation                  |
+| `/alarm_on` / `/alarm_off` | Admin | Toggle global combat alert state for a squad                                      |
+| `/complete_mission`        | Cmdr  | Confirm a completed mission by uploading Garmin screenshots                       |
+| `/reset_mission`           | Cmdr  | Reset/delete completed mission telemetry for a specific day                       |
 | `/report`                  | Ftr   | Submit a weekly status/equipment report (via text, voice, or mixed photo+caption) |
-| `/reset_report`            | Ftr   | Reset/delete your active weekly equipment report                 |
+| `/reset_report`            | Ftr   | Reset/delete your active weekly equipment report                                  |
 
 ### Fighter Mini App
 
@@ -220,20 +220,20 @@ The Telegram bot always opens the URL configured in @BotFather (production URL).
 
 ## Environment Variables
 
-| Variable                   | Required | Description                                      |
-| -------------------------- | -------- | ------------------------------------------------ |
-| `TELEGRAM_BOT_TOKEN`       | ✅       | Bot token from @BotFather                        |
-| `JWT_SECRET`               | ✅       | Secret for signing JWT tokens                    |
-| `AI_API_KEY`               | ✅       | Google AI API key for avatar generation          |
-| `TELEGRAM_ADMIN_USERNAMES` | ✅       | Comma-separated list of admin Telegram usernames |
-| `GCP_PROJECT_ID`           | ✅       | Google Cloud project ID                          |
-| `GCS_AVATAR_BUCKET`        | ✅       | GCS bucket name for avatar storage               |
-| `CLOUDTASKS_QUEUE_NAME`    | ✅       | Cloud Tasks queue for avatar generation jobs     |
-| `ALLOWED_ORIGINS`          | ✅       | Comma-separated CORS allowlist                   |
-| `DAILY_AI_LIMIT`           | —        | Daily limit of Gemini AI calls for the squad (default: `5`)      |
-| `PORT`                     | —        | Server port (default: `8080`)                    |
-| `NODE_ENV`                 | —        | `development` or `production`                    |
-| `GCP_REGION`               | —        | GCP region (default: `europe-west1`)             |
+| Variable                   | Required | Description                                                 |
+| -------------------------- | -------- | ----------------------------------------------------------- |
+| `TELEGRAM_BOT_TOKEN`       | ✅       | Bot token from @BotFather                                   |
+| `JWT_SECRET`               | ✅       | Secret for signing JWT tokens                               |
+| `AI_API_KEY`               | ✅       | Google AI API key for avatar generation                     |
+| `TELEGRAM_ADMIN_USERNAMES` | ✅       | Comma-separated list of admin Telegram usernames            |
+| `GCP_PROJECT_ID`           | ✅       | Google Cloud project ID                                     |
+| `GCS_AVATAR_BUCKET`        | ✅       | GCS bucket name for avatar storage                          |
+| `CLOUDTASKS_QUEUE_NAME`    | ✅       | Cloud Tasks queue for avatar generation jobs                |
+| `ALLOWED_ORIGINS`          | ✅       | Comma-separated CORS allowlist                              |
+| `DAILY_AI_LIMIT`           | —        | Daily limit of Gemini AI calls for the squad (default: `5`) |
+| `PORT`                     | —        | Server port (default: `8080`)                               |
+| `NODE_ENV`                 | —        | `development` or `production`                               |
+| `GCP_REGION`               | —        | GCP region (default: `europe-west1`)                        |
 
 ---
 

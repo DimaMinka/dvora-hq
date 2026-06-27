@@ -69,13 +69,15 @@ export async function handleReportCallback(ctx, state, data) {
 
     await db.collection('reports').doc(docId).set(reportData);
 
-    const enReport = result.en || result[Object.keys(result).find(k => k !== 'is_security_threat' && k !== 'asset_category')];
+    const enReport =
+      result.en ||
+      result[Object.keys(result).find((k) => k !== 'is_security_threat' && k !== 'asset_category')];
 
     const itemsSummary = enReport.items
       .map(
         (it) =>
           `• *${it.name}:* \`${it.quantity}\` pcs\n` +
-          `  _Serials:_ ${it.serial_numbers.length > 0 ? it.serial_numbers.map(s => `\`${s}\``).join(', ') : 'None'}\n` +
+          `  _Serials:_ ${it.serial_numbers.length > 0 ? it.serial_numbers.map((s) => `\`${s}\``).join(', ') : 'None'}\n` +
           `  _Status:_ ${it.status}`
       )
       .join('\n');

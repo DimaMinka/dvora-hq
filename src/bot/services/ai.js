@@ -12,9 +12,7 @@ function getSupportedLanguages() {
     const localesDir = path.resolve(__dirname, '../../../frontend/src/locales');
     if (fs.existsSync(localesDir)) {
       const files = fs.readdirSync(localesDir);
-      return files
-        .filter((f) => f.endsWith('.json'))
-        .map((f) => f.replace('.json', ''));
+      return files.filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', ''));
     }
   } catch (err) {
     console.error('[AI Service] Failed to read locales directory dynamically:', err.message);
@@ -230,10 +228,10 @@ Classify the asset category into one of: 'comms', 'transport', 'weapons', 'medic
 
 To ensure data consistency, you MUST match and map extracted items to the following standard inventory catalog:
 Standard Hebrew reference list:
-${(stdInventory.he || []).map(i => `- ${i}`).join('\n')}
+${(stdInventory.he || []).map((i) => `- ${i}`).join('\n')}
 
 Standard English reference list:
-${(stdInventory.en || []).map(i => `- ${i}`).join('\n')}
+${(stdInventory.en || []).map((i) => `- ${i}`).join('\n')}
 
 When mapping items:
 - Use the exact standard name (and default details/quantities) from these reference lists when matching.
@@ -287,7 +285,10 @@ Text content: "${textContent}"`;
         type: 'OBJECT',
         properties: {
           is_security_threat: { type: 'BOOLEAN' },
-          asset_category: { type: 'STRING', enum: ['comms', 'transport', 'weapons', 'medical', 'general'] },
+          asset_category: {
+            type: 'STRING',
+            enum: ['comms', 'transport', 'weapons', 'medical', 'general'],
+          },
           ...langProperties,
         },
         required: ['is_security_threat', 'asset_category', ...SUPPORTED_LANGUAGES],
@@ -297,4 +298,3 @@ Text content: "${textContent}"`;
 
   return JSON.parse(aiResponse.text);
 }
-

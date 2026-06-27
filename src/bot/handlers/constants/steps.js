@@ -45,4 +45,3 @@ export const REPORT_RESET_STEPS = {
   SELECT_SQUAD: 'report_reset_select_squad',
   CONFIRM: 'report_reset_confirm',
 };
-

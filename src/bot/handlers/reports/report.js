@@ -15,9 +15,9 @@ export async function isUserAuthorizedForReport(ctx) {
       .collection('users')
       .where('tg_username', 'in', [cleaned, `@${cleaned}`])
       .get();
-      
+
     if (snapshot.empty) return false;
-    
+
     let authorized = false;
     snapshot.forEach((doc) => {
       const u = doc.data();
@@ -99,14 +99,17 @@ export async function handleReportMedia(ctx, state) {
 
   setConversationState(ctx.chat.id, state);
 
-  return ctx.reply(`📸 Photo attached. (Total: ${state.data.photos.length} photos, ${state.data.texts.length} notes, ${state.data.voices.length} voice notes)`, {
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: '✅ Generate Report', callback_data: 'report_generate' }],
-        [{ text: '❌ Cancel', callback_data: 'cancel' }],
-      ],
-    },
-  });
+  return ctx.reply(
+    `📸 Photo attached. (Total: ${state.data.photos.length} photos, ${state.data.texts.length} notes, ${state.data.voices.length} voice notes)`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '✅ Generate Report', callback_data: 'report_generate' }],
+          [{ text: '❌ Cancel', callback_data: 'cancel' }],
+        ],
+      },
+    }
+  );
 }
 
 export async function handleReportVoice(ctx, state) {
@@ -117,14 +120,17 @@ export async function handleReportVoice(ctx, state) {
   state.data.voices.push({ fileId: voice.file_id });
   setConversationState(ctx.chat.id, state);
 
-  return ctx.reply(`🎙 Voice note attached. (Total: ${state.data.photos.length} photos, ${state.data.texts.length} notes, ${state.data.voices.length} voice notes)`, {
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: '✅ Generate Report', callback_data: 'report_generate' }],
-        [{ text: '❌ Cancel', callback_data: 'cancel' }],
-      ],
-    },
-  });
+  return ctx.reply(
+    `🎙 Voice note attached. (Total: ${state.data.photos.length} photos, ${state.data.texts.length} notes, ${state.data.voices.length} voice notes)`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '✅ Generate Report', callback_data: 'report_generate' }],
+          [{ text: '❌ Cancel', callback_data: 'cancel' }],
+        ],
+      },
+    }
+  );
 }
 
 export async function handleReportText(ctx, state) {
@@ -135,14 +141,17 @@ export async function handleReportText(ctx, state) {
   state.data.texts.push(text);
   setConversationState(ctx.chat.id, state);
 
-  return ctx.reply(`✍️ Note attached. (Total: ${state.data.photos.length} photos, ${state.data.texts.length} notes, ${state.data.voices.length} voice notes)`, {
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: '✅ Generate Report', callback_data: 'report_generate' }],
-        [{ text: '❌ Cancel', callback_data: 'cancel' }],
-      ],
-    },
-  });
+  return ctx.reply(
+    `✍️ Note attached. (Total: ${state.data.photos.length} photos, ${state.data.texts.length} notes, ${state.data.voices.length} voice notes)`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '✅ Generate Report', callback_data: 'report_generate' }],
+          [{ text: '❌ Cancel', callback_data: 'cancel' }],
+        ],
+      },
+    }
+  );
 }
 
 import { handleReportCallback } from './reportSubmit.js';

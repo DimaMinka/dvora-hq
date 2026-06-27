@@ -17,7 +17,9 @@ async function checkAndIncrementAiLimit() {
     const doc = await transaction.get(counterRef);
     const count = doc.exists ? doc.data().count || 0 : 0;
     if (count >= limit) {
-      throw new Error(`⚠️ Daily AI request limit exceeded for the squad (maximum ${limit} per day).`);
+      throw new Error(
+        `⚠️ Daily AI request limit exceeded for the squad (maximum ${limit} per day).`
+      );
     }
     transaction.set(counterRef, { count: count + 1 }, { merge: true });
     return count + 1;
